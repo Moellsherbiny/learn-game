@@ -1,7 +1,7 @@
 "use server";
 
 import { prisma } from "@/lib/prisma";
-import { sendOTPEmail } from "@/lib/mail";
+// import { sendOTPEmail } from "@/lib/mail";
 import { generateOTP, hashOTP } from "@/lib/otp";
 import crypto from "crypto";
 
@@ -114,7 +114,7 @@ export async function resendOTP({ email, mode }: ResendOTPInput) {
       },
     });
 
-    await sendOTPEmail({ email, otp: plain, mode });
+    // await sendOTPEmail({ email, otp: plain, mode });
 
     return { success: true };
   } catch {
