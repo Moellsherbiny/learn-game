@@ -1,0 +1,381 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Get a free hosted Postgres database in seconds: `npx create-db`
+
+generator client {
+  provider = "prisma-client"
+  output   = "../lib/generated/prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+enum UserRole {
+  STUDENT
+  TEACHER
+  ADMIN
+}
+
+enum StudentLevel {
+  BEGINNER
+  INTERMEDIATE
+  ADVANCED
+}
+
+model User {
+  id                 String          @id @default(cuid())
+  name               String?
+  email              String          @unique
+  phone              String?
+  school             String?
+  emailVerified      DateTime?
+  image              String?
+  password           String?
+  role               UserRole        @default(STUDENT)
+  level              StudentLevel    @default(BEGINNER)
+  accounts           Account[]
+  sessions           Session[]
+  Authenticator      Authenticator[]
+  // Battle Rooms as Teacher
+  teacherBattleRooms BattleRoom[] @relation("TeacherBattleRooms")
+
+  // Battle Participation as Student
+  battleParticipants BattleParticipant[] @relation("StudentBattleParticipants")
+
+  // Battle Answers
+  battleAnswers   BattleAnswer[] @relation("StudentBattleAnswers")
+  xp              Int             @default(0)
+  currentLevel    Int             @default(1)
+  streak          Int             @default(0)
+  coins           Int             @default(0)
+  placementResults PlacementResult[]
+  otp             String?
+  otp_expires_at  DateTime?
+  is_otp_verified Boolean?
+  coursesTeaching Course[]        @relation("CoursesTeaching")
+  enrollments     Enrollment[]
+  progress        Progress[]
+  leaderboard     Leaderboard[]
+  createdAt       DateTime        @default(now())
+  updatedAt       DateTime        @updatedAt
+}
+
+model Account {
+  userId            String
+  type              String
+  provider          String
+  providerAccountId String
+  refresh_token     String?
+  access_token      String?
+  expires_at        Int?
+  token_type        String?
+  scope             String?
+  id_token          String?
+  session_state     String?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@id([provider, providerAccountId])
+}
+
+model Session {
+  sessionToken String   @unique
+  userId       String
+  expires      DateTime
+  user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model VerificationToken {
+  identifier String
+  token      String
+  expires    DateTime
+
+  @@id([identifier, token])
+}
+
+model Authenticator {
+  credentialID         String  @unique
+  userId               String
+  providerAccountId    String
+  credentialPublicKey  String
+  counter              Int
+  credentialDeviceType String
+  credentialBackedUp   Boolean
+  transports           String?
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@id([userId, credentialID])
+}
+
+model Course {
+  id          String       @id @default(cuid())
+  title       String
+  description String?
+  teacherId   String
+  teacher     User         @relation("CoursesTeaching", fields: [teacherId], references: [id], onDelete: Cascade)
+  thumbnail   String?
+  enrollments Enrollment[]
+  modules     Module[]
+  placementTest PlacementTest?
+  placementResults PlacementResult[]
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model Module {
+  id          String       @id @default(cuid())
+  title       String
+  description String?
+  courseId    String
+  course      Course       @relation(fields: [courseId], references: [id], onDelete: Cascade)
+  lessons     Lesson[]
+  level       StudentLevel @default(BEGINNER)
+  requiredXp  Int          @default(0)
+  unlockScore Float        @default(80)
+  order       Int
+  createdAt   DateTime     @default(now())
+  updatedAt   DateTime     @updatedAt
+}
+
+enum GameType {
+  QUIZ
+  MATCHING
+  FILL_BLANKS
+  CONVERSATION
+}
+
+model Lesson {
+  id          String  @id @default(cuid())
+  title       String
+  description String?
+
+  gameType GameType
+
+  xpReward  Int   @default(10)
+  minScore  Float @default(80)
+  maxStars  Int   @default(3)
+  timeLimit Int?
+
+  contents LessonContent[]
+  moduleId String
+  module   Module          @relation(fields: [moduleId], references: [id], onDelete: Cascade)
+
+  progress Progress[]
+  order    Int
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model LessonContent {
+  id       String @id @default(cuid())
+  lessonId String
+  lesson   Lesson @relation(fields: [lessonId], references: [id], onDelete: Cascade)
+
+  question String
+  answer   String?
+  optionA  String?
+  optionB  String?
+  optionC  String?
+  optionD  String?
+
+  leftText  String?
+  rightText String?
+
+  sortOrder Int @default(0)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model Progress {
+  id        String @id @default(cuid())
+  studentId String
+  lessonId  String
+
+  completed Boolean @default(false)
+  score     Float   @default(0)
+  stars     Int     @default(0)
+  xpEarned  Int     @default(0)
+  attempts  Int     @default(0)
+
+  student User   @relation(fields: [studentId], references: [id], onDelete: Cascade)
+  lesson  Lesson @relation(fields: [lessonId], references: [id], onDelete: Cascade)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@unique([studentId, lessonId])
+}
+
+model Enrollment {
+  id        String   @id @default(cuid())
+  courseId  String
+  studentId String
+  course    Course   @relation(fields: [courseId], references: [id], onDelete: Cascade)
+  student   User     @relation(fields: [studentId], references: [id], onDelete: Cascade)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@unique([courseId, studentId])
+}
+
+model Leaderboard {
+  id        String   @id @default(cuid())
+  studentId String
+  score     Float
+  student   User     @relation(fields: [studentId], references: [id], onDelete: Cascade)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@unique([studentId])
+}
+
+model PlacementTest {
+  id          String   @id @default(cuid())
+
+  courseId    String   @unique
+  course      Course   @relation(fields: [courseId], references: [id])
+
+  title       String
+
+  questions   Json
+
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}
+
+model PlacementResult {
+  id            String @id @default(cuid())
+
+  studentId     String
+  courseId      String
+
+  level         StudentLevel
+
+  confidence    Int
+
+  score         Float
+
+  strengths     Json?
+  weaknesses    Json?
+
+  feedback      String?
+  answers       Json?
+  createdAt     DateTime @default(now())
+
+  student User @relation(fields: [studentId], references: [id])
+  course  Course @relation(fields: [courseId], references: [id])
+
+  @@unique([studentId, courseId])
+}
+enum BattleStatus {
+  WAITING
+  LIVE
+  FINISHED
+}
+
+enum TeamType {
+  TEAM_A
+  TEAM_B
+}
+
+model BattleRoom {
+  id    String @id @default(cuid())
+  title String
+  code  String @unique
+
+  teacherId String
+  teacher   User   @relation("TeacherBattleRooms", fields: [teacherId], references: [id],onDelete: Cascade)
+
+  status BattleStatus @default(WAITING)
+
+  currentQuestion Int @default(0)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  participants BattleParticipant[]
+  questions    BattleQuestion[]
+}
+
+model BattleParticipant {
+  id String @id @default(cuid())
+
+  roomId String
+  room   BattleRoom @relation(fields: [roomId],references: [id],onDelete: Cascade)
+
+  studentId String
+  student   User @relation("StudentBattleParticipants",fields: [studentId],references: [id],onDelete: Cascade)
+
+  team TeamType
+
+  score Int @default(0)
+
+  isReady Boolean @default(false)
+
+  joinedAt DateTime @default(now())
+
+  @@unique([roomId, studentId])
+}
+
+model BattleQuestion {
+  id String @id @default(cuid())
+
+  roomId String
+  room   BattleRoom @relation(fields: [roomId], references: [id], onDelete: Cascade )
+
+  question String
+
+  type GameType
+
+  answer String?
+
+  optionA String?
+  optionB String?
+  optionC String?
+  optionD String?
+
+  leftText  String?
+  rightText String?
+
+  points Int @default(100)
+
+  timeLimit Int @default(20)
+
+  order Int
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  answers BattleAnswer[]
+}
+
+model BattleAnswer {
+  id String @id @default(cuid())
+
+  questionId String
+  question   BattleQuestion @relation(fields: [questionId],references: [id],onDelete: Cascade)
+
+  studentId String
+  student   User @relation("StudentBattleAnswers",  fields: [studentId], references: [id],onDelete: Cascade)
+
+  answer String
+
+  isCorrect Boolean
+
+  responseTime Int
+
+  createdAt DateTime @default(now())
+
+  @@unique([questionId, studentId])
+}

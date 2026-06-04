@@ -1,0 +1,28 @@
+allowBuilds:
+  '@firebase/util': true
+  '@google/genai': true
+  '@parcel/watcher': false
+  '@prisma/engines': true
+  '@swc/core': true
+  bcrypt: true
+  core-js: false
+  msw: false
+  prisma: true
+  protobufjs: false
+  puppeteer: false
+  sharp: false
+  unrs-resolver: false
+ignoredBuiltDependencies:
+  - '@parcel/watcher'
+  - core-js
+  - msw
+  - protobufjs
+  - puppeteer
+  - sharp
+  - unrs-resolver
+onlyBuiltDependencies:
+  - '@firebase/util'
+  - '@prisma/engines'
+  - '@swc/core'
+  - bcrypt
+  - prisma
