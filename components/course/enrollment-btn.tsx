@@ -51,7 +51,7 @@ export default function EnrollButton({
       ) : (
         <>
           <Rocket className="ml-2 h-5 w-5" />
-          التسجيل في الكورس
+          التسجيل في الدورة التعليمية
         </>
       )}
     </Button>

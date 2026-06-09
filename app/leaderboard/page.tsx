@@ -363,7 +363,7 @@ function LeaderboardList({
                     <>
                       <InfoBadge
                         icon={<BookOpen className="h-4 w-4" />}
-                        value={`${user.totalCourses} كورس`}
+                        value={`${user.totalCourses} دورة تعليمية`}
                       />
 
                       <InfoBadge

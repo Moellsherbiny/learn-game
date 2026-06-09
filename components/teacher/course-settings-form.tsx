@@ -118,7 +118,7 @@ export default function CourseSettingsForm({
   const handleDelete = () => {
     const confirmed =
       window.confirm(
-        "هل أنت متأكد من حذف هذا الكورس؟",
+        "هل أنت متأكد من حذف هذا الدورة التعليمية؟",
       );
 
     if (!confirmed) return;
@@ -155,7 +155,7 @@ export default function CourseSettingsForm({
               <div className="mb-5 flex flex-wrap gap-3">
                 <Badge className="rounded-full px-4 py-2">
                   <BookOpen className="ml-2 h-4 w-4" />
-                  إعدادات الكورس
+                  إعدادات الدورة التعليمية
                 </Badge>
 
                 <Badge
@@ -172,7 +172,7 @@ export default function CourseSettingsForm({
               </h1>
 
               <p className="mt-4 max-w-2xl leading-8 text-muted-foreground">
-                إدارة بيانات الكورس،
+                إدارة بيانات الدورة التعليمية，
                 المستويات، والصورة
                 التعريفية الخاصة به.
               </p>
@@ -203,7 +203,7 @@ export default function CourseSettingsForm({
                   href={`/teacher/courses/${course.id}`}
                 >
                   <ArrowLeft className="ml-2 h-5 w-5" />
-                  العودة للكورس
+                  العودة للدورة التعليمية
                 </Link>
               </Button>
             </div>
@@ -289,12 +289,12 @@ export default function CourseSettingsForm({
 
             <div>
               <h2 className="text-2xl font-black">
-                بيانات الكورس
+                بيانات الدورة التعليمية
               </h2>
 
               <p className="mt-1 text-muted-foreground">
                 قم بتعديل المعلومات
-                الأساسية للكورس.
+                الأساسية للدورة التعليمية.
               </p>
             </div>
           </div>
@@ -309,7 +309,7 @@ export default function CourseSettingsForm({
             {/* TITLE */}
             <div className="space-y-3">
               <Label className="text-base font-bold">
-                عنوان الكورس
+                عنوان الدورة التعليمية
               </Label>
 
               <Input
@@ -319,7 +319,7 @@ export default function CourseSettingsForm({
                     e.target.value,
                   )
                 }
-                placeholder="أدخل عنوان الكورس"
+                placeholder="أدخل عنوان الدورة التعليمية"
                 className="h-14 rounded-2xl text-lg"
               />
             </div>
@@ -338,7 +338,7 @@ export default function CourseSettingsForm({
                     e.target.value,
                   )
                 }
-                placeholder="اكتب وصفًا احترافيًا للكورس..."
+                placeholder="اكتب وصفًا احترافيًا للدورة التعليمية..."
                 className="rounded-2xl leading-8"
               />
             </div>
@@ -411,7 +411,7 @@ export default function CourseSettingsForm({
                 "
               >
                 <Trash2 className="ml-2 h-5 w-5" />
-                حذف الكورس
+                حذف الدورة التعليمية
               </Button>
             </div>
           </form>

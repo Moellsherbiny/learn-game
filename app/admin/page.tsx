@@ -91,7 +91,7 @@ export default async function AdminPage() {
             <BookOpen className="h-10 w-10 text-primary" />
 
             <div>
-              <p className="text-sm text-muted-foreground">إجمالي الكورسات</p>
+              <p className="text-sm text-muted-foreground">إجمالي الدورات</p>
 
               <p className="text-3xl font-bold">{stats.courses}</p>
             </div>
@@ -129,7 +129,7 @@ export default async function AdminPage() {
                       البريد الإلكتروني
                     </TableHead>
 
-                    <TableHead className="text-right">عدد الكورسات</TableHead>
+                    <TableHead className="text-right">عدد الدورات</TableHead>
                   </TableRow>
                 </TableHeader>
 

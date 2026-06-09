@@ -69,7 +69,7 @@ export async function deleteCourse(
 
   if (!course) {
     throw new Error(
-      "الكورس غير موجود",
+      "الدورة التعليمية غير موجود",
     );
   }
 
@@ -84,7 +84,7 @@ export async function deleteCourse(
       session.user.id
   ) {
     throw new Error(
-      "ليس لديك صلاحية حذف هذا الكورس",
+      "ليس لديك صلاحية حذف هذا الدورة التعليمية",
     );
   }
 

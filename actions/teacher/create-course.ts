@@ -25,7 +25,7 @@ export async function createCourse({
 
   // التأكد أن المستخدم مدرس
   if (session.user.role !== UserRole.TEACHER) {
-    throw new Error("غير مصرح لك بإنشاء الكورسات.");
+    throw new Error("غير مصرح لك بإنشاء الدورات.");
   }
 
   const cleanTitle = title.trim();
@@ -33,11 +33,11 @@ export async function createCourse({
   const cleanThumbnail = thumbnail?.trim() || null;
 
   if (!cleanTitle) {
-    throw new Error("عنوان الكورس مطلوب.");
+    throw new Error("عنوان الدورة التعليمية مطلوب.");
   }
 
   if (cleanTitle.length < 3) {
-    throw new Error("عنوان الكورس يجب أن يكون 3 أحرف على الأقل.");
+    throw new Error("عنوان الدورة التعليمية يجب أن يكون 3 أحرف على الأقل.");
   }
 
   const course = await prisma.course.create({

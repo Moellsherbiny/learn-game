@@ -70,7 +70,7 @@ export default function ModuleForm({ courseId }: ModuleFormProps) {
           إنشاء مستوى جديد
         </CardTitle>
         <CardDescription>
-          أضف مستوى جديدًا ضمن الكورس وحدد شروط فتحه.
+          أضف مستوى جديدًا ضمن الدورة التعليمية وحدد شروط فتحه.
         </CardDescription>
       </CardHeader>
 

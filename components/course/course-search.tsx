@@ -21,7 +21,7 @@ export function CourseSearch({
         onChange={(e) =>
           onChange(e.target.value)
         }
-        placeholder="ابحث عن كورس..."
+        placeholder="ابحث عن دورة تعليمية..."
         className="h-12 rounded-full pr-11"
       />
     </div>

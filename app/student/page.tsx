@@ -482,7 +482,7 @@ export default async function StudentPage() {
           {/* LEFT COLUMN */}
           <div>
                         <SectionTitle
-              title="الكورسات الخاصة بك"
+              title="الدورات الخاصة بك"
               icon={BookOpen}
             />
 
@@ -498,7 +498,7 @@ export default async function StudentPage() {
                   </h3>
 
                   <p className="mt-2 max-w-md text-sm text-muted-foreground">
-                    استكشف الكورسات المتاحة
+                    استكشف الدورات المتاحة
                     وابدأ التعلم خطوة بخطوة.
                   </p>
 
@@ -507,7 +507,7 @@ export default async function StudentPage() {
                     className="mt-6"
                   >
                     <Link href="/courses">
-                      استكشف الكورسات
+                      استكشف الدورات
                     </Link>
                   </Button>
 
@@ -615,7 +615,7 @@ export default async function StudentPage() {
                             {course.progress >
                             0
                               ? "متابعة التعلم"
-                              : "بدء الكورس"}
+                              : "بدء الدورة التعليمية"}
 
                             <ChevronLeft className="mr-2 h-4 w-4" />
                           </Link>

@@ -26,7 +26,7 @@ export async function enrollInCourse(courseId: string) {
   if (existingEnrollment) {
     return {
       success: true,
-      message: "أنت مسجل بالفعل في هذا الكورس.",
+      message: "أنت مسجل بالفعل في هذه الدورة.",
     };
   }
 
@@ -44,6 +44,6 @@ export async function enrollInCourse(courseId: string) {
 
   return {
     success: true,
-    message: "تم التسجيل في الكورس بنجاح.",
+    message: "تم التسجيل في الدورة بنجاح.",
   };
 }

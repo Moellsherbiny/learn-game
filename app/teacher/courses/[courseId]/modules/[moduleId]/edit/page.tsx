@@ -152,7 +152,7 @@ export default async function EditModulePage({
                 {/* LEFT */}
                 <div>
                   <p className="mb-2 text-sm text-primary">
-                    الكورس
+                    الدورة التعليمية
                   </p>
 
                   <h2 className="text-2xl font-black">

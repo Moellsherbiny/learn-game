@@ -299,7 +299,7 @@ export async function createModule(
 
   if (!course) {
     throw new Error(
-      "الكورس غير موجود.",
+      "الدورة التعليمية غير موجود.",
     );
   }
 

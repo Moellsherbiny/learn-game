@@ -157,7 +157,7 @@ export default async function CourseMapPage({ params }: PageProps) {
                   hover:text-primary
                 "
               >
-                الكورسات
+                الدورات
                 <ChevronLeft className="h-4 w-4" />
               </Link>
 
@@ -263,7 +263,7 @@ export default async function CourseMapPage({ params }: PageProps) {
                   </div>
 
                   <div>
-                    <h2 className="text-xl font-black">تقدمك في الكورس</h2>
+                    <h2 className="text-xl font-black">تقدمك في الدورة التعليمية</h2>
 
                     <p className="text-sm text-muted-foreground">
                       استمر حتى الوصول إلى 100%

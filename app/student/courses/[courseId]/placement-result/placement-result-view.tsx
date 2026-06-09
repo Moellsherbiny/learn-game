@@ -222,7 +222,7 @@ export function PlacementResultView({
             <Link
               href={`/student/courses/${courseId}`}
             >
-              الانتقال إلى الكورس
+              الانتقال إلى الدورة التعليمية
 
               <ArrowLeft className="mr-2 h-4 w-4" />
             </Link>

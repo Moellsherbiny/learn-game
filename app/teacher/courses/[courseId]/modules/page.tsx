@@ -144,7 +144,7 @@ export default async function CourseModulesPage({
                     href={`/teacher/courses/${course.id}`}
                   >
                     <ArrowLeft className="ml-2 h-5 w-5" />
-                    إعدادات الكورس
+                    إعدادات الدورة التعليمية
                   </Link>
                 </Button>
 
@@ -245,7 +245,7 @@ export default async function CourseModulesPage({
 
               <p className="mt-5 max-w-2xl text-lg leading-8 text-muted-foreground">
                 ابدأ بإنشاء أول مستوى
-                تعليمي داخل الكورس،
+                تعليمي داخل الدورة التعليمية،
                 ثم أضف الدروس
                 والألعاب التفاعلية.
               </p>

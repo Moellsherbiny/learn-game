@@ -132,11 +132,11 @@ export default async function CoursePage({ params }: CoursePageProps) {
                   <div className="rounded-2xl border border-green-500/20 bg-green-500/10 p-4 text-center">
                     <CheckCircle2 className="mx-auto mb-2 h-6 w-6 text-green-500" />
                     <p className="font-semibold text-green-600 dark:text-green-400">
-                      أنت مسجل بالفعل في هذا الكورس
+                      أنت مسجل بالفعل في هذا الدورة التعليمية
                     </p>
                     <Button asChild variant="default" className="mt-4">
                       <Link href={`/student/courses/${course.id}`}>
-                        انتقل إلى الكورس
+                        انتقل إلى الدورة التعليمية
                       </Link>
                     </Button>
                   </div>

@@ -90,7 +90,7 @@ export default function CourseForm() {
           });
         }
 
-        // إنشاء الكورس
+        // إنشاء الدورة التعليمية
         await createCourse({
           title,
           description,
@@ -105,7 +105,7 @@ export default function CourseForm() {
         const message =
           error instanceof Error
             ? error.message
-            : "حدث خطأ أثناء إنشاء الكورس.";
+            : "حدث خطأ أثناء إنشاء الدورة التعليمية.";
 
         toast.error(message);
       }
@@ -116,7 +116,7 @@ export default function CourseForm() {
     <form onSubmit={handleSubmit} className="space-y-8">
       {/* Title */}
       <div className="space-y-2">
-        <Label htmlFor="title">عنوان الكورس</Label>
+        <Label htmlFor="title">عنوان الدورة التعليمية</Label>
         <div className="relative">
           <BookOpen className="absolute right-3 top-3.5 h-4 w-4 text-muted-foreground" />
           <Input
@@ -132,14 +132,14 @@ export default function CourseForm() {
 
       {/* Description */}
       <div className="space-y-2">
-        <Label htmlFor="description">وصف الكورس</Label>
+        <Label htmlFor="description">وصف الدورة التعليمية</Label>
         <div className="relative">
           <FileText className="absolute right-3 top-3.5 h-4 w-4 text-muted-foreground" />
           <Textarea
             id="description"
             value={description}
             onChange={(e) => setDescription(e.target.value)}
-            placeholder="وصف مختصر عن أهداف الكورس وما سيتعلمه الطلاب."
+            placeholder="وصف مختصر عن أهداف الدورة التعليمية وما سيتعلمه الطلاب."
             rows={5}
             className="rounded-2xl pr-10"
           />
@@ -148,7 +148,7 @@ export default function CourseForm() {
 
       {/* Image Upload */}
       <div className="space-y-3">
-        <Label htmlFor="thumbnail">صورة الكورس</Label>
+        <Label htmlFor="thumbnail">صورة الدورة التعليمية</Label>
 
         {!preview ? (
           <label
@@ -160,7 +160,7 @@ export default function CourseForm() {
             </div>
 
             <h3 className="text-lg font-bold">
-              اختر صورة للكورس
+              اختر صورة للدورة التعليمية
             </h3>
 
             <p className="mt-2 text-sm leading-7 text-muted-foreground">
@@ -218,12 +218,12 @@ export default function CourseForm() {
         {isPending ? (
           <>
             <Loader2 className="ml-2 h-5 w-5 animate-spin" />
-            جاري إنشاء الكورس...
+            جاري إنشاء الدورة التعليمية...
           </>
         ) : (
           <>
             <Sparkles className="ml-2 h-5 w-5" />
-            إنشاء الكورس
+            إنشاء الدورة التعليمية
           </>
         )}
       </Button>

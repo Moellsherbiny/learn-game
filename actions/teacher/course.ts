@@ -104,7 +104,7 @@ export async function updateCourse(data: UpdateCourseInput) {
   const title = data.title.trim();
 
   if (!title) {
-    throw new Error("عنوان الكورس مطلوب.");
+    throw new Error("عنوان الدورة التعليمية مطلوب.");
   }
 
   const course = await prisma.course.findFirst({
@@ -115,7 +115,7 @@ export async function updateCourse(data: UpdateCourseInput) {
   });
 
   if (!course) {
-    throw new Error("الكورس غير موجود.");
+    throw new Error("الدورة التعليمية غير موجود.");
   }
 
   await prisma.course.update({
@@ -145,7 +145,7 @@ export async function deleteCourse(courseId: string) {
   });
 
   if (!course) {
-    throw new Error("الكورس غير موجود.");
+    throw new Error("الدورة التعليمية غير موجود.");
   }
 
   await prisma.course.delete({

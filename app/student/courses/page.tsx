@@ -118,7 +118,7 @@ export default async function MyCoursesPage() {
             <div className="grid gap-5 sm:grid-cols-2">
               {[
                 {
-                  title: "الكورسات",
+                  title: "الدورات",
                   value: stats.totalCourses,
                   icon: BookOpen,
                 },
@@ -192,7 +192,7 @@ export default async function MyCoursesPage() {
           <div className="mb-16 grid gap-5 md:grid-cols-3">
             {[
               {
-                title: "أكمل كورس جديد",
+                title: "أكمل دورة جديدة",
                 progress: 70,
                 reward: "+100 XP",
                 icon: BookOpen,
@@ -260,7 +260,7 @@ export default async function MyCoursesPage() {
             <Sparkles className="h-7 w-7 text-primary" />
 
             <h2 className="text-3xl font-black">
-              الكورسات النشطة
+              الدورات النشطة
             </h2>
           </div>
 

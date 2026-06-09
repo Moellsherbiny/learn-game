@@ -118,11 +118,11 @@ export default function CoursesPage({ courses }: CoursesClientProps) {
               </div>
 
               <h3 className="text-2xl font-bold">
-                لا توجد كورسات متاحة حاليًا
+                لا توجد دورات متاحة حاليًا
               </h3>
 
               <p className="mt-3 max-w-md leading-8 text-muted-foreground">
-                لم يتم إضافة أي كورسات بعد. بناء تجربة تعلم ممتعة تعتمد على
+                لم يتم إضافة أي دورة تعليمية بعد. بناء تجربة تعلم ممتعة تعتمد على
                 الألعاب والمستويات.
               </p>
             </CardContent>
@@ -239,7 +239,7 @@ export default function CoursesPage({ courses }: CoursesClientProps) {
                   {/* CTA */}
                   <Button asChild className="mt-6 h-11 w-full rounded-2xl">
                     <Link href={`/courses/${course.id}`}>
-                      استكشف الكورس
+                      استكشف الدورة التعليمية
                       <ArrowLeft className="mr-2 h-4 w-4" />
                     </Link>
                   </Button>
