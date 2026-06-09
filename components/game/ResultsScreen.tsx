@@ -431,7 +431,7 @@ export function ResultsScreen({
 
                 {passed
                   ? "الدرس التالي"
-                  : "العودة للكورس"}
+                  : "العودة للدورة التعليمية"}
               </button>
             </div>
           </div>
