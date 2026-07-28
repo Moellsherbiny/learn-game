@@ -6,7 +6,7 @@ import { z } from "zod";
 import { auth } from "@/auth";
 import { prisma } from "@/lib/prisma";
 
-import { sendTeacherInviteEmail } from "@/lib/mail";
+// import { sendTeacherInviteEmail } from "@/lib/mail";
 
 const sendTeacherInviteSchema =
   z.object({
@@ -101,11 +101,11 @@ export async function sendTeacherInvite(
       `${process.env.NEXTAUTH_URL}` +
       `/auth/teacher/setup?token=${token}`;
 
-    await sendTeacherInviteEmail({
-      name,
-      email,
-      inviteUrl,
-    });
+    // await sendTeacherInviteEmail({
+    //   name,
+    //   email,
+    //   inviteUrl,
+    // });
 
     return {
       success: true,
