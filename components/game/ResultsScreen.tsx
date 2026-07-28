@@ -295,7 +295,7 @@ export function ResultsScreen({
                       </p>
 
                       <h3 className="mt-1 text-3xl font-black text-primary">
-                        +{xpEarned} XP
+                        +{xpEarned} نقاط خبرة
                       </h3>
                     </div>
                   </div>

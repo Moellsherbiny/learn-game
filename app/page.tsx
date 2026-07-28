@@ -310,7 +310,7 @@ export default async function HomePage() {
                 <Trophy className="h-8 w-8" />
               </div>
 
-              <h3 className="mt-6 text-2xl font-black">نظام XP</h3>
+              <h3 className="mt-6 text-2xl font-black">نقاط الخبرة</h3>
 
               <p className="mt-4 leading-8 text-muted-foreground">
                 اجمع النقاط والعملات وارتقِ بالمستويات التعليمية.
@@ -455,7 +455,7 @@ export default async function HomePage() {
                     {student.xp}
                   </div>
 
-                  <p className="mt-1 text-sm text-muted-foreground">XP</p>
+                  <p className="mt-1 text-sm text-muted-foreground">نقاط الخبرة</p>
                 </div>
               </CardContent>
             </Card>

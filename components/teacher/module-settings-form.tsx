@@ -337,7 +337,7 @@ export default function ModuleSettingsForm({
             </div>
 
             <Label className="mb-3 block text-sm font-bold">
-              Required XP
+              مقدار نقاط الخبرة المطلوبة
             </Label>
 
             <Input

@@ -377,7 +377,7 @@ export default function LessonSettingsForm({
             </div>
 
             <Label className="mb-3 block text-sm font-bold">
-              XP Reward
+             نقاط الخبرة الممنوحة
             </Label>
 
             <Input

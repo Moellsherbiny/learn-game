@@ -174,10 +174,10 @@ export default async function TeacherModulePage({ params }: PageProps) {
             <div className="mt-8 rounded-[28px] border border-primary/10 bg-primary/5 p-6">
               <div className="flex flex-col gap-5 lg:flex-row lg:items-center lg:justify-between">
                 <div>
-                  <p className="mb-2 text-sm text-primary">Required XP</p>
+                  <p className="mb-2 text-sm text-primary">نقاط الخبرة المطلوبة</p>
 
                   <h2 className="text-3xl font-black">
-                    {module.requiredXp} XP
+                    {module.requiredXp} نقاط خبرة
                   </h2>
                 </div>
 
@@ -240,7 +240,7 @@ export default async function TeacherModulePage({ params }: PageProps) {
 
               <div className="text-4xl font-black">{totalXp}</div>
 
-              <div className="mt-2 text-muted-foreground">إجمالي XP</div>
+              <div className="mt-2 text-muted-foreground">إجمالي نقاط الخبرة</div>
             </CardContent>
           </Card>
 
@@ -345,7 +345,7 @@ export default async function TeacherModulePage({ params }: PageProps) {
                               <Sparkles className="h-4 w-4" />
 
                               <span className="font-bold">
-                                {lesson.xpReward} XP
+                                {lesson.xpReward} نقاط الخبرة
                               </span>
                             </div>
 

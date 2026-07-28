@@ -20,7 +20,7 @@ const stats = [
 const highlights = [
   {
     icon: Trophy,
-    label: "XP ومستويات",
+    label: " مستويات ونقاط خبرة",
   },
   {
     icon: Coins,
@@ -175,7 +175,7 @@ export default function Hero() {
               <div className="mb-6">
                 <div className="mb-2 flex justify-between text-sm">
                   <span>التقدم</span>
-                  <span className="font-semibold">2,450 XP</span>
+                  <span className="font-semibold">2,450 نقاط خبرة</span>
                 </div>
 
                 <div className="h-3 rounded-full bg-muted">

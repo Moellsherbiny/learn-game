@@ -393,7 +393,7 @@ export function GameEngine({
               <div className="flex items-center gap-2 rounded-2xl border border-primary/20 bg-primary/5 px-3 py-2 text-sm font-bold text-primary">
                 <Zap className="h-4 w-4" />
 
-                <span>{lesson.xpReward} XP</span>
+                <span>{lesson.xpReward} نقاط خبرة</span>
               </div>
             )}
           </div>

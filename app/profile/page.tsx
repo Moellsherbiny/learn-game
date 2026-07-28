@@ -370,7 +370,7 @@ export default async function ProfilePage() {
 
                   <span className="text-sm text-muted-foreground">
 
-                    {xp} / {nextLevelXP} XP
+                    {xp} / {nextLevelXP} نقاط خبرة
                   </span>
                 </div>
 
@@ -411,7 +411,7 @@ export default async function ProfilePage() {
 
             <p className="mt-2 text-sm text-muted-foreground">
 
-              XP
+              نقاط خبرة
             </p>
           </div>
 

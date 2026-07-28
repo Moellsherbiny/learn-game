@@ -208,7 +208,7 @@ export default async function LessonContentPage({
                   </div>
 
                   <div className="mt-1 text-sm text-muted-foreground">
-                    XP Reward
+                    نقاط الخبرة
                   </div>
                 </div>
               </div>
@@ -258,7 +258,7 @@ export default async function LessonContentPage({
                       lesson.module
                         .requiredXp
                     }{" "}
-                    XP
+                    نقاط الخبرة المطلوبة
                   </Badge>
                 </div>
               </div>

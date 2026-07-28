@@ -52,7 +52,7 @@ export default function Leaderboard() {
                 <Flame className="mr-1" /> {p.streak} يوم
               </span>
               <span className="text-sm font-extrabold text-game-purple-light">
-                {p.xp.toLocaleString()} XP
+                {p.xp.toLocaleString()} نقاط الخبرة
               </span>
             </div>
           ))}
@@ -69,7 +69,7 @@ export default function Leaderboard() {
             <span className="text-xs text-game-amber bg-game-amber/10 rounded-full px-2 py-0.5">
               <Flame className="mr-1" /> 5 أيام
             </span>
-            <span className="text-sm font-extrabold text-slate-500">1,920 XP</span>
+            <span className="text-sm font-extrabold text-slate-500">1,920 نقاط خبرة</span>
           </div>
         </div>
       </Reveal>

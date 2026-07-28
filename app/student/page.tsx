@@ -78,7 +78,7 @@ export default async function StudentPage() {
     },
 
     {
-      title: "إجمالي XP",
+      title: "إجمالي نقاط الخبرة",
       value: student.xp.toLocaleString(),
       icon: Sparkles,
     },
@@ -106,14 +106,14 @@ export default async function StudentPage() {
     {
       title: "أكمل درساً جديداً",
       progress: 70,
-      reward: "+50 XP",
+      reward: "+50 نقاط خبرة",
       icon: BookOpen,
     },
 
     {
       title: "اربح تحدياً تعليمياً",
       progress: 40,
-      reward: "+100 XP",
+      reward: "+100 نقاط خبرة",
       icon: Sword,
     },
 
@@ -197,11 +197,11 @@ export default async function StudentPage() {
                 <div className="mt-3 flex justify-between text-xs text-muted-foreground">
 
                   <span>
-                    {student.currentLevelXp} XP
+                    {student.currentLevelXp} نقاط خبرة
                   </span>
 
                   <span>
-                    {student.nextLevelXp} XP
+                    {student.nextLevelXp} نقاط خبرة
                   </span>
                 </div>
 
@@ -210,7 +210,7 @@ export default async function StudentPage() {
                   {" "}
                   <span className="font-semibold text-primary">
                     {student.nextLevelXp -
-                      student.currentLevelXp} XP
+                      student.currentLevelXp} نقاط خبرة
                   </span>
                   {" "}
                   للوصول للمستوى التالي

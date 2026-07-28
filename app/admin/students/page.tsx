@@ -122,7 +122,7 @@ export default async function StudentsPage() {
                     </TableHead>
 
                     <TableHead className="text-right">
-                      نقاط الخبرة ( XP )
+                      نقاط الخبرة 
                     </TableHead>
 
                 

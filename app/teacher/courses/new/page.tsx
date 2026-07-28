@@ -84,7 +84,7 @@ export default function NewCoursePage() {
 
               <div className="rounded-3xl border border-border/50 bg-card/60 p-5 backdrop-blur-sm">
                 <Trophy className="mb-3 h-6 w-6 text-primary" />
-                <h3 className="font-bold">XP ومكافآت</h3>
+                <h3 className="font-bold"> مكافآت نقاط الخبرة</h3>
                 <p className="mt-1 text-sm leading-6 text-muted-foreground">
                   حفّز الطلاب بالنقاط والإنجازات.
                 </p>

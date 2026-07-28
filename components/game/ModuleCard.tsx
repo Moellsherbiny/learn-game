@@ -168,10 +168,10 @@ export function ModuleCard({
                 </IconBox>
               </div>
 
-              <p className="text-sm font-bold">يتطلب {module.requiredXp} XP</p>
+              <p className="text-sm font-bold">يتطلب {module.requiredXp} نقاط خبرة</p>
 
               <p className="mt-1 text-xs text-muted-foreground">
-                لديك {studentXp} XP
+                لديك {studentXp} نقاط خبرة
               </p>
             </div>
           </div>

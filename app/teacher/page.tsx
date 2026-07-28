@@ -455,7 +455,7 @@ export default async function TeacherPage() {
 
                         <p className="mt-2 text-sm text-muted-foreground">
 
-                          XP
+                          نقاط الخبرة
                         </p>
                       </div>
                     </div>
@@ -486,7 +486,7 @@ export default async function TeacherPage() {
 
                               <th className="p-4 text-right font-black">
 
-                                XP
+                                نقاط الخبرة
                               </th>
 
                               <th className="p-4 text-right font-black">

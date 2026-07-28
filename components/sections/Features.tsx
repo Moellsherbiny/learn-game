@@ -22,7 +22,7 @@ const features = [
   },
   {
     icon: Zap,
-    title: "نقاط الخبرة (XP)",
+    title: "نقاط الخبرة",
     desc: "اكسب نقاطاً مع كل درس تجتازه وارتقِ في المستويات. كلما أتقنت أكثر، كلما فتحت محتوى أعمق.",
     iconBg: "bg-game-amber/15",
     iconColor: "text-game-amber",
@@ -97,7 +97,7 @@ export default function Features() {
                 {/* Top accent line */}
                 <div
                   className={cn(
-                    "absolute top-0 left-0 right-0 h-0.5 bg-gradient-to-r to-transparent opacity-0 group-hover:opacity-100 transition-opacity",
+                    "absolute top-0 left-0 right-0 h-0.5 bg-linear-to-r to-transparent opacity-0 group-hover:opacity-100 transition-opacity",
                     f.topLine
                   )}
                 />

@@ -84,7 +84,7 @@ export default function GamePreview() {
             <div className="flex items-center gap-3 flex-1 max-w-xs">
               <div className="flex items-center gap-1.5">
                 <Zap className="w-4 h-4 text-game-amber" />
-                <span className="text-xs font-bold text-game-amber">340 XP</span>
+                <span className="text-xs font-bold text-game-amber">340 نقاط خبرة</span>
               </div>
               <Progress value={68} colorClass="bg-gradient-to-r from-game-purple to-game-purple-light" className="flex-1" />
               <span className="text-xs text-slate-500">500</span>
@@ -148,7 +148,7 @@ export default function GamePreview() {
                   <span>❤️</span>
                 </div>
                 <span className="text-xs text-slate-500">3 محاولات متبقية</span>
-                <span className="text-xs font-bold text-game-amber mr-auto">+15 XP</span>
+                <span className="text-xs font-bold text-game-amber mr-auto">+15 نقاط خبرة</span>
               </div>
             </div>
 

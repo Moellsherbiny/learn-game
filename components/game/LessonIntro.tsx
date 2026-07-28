@@ -123,7 +123,7 @@ export function LessonIntro({
                 </div>
 
                 <div className="mt-1 text-sm text-muted-foreground">
-                  XP
+                  نقاط خبرة
                 </div>
               </div>
 

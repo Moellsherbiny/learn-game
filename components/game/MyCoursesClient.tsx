@@ -147,7 +147,7 @@ function XpLevelBar({ stats }: { stats: MyCoursesStats }) {
             {stats.totalXp.toLocaleString()}
           </p>
 
-          <p className="text-muted-foreground text-xs text-left">XP إجمالي</p>
+          <p className="text-muted-foreground text-xs text-left">إجمالي نقاط الخبرة  </p>
         </div>
       </div>
 
@@ -161,7 +161,7 @@ function XpLevelBar({ stats }: { stats: MyCoursesStats }) {
       <div className="flex justify-between text-xs text-muted-foreground">
         <span>{stats.levelProgress}% للمستوى التالي</span>
 
-        <span>{stats.nextLevelXp.toLocaleString()} XP</span>
+        <span>{stats.nextLevelXp.toLocaleString()} نقاط خبرة</span>
       </div>
     </div>
   );
@@ -278,7 +278,7 @@ transition-all duration-300
           <MiniStat
             icon={<Zap className="h-4 w-4 text-primary" />}
             value={`${course.xpEarned}`}
-            label="XP"
+            label="نقاط خبرة"
             color="text-amber-400"
           />
           <MiniStat
@@ -579,7 +579,7 @@ export function MyCoursesClient({
           <StatCard
             icon={<Zap className="h-8 w-8 text-primary" />}
             value={stats.totalXp.toLocaleString()}
-            label="نقاط XP"
+            label="نقاط خبرة"
             sub="مجموع الكل"
             color="bg-amber-400"
           />
@@ -666,7 +666,7 @@ focus:border-primary/40
             >
               <option value="recent">الأحدث نشاطاً</option>
               <option value="progress">الأعلى تقدماً</option>
-              <option value="xp">الأعلى XP</option>
+              <option value="xp">الأعلى نقاط خبرة</option>
               <option value="name">الاسم</option>
             </select>
 

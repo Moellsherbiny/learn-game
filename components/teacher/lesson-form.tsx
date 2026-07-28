@@ -148,7 +148,7 @@ export default function LessonForm({ courseId, moduleId }: LessonFormProps) {
 
           <div className="grid gap-4 sm:grid-cols-2">
             <div className="space-y-2">
-              <Label>XP Reward</Label>
+              <Label>نقاط الخبرة الممنوحة</Label>
               <Input
                 type="number"
                 value={xpReward}

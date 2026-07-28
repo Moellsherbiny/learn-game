@@ -269,7 +269,7 @@ export default function CourseSettingsForm({
             </div>
 
             <div className="mt-2 text-muted-foreground">
-              إجمالي XP
+              إجمالي نقاط الخبرة الممنوحة
             </div>
           </CardContent>
         </Card>

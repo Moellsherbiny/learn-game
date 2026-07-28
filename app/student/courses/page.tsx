@@ -96,18 +96,18 @@ export default async function MyCoursesPage() {
 
                 <div className="mt-4 flex items-center justify-between text-sm">
                   <span className="font-medium text-muted-foreground">
-                    {currentLevelXp} XP
+                    {currentLevelXp} نقاط خبرة
                   </span>
 
                   <span className="font-medium text-muted-foreground">
-                    {nextLevelXp} XP
+                    {nextLevelXp} نقاط خبرة
                   </span>
                 </div>
 
                 <p className="mt-5 text-sm text-muted-foreground">
                   متبقي{" "}
                   <span className="font-bold text-primary">
-                    {nextLevelXp - currentLevelXp} XP
+                    {nextLevelXp - currentLevelXp} نقاط خبرة
                   </span>{" "}
                   للوصول للمستوى التالي
                 </p>
@@ -194,19 +194,19 @@ export default async function MyCoursesPage() {
               {
                 title: "أكمل دورة جديدة",
                 progress: 70,
-                reward: "+100 XP",
+                reward: "+100 نقاط خبرة",
                 icon: BookOpen,
               },
               {
                 title: "حقق سلسلة نشاط",
                 progress: 50,
-                reward: "+50 Coins",
+                reward: "+50 نقاط خبرة",
                 icon: Flame,
               },
               {
                 title: "شارك في تحدي جماعي",
                 progress: 25,
-                reward: "+200 XP",
+                reward: "+200 نقاط خبرة",
                 icon: Swords,
               },
             ].map((mission, index) => (

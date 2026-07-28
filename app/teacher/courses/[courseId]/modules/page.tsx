@@ -220,7 +220,7 @@ export default async function CourseModulesPage({
               </div>
 
               <div className="mt-2 text-muted-foreground">
-                إجمالي XP
+                إجمالي نقاط الخبرة
               </div>
             </CardContent>
           </Card>
@@ -315,7 +315,7 @@ export default async function CourseModulesPage({
                             {
                               module.requiredXp
                             }{" "}
-                            XP
+                            نقاط خبرة
                           </Badge>
                         </div>
 
@@ -481,7 +481,7 @@ export default async function CourseModulesPage({
                                       </div>
 
                                       <p className="mt-2 text-sm text-muted-foreground">
-                                        XP Reward:{" "}
+                                        نقاط الخبرة
                                         {
                                           lesson.xpReward
                                         }

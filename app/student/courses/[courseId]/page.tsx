@@ -200,7 +200,7 @@ export default async function CourseMapPage({ params }: PageProps) {
                         </p>
 
                         <p className="text-2xl font-black text-primary">
-                          {course.studentXp} XP
+                          {course.studentXp} نقاط خبرة
                         </p>
                       </div>
                     </div>
@@ -385,7 +385,7 @@ export default async function CourseMapPage({ params }: PageProps) {
                               <span className="font-black text-primary">
                                 {module.requiredXp}
                               </span>{" "}
-                              XP
+                              نقاط خبرة
                             </p>
 
                             <div className="mt-5 w-72">

@@ -27,7 +27,7 @@ export const metadata: Metadata = {
     "Gamified Learning",
     "التعلم بالتلعيب",
     "منصة تعليمية",
-    "XP",
+    "نقاط الخبرة",
     "Levels",
     "Interactive Learning",
     "Team Battles",

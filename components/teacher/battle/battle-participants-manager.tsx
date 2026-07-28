@@ -196,7 +196,7 @@ export default function BattleParticipantsManager({
                         <span className="font-medium">{student.name}</span>
 
                         <span className="text-xs text-muted-foreground">
-                          XP:
+                          نقاط خبرة:
                           {student.xp}
                         </span>
                       </div>

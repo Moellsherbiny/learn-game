@@ -179,7 +179,7 @@ export default async function EditModulePage({
                     {
                       module.requiredXp
                     }{" "}
-                    XP
+                    نقاط الخبرة المطلوبة
                   </Badge>
 
                   <Badge
@@ -268,7 +268,7 @@ export default async function EditModulePage({
               </div>
 
               <div className="mt-2 text-muted-foreground">
-                إجمالي XP
+                إجمالي نقاط الخبرة
               </div>
             </CardContent>
           </Card>

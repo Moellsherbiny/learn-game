@@ -69,7 +69,7 @@ export default async function CoursePage({ params }: CoursePageProps) {
               </Badge>
 
               <Badge variant="secondary" className="rounded-full px-4 py-2">
-                {estimatedXp.toLocaleString()} XP
+                {estimatedXp.toLocaleString()} نقاط خبرة
               </Badge>
 
               <Badge variant="secondary" className="rounded-full px-4 py-2">
@@ -97,7 +97,7 @@ export default async function CoursePage({ params }: CoursePageProps) {
 
                   <div className="flex items-center gap-3">
                     <Trophy className="h-5 w-5 text-primary" />
-                    <span>{estimatedXp.toLocaleString()} XP إجمالي</span>
+                    <span>{estimatedXp.toLocaleString()} إجمالي نقاط الخبرة</span>
                   </div>
 
                   <div className="flex items-center gap-3">

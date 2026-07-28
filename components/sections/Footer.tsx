@@ -229,7 +229,7 @@ export default function Footer() {
 
                   <Sparkles className="h-4 w-4" />
 
-                  XP ومستويات
+                  نقاط الخبرة ومستويات
                 </div>
 
                 <div

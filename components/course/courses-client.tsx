@@ -97,7 +97,7 @@ export default function CoursesPage({ courses }: CoursesClientProps) {
               المسارات التعليمية
             </h2>
             <p className="mt-2 text-muted-foreground">
-              اختر المجال الذي ترغب في تعلمه وابدأ بجمع XP.
+              اختر المجال الذي ترغب في تعلمه وابدأ بجمع نقاط الخبرة.
             </p>
           </div>
 
@@ -189,7 +189,7 @@ export default function CoursesPage({ courses }: CoursesClientProps) {
                       <Badge className="rounded-full">تعلم تكيفي</Badge>
 
                       <Badge variant="secondary" className="rounded-full">
-                        XP System
+                         نقاط خبرة
                       </Badge>
                     </div>
                   </CardDescription>

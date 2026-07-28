@@ -20,7 +20,7 @@ export default function AuthLayout({
   const features = [
     {
       icon: Trophy,
-      label: "XP ومستويات",
+      label: " نقاط خبرة ومستويات",
     },
 
     {

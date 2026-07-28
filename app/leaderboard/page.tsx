@@ -159,7 +159,7 @@ export default async function LeaderboardPage() {
                 <div className="flex flex-wrap gap-3">
                   <InfoBadge
                     icon={<Sparkles className="h-4 w-4" />}
-                    value={`${currentUser.xp.toLocaleString()} XP`}
+                    value={`${currentUser.xp.toLocaleString()} نقاط خبرة`}
                   />
 
                   <InfoBadge
@@ -255,7 +255,7 @@ function LeaderboardList({
 
               <div className="mt-6">
                 <div className="mb-2 flex items-center justify-between text-sm">
-                  <span className="text-muted-foreground">XP</span>
+                  <span className="text-muted-foreground">نقاط خبرة</span>
 
                   <span className="font-bold text-primary">
                     {user.xp.toLocaleString()}
@@ -339,7 +339,7 @@ function LeaderboardList({
                 <div className="flex flex-wrap items-center gap-3">
                   <InfoBadge
                     icon={<Sparkles className="h-4 w-4" />}
-                    value={`${user.xp.toLocaleString()} XP`}
+                    value={`${user.xp.toLocaleString()} نقاط خبرة`}
                   />
 
                   <InfoBadge

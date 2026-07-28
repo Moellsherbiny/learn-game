@@ -148,7 +148,7 @@ export default async function NewLessonPage({
                 </div>
 
                 <h3 className="text-lg font-black">
-                  XP Rewards
+                  نقاط الخبرة
                 </h3>
 
                 <p className="mt-2 text-sm leading-7 text-muted-foreground">
