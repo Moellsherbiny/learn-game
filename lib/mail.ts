@@ -8,265 +8,158 @@ const transporter = nodemailer.createTransport({
   },
 });
 
-interface SendTeacherInviteEmailParams {
-  name: string;
-  email: string;
-  inviteUrl: string;
+export async function sendEmail({
+  to,
+  subject,
+  html,
+}: {
+  to: string;
+  subject: string;
+  html: string;
+}) {
+  return transporter.sendMail({
+    from: `"Learn Game" <${process.env.GMAIL_USER}>`,
+    to,
+    subject,
+    html,
+  });
 }
 
-export async function sendTeacherInviteEmail({
-  email,
-  name,
-  inviteUrl,
-}: SendTeacherInviteEmailParams) {
-  const subject = "دعوة للانضمام كمدرس";
-
-  const heading = "تمت دعوتك للانضمام كمدرس";
-
-  const bodyText =
-    "تم إنشاء دعوة لك للانضمام إلى المنصة كمدرس. اضغط على الزر التالي لإكمال إنشاء الحساب وتحديد كلمة المرور الخاصة بك.";
+/**
+ * إرسال كود إعادة تعيين كلمة المرور
+ */
+export async function sendResetCodeEmail(email: string, code: string) {
   const html = `
-<html lang="ar" dir="rtl">
+<!DOCTYPE html>
+<html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>${subject}</title>
+<meta charset="UTF-8" />
 </head>
 
-<body
-  style="
-    margin:0;
-    padding:32px 16px;
-    background:#f8fafc;
-    font-family:Inter,Segoe UI,Tahoma,sans-serif;
-  "
->
-  <table
-    width="100%"
-    cellpadding="0"
-    cellspacing="0"
-  >
-    <tr>
-      <td align="center">
+<body style="margin:0;padding:0;background:#f5f7fb;font-family:Arial,sans-serif;">
 
-        <table
-          width="100%"
-          style="
-            max-width:560px;
-            background:#ffffff;
-            border:1px solid #e5e7eb;
-            border-radius:20px;
-            overflow:hidden;
-            box-shadow:
-              0 1px 2px rgba(0,0,0,.04),
-              0 8px 24px rgba(0,0,0,.06);
-          "
-        >
-          <!-- Top Bar -->
+<table width="100%" cellpadding="0" cellspacing="0" style="padding:40px 0;">
+<tr>
+<td align="center">
 
-          <tr>
-            <td
-              style="
-                height:6px;
-                background:linear-gradient(
-                  90deg,
-                  #6366f1,
-                  #8b5cf6
-                );
-              "
-            ></td>
-          </tr>
+<table
+width="600"
+cellpadding="0"
+cellspacing="0"
+style="
+background:#ffffff;
+border-radius:16px;
+overflow:hidden;
+box-shadow:0 8px 30px rgba(0,0,0,.08);
+">
 
-          <!-- Content -->
+<tr>
+<td
+style="
+background:#2563eb;
+padding:32px;
+text-align:center;
+color:white;
+font-size:28px;
+font-weight:bold;
+">
+Learn Game
+</td>
+</tr>
 
-          <tr>
-            <td
-              style="
-                padding:40px 36px;
-              "
-            >
-              <!-- Logo -->
+<tr>
+<td style="padding:40px;">
 
-              <div
-                style="
-                  text-align:center;
-                  margin-bottom:24px;
-                "
-              >
-                <div
-                  style="
-                    width:64px;
-                    height:64px;
-                    line-height:64px;
-                    border-radius:18px;
-                    margin:auto;
-                    background:#eef2ff;
-                    font-size:32px;
-                  "
-                >
-                  🎓
-                </div>
-              </div>
+<h2
+style="
+margin-top:0;
+color:#111827;
+">
+Password Reset
+</h2>
 
-              <!-- Title -->
+<p
+style="
+font-size:16px;
+line-height:1.8;
+color:#4b5563;
+">
+We received a request to reset your password.
+Use the verification code below.
+</p>
 
-              <h1
-                style="
-                  margin:0;
-                  color:#111827;
-                  font-size:28px;
-                  font-weight:700;
-                  text-align:center;
-                "
-              >
-                ${heading}
-              </h1>
+<div
+style="
+margin:35px 0;
+text-align:center;
+">
 
-              <p
-                style="
-                  margin:16px 0 0;
-                  text-align:center;
-                  color:#6b7280;
-                  font-size:15px;
-                  line-height:1.8;
-                "
-              >
-                ${bodyText}
-              </p>
+<span
+style="
+display:inline-block;
+padding:18px 36px;
+font-size:34px;
+font-weight:bold;
+letter-spacing:10px;
+background:#eff6ff;
+border:2px dashed #2563eb;
+border-radius:12px;
+color:#2563eb;
+">
+${code}
+</span>
 
-              <!-- User -->
+</div>
 
-              <div
-                style="
-                  margin:32px 0;
-                  padding:16px;
-                  background:#f9fafb;
-                  border:1px solid #e5e7eb;
-                  border-radius:14px;
-                  text-align:center;
-                "
-              >
-                <p
-                  style="
-                    margin:0;
-                    color:#374151;
-                    font-size:15px;
-                  "
-                >
-                  مرحباً
-                </p>
+<p
+style="
+font-size:15px;
+color:#6b7280;
+line-height:1.8;
+">
+This verification code will expire in
+<strong>10 minutes</strong>.
+</p>
 
-                <p
-                  style="
-                    margin:8px 0 0;
-                    color:#111827;
-                    font-size:20px;
-                    font-weight:700;
-                  "
-                >
-                  ${name}
-                </p>
-              </div>
+<p
+style="
+font-size:15px;
+color:#6b7280;
+line-height:1.8;
+">
+If you didn't request a password reset,
+you can safely ignore this email.
+</p>
 
-              <!-- CTA -->
+</td>
+</tr>
 
-              <div
-                style="
-                  text-align:center;
-                  margin-bottom:32px;
-                "
-              >
-                <a
-                  href="${inviteUrl}"
-                  style="
-                    display:inline-block;
-                    background:#111827;
-                    color:#ffffff;
-                    text-decoration:none;
-                    padding:14px 28px;
-                    border-radius:12px;
-                    font-weight:600;
-                    font-size:14px;
-                  "
-                >
-                  إكمال إنشاء الحساب
-                </a>
-              </div>
+<tr>
+<td
+style="
+background:#f9fafb;
+padding:24px;
+text-align:center;
+font-size:13px;
+color:#9ca3af;
+">
+© ${new Date().getFullYear()} Learn Game
+</td>
+</tr>
 
-              <!-- Expire -->
+</table>
 
-              <div
-                style="
-                  text-align:center;
-                  padding:14px;
-                  background:#fffbeb;
-                  border:1px solid #fde68a;
-                  border-radius:12px;
-                "
-              >
-                <p
-                  style="
-                    margin:0;
-                    color:#92400e;
-                    font-size:13px;
-                  "
-                >
-                  ⏳ تنتهي صلاحية رابط الدعوة خلال
-                  <strong>7 أيام</strong>
-                </p>
-              </div>
+</td>
+</tr>
+</table>
 
-              <!-- Note -->
-
-              <p
-                style="
-                  margin-top:24px;
-                  color:#9ca3af;
-                  text-align:center;
-                  font-size:13px;
-                  line-height:1.8;
-                "
-              >
-                إذا كنت لا تتوقع هذه الدعوة
-                يمكنك تجاهل هذه الرسالة بأمان.
-              </p>
-            </td>
-          </tr>
-
-          <!-- Footer -->
-
-          <tr>
-            <td
-              style="
-                border-top:1px solid #f3f4f6;
-                padding:20px;
-                text-align:center;
-              "
-            >
-              <p
-                style="
-                  margin:0;
-                  color:#9ca3af;
-                  font-size:12px;
-                "
-              >
-                © ${new Date().getFullYear()} Learn Game
-              </p>
-            </td>
-          </tr>
-        </table>
-
-      </td>
-    </tr>
-  </table>
 </body>
 </html>
-  `;
+`;
 
-  await transporter.sendMail({
-    from: `"Learn Game" <${process.env.GMAIL_USER}>`,
+  return sendEmail({
     to: email,
-    subject,
+    subject: "Reset Your Password",
     html,
   });
 }

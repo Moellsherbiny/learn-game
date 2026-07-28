@@ -3,13 +3,10 @@
 
 import { useState } from "react";
 import Link from "next/link";
-import {
-  Mail,
-  ArrowRight,
-  Loader2,
-  ShieldCheck,
-  KeyRound,
-} from "lucide-react";
+import { sendResetCode } from "@/actions/auth/send-reset-code";
+import { useRouter } from "next/navigation";
+import { toast } from "sonner";
+import { Mail, ArrowRight, Loader2, ShieldCheck, KeyRound } from "lucide-react";
 
 import {
   Card,
@@ -26,46 +23,59 @@ export default function ForgotPasswordPage() {
   const [email, setEmail] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const [isSubmitted, setIsSubmitted] = useState(false);
+  const router = useRouter();
 
-  const handleSubmit = async (
-    e: React.FormEvent<HTMLFormElement>
-  ) => {
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
 
-    setIsLoading(true);
+    try {
+      setIsLoading(true);
 
-    // هنا سيتم لاحقًا استدعاء Server Action لإرسال رابط إعادة التعيين
-    await new Promise((resolve) => setTimeout(resolve, 1500));
+      const result = await sendResetCode(email);
 
-    setIsLoading(false);
-    setIsSubmitted(true);
+      if (!result.success) {
+        toast.error(result.message);
+        return;
+      }
+
+      toast.success(result.message);
+
+      setIsSubmitted(true);
+
+      // أو انقله مباشرة لصفحة إدخال الكود
+      setTimeout(() => {
+        router.push(`/auth/verify?email=${encodeURIComponent(email)}`);
+      }, 1500);
+    } catch (error) {
+      console.error(error);
+
+      toast.error("حدث خطأ أثناء إرسال رمز التحقق.");
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   // Success State
   if (isSubmitted) {
     return (
-      <Card className="overflow-hidden rounded-3xl border-border/50 bg-card/90 shadow-2xl backdrop-blur-xl">
+     <Card className="overflow-hidden rounded-3xl border-border/50 bg-card/90 shadow-2xl backdrop-blur-xl">
         <CardContent className="px-6 py-10 text-center">
           <div className="mx-auto mb-6 flex h-20 w-20 items-center justify-center rounded-3xl bg-linear-to-br from-primary/10 to-accent/10">
             <ShieldCheck className="h-10 w-10 text-primary" />
           </div>
 
           <h1 className="text-2xl font-black tracking-tight">
-            تم إرسال الرابط بنجاح
+            تم إرسال رمز التحقق
           </h1>
 
           <p className="mt-4 leading-8 text-muted-foreground">
             إذا كان البريد الإلكتروني
-            <span className="mx-1 font-semibold text-foreground">
-              {email}
-            </span>
-            مسجلًا لدينا، فستصلك رسالة تحتوي على رابط لإعادة تعيين كلمة المرور.
+            <span className="mx-1 font-semibold text-foreground">{email}</span>
+            مسجلًا لدينا، فستصلك رسالة تحتوي على رمز تحقق مكون من 6 أرقام صالح
+            لمدة 10 دقائق.
           </p>
 
-          <Button
-            asChild
-            className="mt-8 h-11 w-full rounded-xl"
-          >
+          <Button asChild className="mt-8 h-11 w-full rounded-xl">
             <Link href="/auth/login">
               <ArrowRight className="ml-2 h-4 w-4" />
               العودة إلى تسجيل الدخول
@@ -94,7 +104,7 @@ export default function ForgotPasswordPage() {
         </CardTitle>
 
         <CardDescription className="text-sm leading-7 text-muted-foreground">
-          أدخل بريدك الإلكتروني وسنرسل لك رابطًا لإعادة تعيين كلمة المرور.
+          أدخل بريدك الإلكتروني وسنرسل إليك رمز تحقق لإعادة تعيين كلمة المرور.
         </CardDescription>
       </CardHeader>
 
@@ -130,12 +140,12 @@ export default function ForgotPasswordPage() {
             {isLoading ? (
               <>
                 <Loader2 className="ml-2 h-5 w-5 animate-spin" />
-                جاري إرسال الرابط...
+                جاري إرسال رمز التحقق...
               </>
             ) : (
               <>
                 <Mail className="ml-2 h-5 w-5" />
-                إرسال رابط إعادة التعيين
+                إرسال رمز التحقق
               </>
             )}
           </Button>

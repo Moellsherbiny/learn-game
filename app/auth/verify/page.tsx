@@ -2,25 +2,29 @@
 
 import { useEffect, useState, useTransition } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
-import { useTranslations } from "next-intl";
 import {
   InputOTP,
   InputOTPGroup,
   InputOTPSlot,
 } from "@/components/ui/input-otp";
 import { Button } from "@/components/ui/button";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
 import { cn } from "@/lib/utils";
-import { verifyOTP, resendOTP } from "@/actions/verify";
+import { verifyResetOTP } from "@/actions/auth/verify-reset-otp";
+import { sendResetCode } from "@/actions/auth/send-reset-code";
 import { ShieldCheck, Mail, RefreshCw, ArrowLeft } from "lucide-react";
-import  Link  from "next/link";
-
+import Link from "next/link";
 export default function VerifyPage() {
-  const t = useTranslations("verify");
   const router = useRouter();
   const searchParams = useSearchParams();
 
   const email = searchParams.get("email") ?? "";
-  const mode = (searchParams.get("mode") as "register" | "reset") ?? "register";
 
   const [otp, setOtp] = useState("");
   const [error, setError] = useState<string | null>(null);
@@ -48,18 +52,23 @@ export default function VerifyPage() {
 
   const handleSubmit = (value: string) => {
     if (value.length !== 6) return;
+
     setError(null);
+
     startTransition(async () => {
-      const result = await verifyOTP({ email, otp: value, mode });
-      if (result.error) {
-        setError(result.error);
+      const result = await verifyResetOTP(email, value);
+
+      if (!result.success) {
+        setError(result.message);
         setOtp("");
-      } else {
-        setSuccess(true);
-        setTimeout(() => {
-          router.push(mode === "reset" ? `/auth/reset-password?token=${result.token}` : "/");
-        }, 1200);
+        return;
       }
+
+      setSuccess(true);
+
+      setTimeout(() => {
+        router.push(`/auth/reset-password?email=${encodeURIComponent(email)}`);
+      }, 1000);
     });
   };
 
@@ -67,55 +76,60 @@ export default function VerifyPage() {
     setError(null);
     setCanResend(false);
     setCountdown(60);
+
     startResendTransition(async () => {
-      const result = await resendOTP({ email, mode });
-      if (result.error) setError(result.error);
+      const result = await sendResetCode(email);
+
+      if (!result.success) {
+        setError(result.message);
+      }
     });
   };
 
   return (
-    <main className="relative min-h-screen flex items-center justify-center overflow-hidden">
+    <main className="flex items-center justify-center">
+      <Card className="w-full max-w-md overflow-hidden rounded-3xl border-border/50 bg-card/90 shadow-2xl backdrop-blur-xl">
+        {/* back link */}
+        <Link
+          href="/auth/forgot-password"
+          className="inline-flex items-center gap-1.5 text-xs text-muted-foreground hover:text-primary transition-colors mb-6"
+        >
+          <ArrowLeft className="w-3 h-3" />
+          العودة
+        </Link>
 
-      {/* ── card ── */}
-      <div className="relative z-10 w-full max-w-md mx-4">
-        <div className="relative">
-
-          {/* back link */}
-          <Link
-            href={mode === "reset" ? "/auth/forgot-password" : "/auth/register"}
-            className="inline-flex items-center gap-1.5 text-xs text-muted-foreground hover:text-primary transition-colors mb-6"
-          >
-            <ArrowLeft className="w-3 h-3" />
-            {t("back")}
-          </Link>
-
-          {/* icon */}
-          <div className="flex items-center justify-center mb-6">
-            <div className="relative">
-              <div className="absolute inset-0 rounded-full bg-indigo-500/30 blur-xl scale-150" />
-              <div className="relative w-16 h-16 rounded-full bg-linear-to-br from-indigo-500 to-violet-600 flex items-center justify-center shadow-lg shadow-indigo-500/30">
-                {success ? (
-                  <ShieldCheck className="w-8 h-8 text-white animate-scale-in" />
-                ) : (
-                  <Mail className="w-8 h-8 text-white" />
-                )}
-              </div>
+        {/* icon */}
+        <div className="flex items-center justify-center mb-6">
+          <div className="relative">
+            <div className="absolute inset-0 rounded-2xl bg-linear-to-br from-primary to-accent blur-md opacity-60" />
+            <div className="relative rounded-2xl bg-linear-to-br from-primary to-accent p-3 text-white shadow-lg">
+              {success ? (
+                <ShieldCheck className="h-6 w-6" />
+              ) : (
+                <Mail className="h-6 w-6" />
+              )}
             </div>
           </div>
+        </div>
 
-          {/* heading */}
-          <div className="text-center mb-8">
-            <h1 className="text-2xl font-bold tracking-tight text-white mb-2">
-              {mode === "reset" ? t("titleReset") : t("titleRegister")}
-            </h1>
-            <p className="text-sm text-muted-foreground leading-relaxed">
-              {t("description")}{" "}
-              <span className="text-indigo-400 font-medium">{email}</span>
-            </p>
-          </div>
-
+        {/* heading */}
+        <CardHeader className="space-y-3 pt-8 text-center">
+          <CardTitle className="text-2xl font-black tracking-tight">
+            "التحقق من البريد الإلكتروني"
+          </CardTitle>
+          <CardDescription className="text-sm leading-7 text-muted-foreground">
+            أدخل رمز التحقق المكون من 6 أرقام الذي تم إرساله إلى
+            <span className="text-primary font-semibold"> {email}</span>
+          </CardDescription>
+        </CardHeader>
+        <CardContent className="space-y-6 pb-8">
           {/* OTP input */}
-          <div className={cn("flex justify-center mb-6 transition-all duration-300", success && "opacity-0 scale-95")}>
+          <div
+            className={cn(
+              "flex justify-center mb-6 transition-all duration-300",
+              success && "opacity-0 scale-95",
+            )}
+          >
             <InputOTP
               maxLength={6}
               value={otp}
@@ -130,11 +144,12 @@ export default function VerifyPage() {
                     index={i}
                     className={cn(
                       "w-12 h-14 text-xl font-bold rounded-xl border",
-                      "bg-white/4 border-white/8 text-primary",
-                      "focus:border-indigo-500 focus:bg-indigo-500/10 focus:ring-0",
+                      "bg-background border-border text-primary",
+                      "focus:border-primary focus:bg-primary/5 focus:ring-0",
                       "transition-all duration-200",
                       error && "border-red-500/60 bg-red-500/10",
-                      success && "border-emerald-500/60 bg-emerald-500/10 text-emerald-400"
+                      success &&
+                        "border-primary bg-emerald-500/10 text-primary",
                     )}
                   />
                 ))}
@@ -145,8 +160,8 @@ export default function VerifyPage() {
           {/* success state */}
           {success && (
             <div className="text-center mb-6 animate-fade-in">
-              <p className="text-emerald-400 font-semibold text-sm">
-                {mode === "reset" ? t("successReset") : t("successRegister")}
+              <p className="text-primary font-semibold text-sm">
+                "تم التحقق من الرمز بنجاح..."
               </p>
             </div>
           )}
@@ -164,19 +179,19 @@ export default function VerifyPage() {
             disabled={otp.length !== 6 || isPending || success}
             className={cn(
               "w-full h-12 rounded-xl font-semibold text-sm transition-all duration-200",
-              "bg-linear-to-r from-indigo-600 to-violet-600",
-              "hover:from-indigo-500 hover:to-violet-500",
+              "bg-linear-to-r from-primary to-accent",
+              "hover:opacity-90",
               "disabled:opacity-40 disabled:cursor-not-allowed",
-              "shadow-lg shadow-indigo-500/20"
+              "shadow-lg",
             )}
           >
             {isPending ? (
               <span className="flex items-center gap-2">
                 <RefreshCw className="w-4 h-4 animate-spin" />
-                {t("verifying")}
+                التحقق...
               </span>
             ) : (
-              t("verifyButton")
+              "التحقق"
             )}
           </Button>
 
@@ -186,20 +201,24 @@ export default function VerifyPage() {
               <button
                 onClick={handleResend}
                 disabled={isResending}
-                className="text-sm text-indigo-400 hover:text-indigo-300 transition-colors font-medium inline-flex items-center gap-1.5"
+                className="text-sm text-primary font-semibold hover:text-primary/80 transition-colors inline-flex items-center gap-1.5"
               >
-                <RefreshCw className={cn("w-3.5 h-3.5", isResending && "animate-spin")} />
-                {t("resend")}
+                <RefreshCw
+                  className={cn("w-3.5 h-3.5", isResending && "animate-spin")}
+                />
+                إعادة الإرسال
               </button>
             ) : (
               <p className="text-sm text-primary/30">
-                {t("resendIn")}{" "}
-                <span className="text-primary/60 tabular-nums font-medium">0:{countdown.toString().padStart(2, "0")}</span>
+                إعادة الإرسال بعد{" "}
+                <span className="text-primary/60 tabular-nums font-medium">
+                  0:{countdown.toString().padStart(2, "0")}
+                </span>
               </p>
             )}
           </div>
-        </div>
-      </div>
+        </CardContent>
+      </Card>
     </main>
   );
 }
