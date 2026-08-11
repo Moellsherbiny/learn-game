@@ -54,6 +54,8 @@ interface Module {
   order: number;
 
   lessons: Lesson[];
+
+  showAdaptiveLessons: boolean;
 }
 
 interface ModuleCardProps {
@@ -125,18 +127,26 @@ export function ModuleCard({
   allLessonsCompleted,
   moduleIndex,
 }: ModuleCardProps) {
-  const completedLessons = module.lessons.filter(
-    (l) => l.progress[0]?.completed,
+ const visibleLessons = module.lessons.filter((lesson) => {
+  if (lesson.order <= 2) {
+    return true;
+  }
+
+  return module.showAdaptiveLessons;
+});
+  const completedLessons = visibleLessons.filter(
+    (lesson) => lesson.progress[0]?.completed,
   ).length;
 
-  const totalLessons = module.lessons.length;
+  const totalLessons = visibleLessons.length;
 
-  const moduleProgress =
+    const moduleProgress =
     totalLessons === 0
       ? 0
       : Math.round((completedLessons / totalLessons) * 100);
-
-  const isComplete = completedLessons === totalLessons && totalLessons > 0;
+    const isComplete =
+    totalLessons === 4 &&
+    completedLessons === totalLessons;
 
   return (
     <div
@@ -168,7 +178,9 @@ export function ModuleCard({
                 </IconBox>
               </div>
 
-              <p className="text-sm font-bold">يتطلب {module.requiredXp} نقاط خبرة</p>
+              <p className="text-sm font-bold">
+                يتطلب {module.requiredXp} نقاط خبرة
+              </p>
 
               <p className="mt-1 text-xs text-muted-foreground">
                 لديك {studentXp} نقاط خبرة
@@ -252,14 +264,13 @@ export function ModuleCard({
         {/* LESSONS */}
         {isUnlocked && (
           <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 xl:grid-cols-3">
-            {module.lessons.map((lesson, lessonIdx) => {
+            {visibleLessons.map((lesson, lessonIdx) => {
               const progress = lesson.progress[0];
 
-              const prevLesson =
-                lessonIdx > 0 ? module.lessons[lessonIdx - 1] : null;
-
               const isLessonLocked =
-                lessonIdx > 0 && !allLessonsCompleted.has(prevLesson!.id);
+                lessonIdx === 1
+                  ? !allLessonsCompleted.has(module.lessons[0].id)
+                  : false;
 
               const isCompleted = progress?.completed ?? false;
 

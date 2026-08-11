@@ -101,6 +101,7 @@ export async function getCourseWithModulesAction(courseId: string) {
                   score: true,
 
                   stars: true,
+                  attempts: true,
                 },
               },
             },
@@ -134,7 +135,7 @@ export async function getCourseWithModulesAction(courseId: string) {
     },
   });
 
-  const progressStats =   await prisma.progress.findMany({
+  const progressStats = await prisma.progress.findMany({
     where: {
       studentId,
       completed: true,
@@ -166,12 +167,33 @@ export async function getCourseWithModulesAction(courseId: string) {
       : 1;
   const isFastLearner =
     progressStats.length === 3 && avgScore >= 85 && avgAttempts <= 1.5;
+
   return {
     ...course,
+
+    modules: course.modules.map((module) => {
+      const firstTwoLessons = module.lessons.slice(0, 2);
+
+      const showAdaptiveLessons = firstTwoLessons.some((lesson) => {
+        const progress = lesson.progress[0];
+
+        return (
+          progress !== undefined &&
+          !progress.completed &&
+          progress.attempts >= 2
+        );
+      });
+
+      return {
+        ...module,
+        showAdaptiveLessons,
+      };
+    }),
 
     studentXp: totalXpEarned._sum.xpEarned ?? 0,
 
     isEnrolled: course.enrollments.length > 0,
+
     isFastLearner,
   };
 }
@@ -341,7 +363,9 @@ export async function submitLessonProgressAction(input: SubmitLessonInput) {
       },
     },
   });
+  const newAttempts = (existing?.attempts ?? 0) + 1;
 
+  const needsAdaptiveLessons = !completed && newAttempts >= 2;
   const shouldUpdateScore = !existing || score > existing.score;
 
   // =========================================
@@ -495,11 +519,8 @@ export async function submitLessonProgressAction(input: SubmitLessonInput) {
     success: true,
 
     completed,
-
     score,
-
     stars,
-
     xpEarned,
 
     coinsEarned: coinsDifference,
@@ -511,10 +532,11 @@ export async function submitLessonProgressAction(input: SubmitLessonInput) {
     previousScore: existing?.score ?? null,
 
     didLevelUp,
-
     newLevel,
 
     progress,
+
+    needsAdaptiveLessons,
   };
 }
 
