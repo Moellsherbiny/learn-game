@@ -1,12 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import {
-  LayoutDashboard,
-  Menu,
-  Rocket,
-  Sparkles,
-} from "lucide-react";
+import { LayoutDashboard, Menu, Rocket, Sparkles } from "lucide-react";
 import { useSession } from "next-auth/react";
 
 import { Button } from "@/components/ui/button";
@@ -19,6 +14,7 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "../ui/dropdown-menu";
+import { ModeToggle } from "../layout/theme-toggle";
 
 const navLinks = [
   {
@@ -45,8 +41,7 @@ export default function Navbar() {
         ? "/admin"
         : "/student";
 
-  const isAuthenticated =
-    status === "authenticated" && !!session?.user;
+  const isAuthenticated = status === "authenticated" && !!session?.user;
 
   return (
     <header className="fixed inset-x-0 top-0 z-50">
@@ -66,10 +61,7 @@ export default function Navbar() {
               Logo
           ========================= */}
 
-          <Link
-            href="/"
-            className="group flex shrink-0 items-center gap-2.5"
-          >
+          <Link href="/" className="group flex shrink-0 items-center gap-2.5">
             <div className="relative">
               <div
                 className={cn(
@@ -142,6 +134,7 @@ export default function Navbar() {
           ========================= */}
 
           <div className="hidden items-center gap-2 md:flex">
+            <ModeToggle />
             {isAuthenticated ? (
               <Button
                 asChild
@@ -166,9 +159,7 @@ export default function Navbar() {
                   size="sm"
                   className="rounded-full px-4 font-medium"
                 >
-                  <Link href="/auth/login">
-                    تسجيل الدخول
-                  </Link>
+                  <Link href="/auth/login">تسجيل الدخول</Link>
                 </Button>
 
                 <Button
@@ -210,9 +201,7 @@ export default function Navbar() {
                   )}
                 >
                   <Menu className="h-5 w-5" />
-                  <span className="sr-only">
-                    فتح القائمة
-                  </span>
+                  <span className="sr-only">فتح القائمة</span>
                 </Button>
               </DropdownMenuTrigger>
 
@@ -235,12 +224,12 @@ export default function Navbar() {
                     asChild
                     className="cursor-pointer rounded-xl py-2.5"
                   >
-                    <Link href={link.href}>
-                      {link.label}
-                    </Link>
+                    <Link href={link.href}>{link.label}</Link>
                   </DropdownMenuItem>
                 ))}
-
+                <div className="px-2 py-1">
+                  <ModeToggle />
+                </div>
                 <DropdownMenuSeparator className="my-2" />
 
                 {/* Actions */}
@@ -261,9 +250,7 @@ export default function Navbar() {
                       asChild
                       className="cursor-pointer rounded-xl py-2.5"
                     >
-                      <Link href="/auth/login">
-                        تسجيل الدخول
-                      </Link>
+                      <Link href="/auth/login">تسجيل الدخول</Link>
                     </DropdownMenuItem>
 
                     <DropdownMenuItem

@@ -218,7 +218,7 @@ export default async function StudentsPage({
 
         <CardContent className="p-0">
           {students.length === 0 ? (
-            <Empty className="min-h-[350px] border-0">
+            <Empty className="min-h-87.5 border-0">
               <EmptyHeader>
                 <EmptyMedia variant="icon">
                   <Users />
@@ -278,7 +278,7 @@ export default async function StudentsPage({
                       XP
                     </TableHead>
 
-                    <TableHead className="w-[150px] text-center">
+                    <TableHead className="w-37.5 text-center">
                       الإجراءات
                     </TableHead>
                   </TableRow>
@@ -319,7 +319,7 @@ export default async function StudentsPage({
                                   "بدون اسم"}
                               </p>
 
-                              <p className="max-w-[220px] truncate text-xs text-muted-foreground">
+                              <p className="max-w-55 truncate text-xs text-muted-foreground">
                                 {student.email}
                               </p>
                             </div>
