@@ -49,38 +49,16 @@ const studentLinks = [
 
 const teacherLinks = [
   { href: "/teacher", label: "الرئيسية", icon: Home },
-  {
-    href: "/teacher/courses/new",
-    label: "إنشاء دورة تعليمية",
-    icon: PlusCircle,
-  },
   { href: "/leaderboard", label: "لوحة الصدارة", icon: Trophy },
-  {
-    href: "/courses",
-    label: "استعراض الدورات",
-    icon: BookOpen,
-  },
-  {
-    href: "/teacher/battles/new",
-    label: "إنشاء تحدي",
-    icon: Swords,
-  },
-  {
-    href: "/messages",
-    label: "المحادثات",
-    icon: Inbox,
-  },
+  {href: "/courses",label: "الدورات",icon: BookOpen,},
+  {href: "/messages",label: "المحادثات",icon: Inbox,},
 ];
 
 const adminLinks = [
   { href: "/admin", label: "الرئيسية", icon: Home },
   { href: "/admin/teachers", label: "المعلمون", icon: GraduationCap },
   { href: "/courses", label: "الدورات", icon: BookOpen },
-  {
-    href: "/messages",
-    label: "المحادثات",
-    icon: Inbox,
-  },
+  {href: "/messages",label: "المحادثات",icon: Inbox},
 ];
 export default function DashboardNavbarClient({
   user,
