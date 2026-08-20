@@ -38,6 +38,13 @@ model User {
   accounts           Account[]
   sessions           Session[]
   Authenticator      Authenticator[]
+
+
+  studentConversations Conversation[] @relation("StudentConversations")
+  teacherConversations Conversation[] @relation("TeacherConversations")
+  adminConversations   Conversation[] @relation("AdminConversations")
+  sentMessages Message[] @relation("SentMessages")
+
   // Battle Rooms as Teacher
   teacherBattleRooms BattleRoom[] @relation("TeacherBattleRooms")
 
@@ -378,4 +385,48 @@ model BattleAnswer {
   createdAt DateTime @default(now())
 
   @@unique([questionId, studentId])
+}
+
+enum ConversationType {
+  STUDENT_TEACHER
+  ADMIN_STUDENT
+  ADMIN_TEACHER
+}
+
+model Conversation {
+  id        String   @id @default(cuid())
+  type ConversationType
+  studentId String?
+  teacherId String?
+  adminId   String?
+  student User? @relation("StudentConversations",fields: [studentId],references: [id],onDelete: Cascade)
+
+  teacher User? @relation("TeacherConversations",fields: [teacherId],references: [id],onDelete: Cascade)
+
+  admin User?  @relation("AdminConversations", fields: [adminId], references: [id], onDelete: Cascade)
+  messages Message[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@unique([studentId, teacherId])
+}
+
+model Message {
+  id             String @id @default(cuid())
+
+  conversationId String
+  senderId       String
+
+  content String
+
+  conversation Conversation @relation(fields: [conversationId],references: [id],onDelete: Cascade)
+
+  sender User @relation("SentMessages",fields: [senderId],references: [id],onDelete: Cascade)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([conversationId])
+  @@index([senderId])
 }

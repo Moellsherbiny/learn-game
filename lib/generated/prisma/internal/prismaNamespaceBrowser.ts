@@ -68,7 +68,9 @@ export const ModelName = {
   BattleRoom: 'BattleRoom',
   BattleParticipant: 'BattleParticipant',
   BattleQuestion: 'BattleQuestion',
-  BattleAnswer: 'BattleAnswer'
+  BattleAnswer: 'BattleAnswer',
+  Conversation: 'Conversation',
+  Message: 'Message'
 } as const
 
 export type ModelName = (typeof ModelName)[keyof typeof ModelName]
@@ -358,6 +360,31 @@ export const BattleAnswerScalarFieldEnum = {
 } as const
 
 export type BattleAnswerScalarFieldEnum = (typeof BattleAnswerScalarFieldEnum)[keyof typeof BattleAnswerScalarFieldEnum]
+
+
+export const ConversationScalarFieldEnum = {
+  id: 'id',
+  type: 'type',
+  studentId: 'studentId',
+  teacherId: 'teacherId',
+  adminId: 'adminId',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+} as const
+
+export type ConversationScalarFieldEnum = (typeof ConversationScalarFieldEnum)[keyof typeof ConversationScalarFieldEnum]
+
+
+export const MessageScalarFieldEnum = {
+  id: 'id',
+  conversationId: 'conversationId',
+  senderId: 'senderId',
+  content: 'content',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+} as const
+
+export type MessageScalarFieldEnum = (typeof MessageScalarFieldEnum)[keyof typeof MessageScalarFieldEnum]
 
 
 export const SortOrder = {

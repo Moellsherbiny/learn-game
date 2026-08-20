@@ -4,7 +4,7 @@ import { redirect } from "next/navigation";
 
 import { auth } from "@/auth";
 import { prisma } from "@/lib/prisma";
-
+import { z } from "zod";
 import type { StudentLevel } from "@/lib/generated/prisma/client";
 
 export type SubmitPlacementTestInput = {
@@ -61,6 +61,19 @@ export async function submitPlacementTestAction(
   const questions =
     placementTest.questions as PlacementQuestion[];
 
+    const answersSchema = z.record(
+  z.string().min(1),
+  z.string().min(1),
+);
+
+const parsedAnswers =
+  answersSchema.safeParse(input.answers);
+
+if (!parsedAnswers.success) {
+  throw new Error("إجابات الاختبار غير صالحة");
+}
+
+const answers = parsedAnswers.data;
   // =========================
   // SCORE
   // =========================
@@ -221,6 +234,7 @@ export async function submitPlacementTestAction(
         weaknesses,
 
         feedback,
+        answers: answers,
       },
 
       update: {
@@ -235,6 +249,8 @@ export async function submitPlacementTestAction(
         weaknesses,
 
         feedback,
+
+        answers: answers,
       },
     });
 

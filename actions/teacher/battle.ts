@@ -83,7 +83,7 @@ export async function createBattleRoomAction(data: CreateBattleRoomInput) {
   // =========================================
 
   await set(
-    ref(realtimeDb, `battleRooms/${room.id}`),
+    ref(realtimeDb, `battle/${room.id}`),
 
     {
       roomId: room.id,
@@ -92,7 +92,7 @@ export async function createBattleRoomAction(data: CreateBattleRoomInput) {
 
       status: "WAITING",
 
-      currentQuestion: 0,
+      currentQuestionIndex: 0,
 
       teams: {
         TEAM_A: {
@@ -371,12 +371,12 @@ export async function startBattleAction(roomId: string) {
   // =========================================
 
   await update(
-    ref(realtimeDb, `battleRooms/${room.id}`),
+    ref(realtimeDb, `battles/${room.id}`),
 
     {
       status: "LIVE",
-
-      currentQuestion: 0,
+  phase: "playing",
+    currentQuestionIndex: 0,
     },
   );
 
@@ -422,10 +422,11 @@ export async function nextBattleQuestionAction(roomId: string) {
     });
 
     await update(
-      ref(realtimeDb, `battleRooms/${room.id}`),
+      ref(realtimeDb, `battles/${room.id}`),
 
       {
         status: "FINISHED",
+            phase: "finished",
       },
     );
 
@@ -895,7 +896,7 @@ export async function addStudentToBattleAction(data: AddStudentToBattleInput) {
   // =========================================
 
   await set(
-    ref(realtimeDb, `battleRooms/${room.id}/participants/${participant.id}`),
+    ref(realtimeDb, `battles/${room.id}/participants/${student.id}`),
 
     {
       participantId: participant.id,
@@ -909,6 +910,8 @@ export async function addStudentToBattleAction(data: AddStudentToBattleInput) {
       team: data.team,
 
       score: 0,
+      ready: false,
+      answered: false,
     },
   );
 
@@ -969,7 +972,7 @@ export async function removeStudentFromBattleAction(participantId: string) {
   await remove(
     ref(
       realtimeDb,
-      `battleRooms/${participant.room.id}/participants/${participant.id}`,
+      `battles/${participant.room.id}/participants/${participant.id}`,
     ),
   );
 

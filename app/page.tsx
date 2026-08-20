@@ -3,17 +3,15 @@
 import Link from "next/link";
 
 import {
-  ArrowBigUp,
   ArrowLeft,
   ArrowUpRight,
   Brain,
+  CheckCircle2,
   Crown,
-  Flame,
   Gamepad2,
   GraduationCap,
   Rocket,
   ShieldCheck,
-  Sparkles,
   Swords,
   Trophy,
   Users,
@@ -21,29 +19,29 @@ import {
 } from "lucide-react";
 
 import { auth } from "@/auth";
-
 import { prisma } from "@/lib/prisma";
 
 import Navbar from "@/components/sections/Navbar";
+import Footer from "@/components/sections/Footer";
 
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import {
+  Avatar,
+  AvatarFallback,
+  AvatarImage,
+} from "@/components/ui/avatar";
 
 import { Badge } from "@/components/ui/badge";
-
 import { Button } from "@/components/ui/button";
-
-import { Card, CardContent } from "@/components/ui/card";
-import Footer from "@/components/sections/Footer";
+import {
+  Card,
+  CardContent,
+} from "@/components/ui/card";
 
 // =========================================
 // PAGE
 // =========================================
 
 export default async function HomePage() {
-  // =========================================
-  // SESSION
-  // =========================================
-
   const session = await auth();
 
   // =========================================
@@ -86,88 +84,113 @@ export default async function HomePage() {
 
       select: {
         id: true,
-
         name: true,
-
         image: true,
-
         xp: true,
-
         currentLevel: true,
       },
     }),
   ]);
 
   // =========================================
-  // HERO BUTTON
+  // DASHBOARD
   // =========================================
 
   const dashboardHref =
     session?.user.role === "TEACHER"
-      ? "teacher"
+      ? "/teacher"
       : session?.user.role === "ADMIN"
-        ? "admin"
-        : "student";
-
-  // =========================================
-  // UI
-  // =========================================
+        ? "/admin"
+        : "/student";
 
   return (
     <main
       dir="rtl"
       className="
-    min-h-screen
-    overflow-x-hidden
-    bg-background
-    text-foreground
-  "
+        min-h-screen
+        overflow-x-hidden
+        bg-background
+        text-foreground
+      "
     >
-      {/* NAVBAR */}
+      {/* =========================================
+          NAVBAR
+      ========================================= */}
 
       <Navbar />
 
-      {/* BACKGROUND */}
+      {/* =========================================
+          HERO
+      ========================================= */}
 
-      <div className="pointer-events-none absolute inset-0 -z-10 overflow-hidden">
-        <div className="absolute left-1/2 top-0 h-60 w-96 -translate-x-1/2 rounded-full bg-primary/10 blur-3xl md:h-125 md:w-225" />
-        <div className="absolute bottom-0 left-0 h-64 w-64 rounded-full bg-fuchsia-500/10 blur-3xl md:h-100 md:w-100" />
-        <div className="absolute right-0 top-1/2 h-64 w-64 rounded-full bg-blue-500/10 blur-3xl md:h-75 md:w-75" />
-      </div>
+      <section className="border-b border-border/60">
+        <div className="mx-auto max-w-6xl px-4 pb-16 pt-32 sm:px-6 sm:pb-20 lg:px-8 lg:pt-36">
+          <div className="mx-auto max-w-3xl text-center">
 
-      {/* HERO */}
-
-      <section className="relative">
-        <div className="container mx-auto px-4 pt-24 pb-16 sm:pt-32 lg:pt-40">
-          <div className="mx-auto max-w-5xl text-center">
-            <Badge className="mb-6 rounded-full px-4 py-1.5 text-xs sm:px-5 sm:py-2 sm:text-sm">
-              <Sparkles className="ml-2 h-3 w-3 sm:h-4 sm:w-4" />
+            <Badge
+              variant="secondary"
+              className="
+                mb-5
+                rounded-full
+                px-3
+                py-1
+                text-xs
+                font-medium
+              "
+            >
               منصة تعليمية تفاعلية
             </Badge>
 
-            <h1 className="text-3xl font-black leading-tight tracking-tight sm:text-5xl lg:text-7xl">
-              حوّل التعليم إلى
-              <span className="block mt-2 bg-linear-to-r from-primary to-fuchsia-500 bg-clip-text text-transparent">
-                لعبة تنافسية ممتعة
+            <h1
+              className="
+                text-3xl
+                font-bold
+                tracking-tight
+                leading-[1.6]
+                sm:text-4xl
+                lg:text-5xl
+              "
+            >
+              منصة تعليمية
+              <span className="text-primary">
+                {" "}قائمة على التلعيب
               </span>
             </h1>
 
-            <p className="mx-auto mt-6 max-w-2xl px-2 text-base leading-7 text-muted-foreground sm:text-lg sm:leading-9">
-              أنشئ دورات تعليمية تفاعلية، نظّم تحديات جماعية مباشرة، تابع تقدم
-              الطلاب، واجعل التعلم أكثر متعة وتحفيزًا.
+            <p
+              className="
+                mx-auto
+                mt-5
+                max-w-2xl
+                text-sm
+                leading-loose
+                text-muted-foreground
+                sm:text-base
+              "
+            >
+              نظام تعليمي تفاعلي يجمع بين المحتوى
+              التعليمي، التقييم، التحديات الجماعية،
+              وتتبع تقدم الطلاب.
             </p>
 
             {/* ACTIONS */}
 
-            <div className="mt-10 flex flex-col items-center justify-center gap-3 sm:flex-row sm:gap-4">
+            <div className="mt-8 flex flex-col items-center justify-center gap-3 sm:flex-row">
               {session?.user ? (
                 <Button
                   asChild
                   size="lg"
-                  className="h-12 w-full sm:w-auto rounded-2xl px-8 text-lg font-black shadow-2xl"
+                  className="
+                    h-11
+                    rounded-xl
+                    px-6
+                    text-sm
+                    font-semibold
+                  "
                 >
                   <Link href={dashboardHref}>
-                    الذهاب للوحة التحكم <ArrowLeft className="mr-2 h-5 w-5" />
+                    لوحة التحكم
+                    <ArrowLeft className="mr-2 h-4 w-4" />
                   </Link>
                 </Button>
               ) : (
@@ -175,343 +198,662 @@ export default async function HomePage() {
                   <Button
                     asChild
                     size="lg"
-                    className="h-12 w-full sm:w-auto rounded-2xl px-8 text-lg font-black shadow-2xl"
+                    className="
+                      h-11
+                      rounded-xl
+                      px-6
+                      text-sm
+                      font-semibold
+                    "
                   >
                     <Link href="/auth/register">
-                      <Rocket className="ml-2 h-5 w-5" /> ابدأ مجانًا
+                      <Rocket className="ml-2 h-4 w-4" />
+                      ابدأ مجانًا
                     </Link>
                   </Button>
+
                   <Button
                     asChild
                     variant="outline"
                     size="lg"
-                    className="h-12 w-full sm:w-auto rounded-2xl px-8 text-lg font-black"
+                    className="
+                      h-11
+                      rounded-xl
+                      px-6
+                      text-sm
+                      font-medium
+                    "
                   >
-                    <Link href="/auth/login">تسجيل الدخول</Link>
+                    <Link href="/auth/login">
+                      تسجيل الدخول
+                    </Link>
                   </Button>
                 </>
               )}
             </div>
+          </div>
 
-            {/* STATS */}
+          {/* =========================================
+              STATS
+          ========================================= */}
 
-            <div className="mt-20 grid gap-5 sm:grid-cols-2 lg:grid-cols-4">
-              {/* STUDENTS */}
+          <div
+            className="
+              mx-auto
+              mt-14
+              grid
+              max-w-5xl
+              grid-cols-2
+              gap-3
+              sm:grid-cols-4
+            "
+          >
+            <StatCard
+              icon={<Users className="h-5 w-5" />}
+              value={studentsCount}
+              label="طالب"
+            />
 
-              <Card className="rounded-[2rem] border-border/50 bg-card/80 backdrop-blur-xl">
-                <CardContent className="p-8 text-center">
-                  <div className="mx-auto flex h-16 w-16 items-center justify-center rounded-2xl bg-primary/10 text-primary">
-                    <Users className="h-8 w-8" />
-                  </div>
+            <StatCard
+              icon={<GraduationCap className="h-5 w-5" />}
+              value={teachersCount}
+              label="مدرس"
+            />
 
-                  <div className="mt-5 text-4xl font-black">
-                    {studentsCount}
-                  </div>
+            <StatCard
+              icon={<Brain className="h-5 w-5" />}
+              value={coursesCount}
+              label="دورة"
+            />
 
-                  <p className="mt-2 text-muted-foreground">طالب</p>
-                </CardContent>
-              </Card>
-
-              {/* TEACHERS */}
-
-              <Card className="rounded-[2rem] border-border/50 bg-card/80 backdrop-blur-xl">
-                <CardContent className="p-8 text-center">
-                  <div className="mx-auto flex h-16 w-16 items-center justify-center rounded-2xl bg-blue-500/10 text-blue-500">
-                    <GraduationCap className="h-8 w-8" />
-                  </div>
-
-                  <div className="mt-5 text-4xl font-black">
-                    {teachersCount}
-                  </div>
-
-                  <p className="mt-2 text-muted-foreground">مدرس</p>
-                </CardContent>
-              </Card>
-
-              {/* COURSES */}
-
-              <Card className="rounded-[2rem] border-border/50 bg-card/80 backdrop-blur-xl">
-                <CardContent className="p-8 text-center">
-                  <div className="mx-auto flex h-16 w-16 items-center justify-center rounded-2xl bg-fuchsia-500/10 text-fuchsia-500">
-                    <Brain className="h-8 w-8" />
-                  </div>
-
-                  <div className="mt-5 text-4xl font-black">{coursesCount}</div>
-
-                  <p className="mt-2 text-muted-foreground">دورة</p>
-                </CardContent>
-              </Card>
-
-              {/* BATTLES */}
-
-              <Card className="rounded-[2rem] border-border/50 bg-card/80 backdrop-blur-xl">
-                <CardContent className="p-8 text-center">
-                  <div className="mx-auto flex h-16 w-16 items-center justify-center rounded-2xl bg-yellow-500/10 text-yellow-500">
-                    <Swords className="h-8 w-8" />
-                  </div>
-
-                  <div className="mt-5 text-4xl font-black">{battlesCount}</div>
-
-                  <p className="mt-2 text-muted-foreground">تحدي</p>
-                </CardContent>
-              </Card>
-            </div>
+            <StatCard
+              icon={<Swords className="h-5 w-5" />}
+              value={battlesCount}
+              label="تحدي"
+            />
           </div>
         </div>
       </section>
 
-      {/* FEATURES */}
+      {/* =========================================
+          FEATURES
+      ========================================= */}
 
-      <section id="features" className="container mx-auto px-4 py-20">
-        <div className="text-center">
-          <Badge className="rounded-full px-4 py-2">المميزات</Badge>
+      <section
+        id="features"
+        className="border-b border-border/60"
+      >
+        <div className="mx-auto max-w-6xl px-4 py-16 sm:px-6 lg:px-8">
+          <SectionHeader
+            eyebrow="إمكانيات النظام"
+            title="مكونات تعليمية متكاملة"
+            description="مجموعة من الأدوات المصممة لدعم تجربة تعلم تفاعلية ومتابعة تقدم الطالب."
+          />
 
-          <h2 className="mt-6 text-4xl font-black">لماذا Learn Game؟</h2>
-        </div>
+          <div
+            className="
+              mt-10
+              grid
+              gap-4
+              md:grid-cols-2
+              lg:grid-cols-3
+            "
+          >
+            <FeatureCard
+              icon={<Gamepad2 className="h-5 w-5" />}
+              title="التعلم التفاعلي"
+              description="تحويل المحتوى التعليمي إلى أنشطة وأسئلة تفاعلية تساعد على زيادة مشاركة الطالب."
+            />
 
-        <div className="mt-14 grid gap-6 md:grid-cols-2 lg:grid-cols-3">
-          {/* FEATURE */}
+            <FeatureCard
+              icon={<Swords className="h-5 w-5" />}
+              title="التحديات الجماعية"
+              description="تنظيم تحديات تعليمية بين الطلاب مع عرض النتائج والنقاط أثناء التحدي."
+            />
 
-          <Card className="rounded-[2rem] border-border/50 bg-card/80 backdrop-blur-xl">
-            <CardContent className="p-8">
-              <div className="flex h-16 w-16 items-center justify-center rounded-2xl bg-primary/10 text-primary">
-                <Gamepad2 className="h-8 w-8" />
-              </div>
-
-              <h3 className="mt-6 text-2xl font-black">تعليم ممتع</h3>
-
-              <p className="mt-4 leading-8 text-muted-foreground">
-                حوّل الدروس إلى تجربة تفاعلية ممتعة تشبه الألعاب.
-              </p>
-            </CardContent>
-          </Card>
-
-          {/* FEATURE */}
-
-          <Card className="rounded-[2rem] border-border/50 bg-card/80 backdrop-blur-xl">
-            <CardContent className="p-8">
-              <div className="flex h-16 w-16 items-center justify-center rounded-2xl bg-fuchsia-500/10 text-fuchsia-500">
-                <Swords className="h-8 w-8" />
-              </div>
-
-              <h3 className="mt-6 text-2xl font-black">تحديات مباشرة</h3>
-
-              <p className="mt-4 leading-8 text-muted-foreground">
-                أنشئ تحديات جماعية مباشرة بين الطلاب في الوقت الحقيقي.
-              </p>
-            </CardContent>
-          </Card>
-
-          {/* FEATURE */}
-
-          <Card className="rounded-[2rem] border-border/50 bg-card/80 backdrop-blur-xl">
-            <CardContent className="p-8">
-              <div className="flex h-16 w-16 items-center justify-center rounded-2xl bg-yellow-500/10 text-yellow-500">
-                <Trophy className="h-8 w-8" />
-              </div>
-
-              <h3 className="mt-6 text-2xl font-black">نقاط الخبرة</h3>
-
-              <p className="mt-4 leading-8 text-muted-foreground">
-                اجمع النقاط والعملات وارتقِ بالمستويات التعليمية.
-              </p>
-            </CardContent>
-          </Card>
+            <FeatureCard
+              icon={<Trophy className="h-5 w-5" />}
+              title="نظام التقدم"
+              description="متابعة مستوى الطالب ونقاط الخبرة والإنجازات والتقدم داخل المقررات."
+            />
+          </div>
         </div>
       </section>
 
-      {/* LIVE BATTLE */}
+      {/* =========================================
+          BATTLE
+      ========================================= */}
 
-      <section id="battle" className="container mx-auto px-4 py-20">
-        <div
-          className="
-            overflow-hidden
-            rounded-[3rem]
-            border
-            border-primary/20
-            bg-linear-to-br
-            from-primary/10
-            to-fuchsia-500/10
-            p-10
-            shadow-2xl
-          "
-        >
-          <div className="grid gap-10 lg:grid-cols-2 lg:items-center">
-            {/* LEFT */}
+      <section
+        id="battle"
+        className="border-b border-border/60"
+      >
+        <div className="mx-auto max-w-6xl px-4 py-16 sm:px-6 lg:px-8">
+          <div className="grid gap-8 lg:grid-cols-2 lg:items-center">
+
+            {/* TEXT */}
 
             <div>
-              <Badge className="rounded-full px-4 py-2">تحديات مباشرة</Badge>
+              <Badge
+                variant="outline"
+                className="rounded-full px-3 py-1 text-xs"
+              >
+                التحديات الجماعية
+              </Badge>
 
-              <h2 className="mt-6 text-5xl font-black leading-[1.4]">
-                معارك تعليمية في الوقت الحقيقي ⚔️
+              <h2
+                className="
+                  mt-4
+                  text-2xl
+                  font-bold
+                  leading-[1.6]
+                  tracking-tight
+                  sm:text-3xl
+                "
+              >
+                بيئة تنافسية لدعم التعلم
               </h2>
 
-              <p className="mt-6 text-lg leading-9 text-muted-foreground">
-                الطلاب يتنافسون مباشرة، النتائج تظهر لحظيًا، والـ scoreboard
-                يتحدث في الوقت الفعلي.
+              <p
+                className="
+                  mt-4
+                  max-w-xl
+                  text-sm
+                  leading-loose
+                  text-muted-foreground
+                  sm:text-base
+                "
+              >
+                يتيح النظام للطلاب المشاركة في تحديات
+                جماعية والإجابة عن الأسئلة ومتابعة
+                النتائج بصورة مباشرة.
               </p>
 
-              <div className="mt-8 flex flex-wrap gap-4">
-                <div className="flex items-center gap-2 rounded-2xl border bg-background/80 px-5 py-3">
-                  <Zap className="h-5 w-5 text-yellow-500" />
+              <div className="mt-6 flex flex-wrap gap-2">
+                <FeaturePill
+                  icon={<Zap className="h-4 w-4" />}
+                  text="نتائج مباشرة"
+                />
 
-                  <span className="font-bold">Real-time</span>
-                </div>
+                <FeaturePill
+                  icon={<ShieldCheck className="h-4 w-4" />}
+                  text="إدارة التحدي"
+                />
 
-                <div className="flex items-center gap-2 rounded-2xl border bg-background/80 px-5 py-3">
-                  <ShieldCheck className="h-5 w-5 text-primary" />
-
-                  <span className="font-bold">Anti Cheat</span>
-                </div>
+                <FeaturePill
+                  icon={<Trophy className="h-4 w-4" />}
+                  text="نظام نقاط"
+                />
               </div>
             </div>
 
-            {/* RIGHT */}
+            {/* BATTLE PREVIEW */}
 
-            <div className="rounded-[2rem] border border-border/50 bg-background/80 p-8 shadow-2xl">
-              <div className="flex items-center justify-between">
-                <div className="text-center">
-                  <div className="text-5xl font-black text-blue-500">540</div>
+            <Card className="overflow-hidden rounded-2xl">
+              <CardContent className="p-0">
 
-                  <p className="mt-2 text-sm text-muted-foreground">TEAM A</p>
+                <div className="border-b bg-muted/30 px-5 py-4">
+                  <div className="flex items-center justify-between">
+                    <span className="text-sm font-semibold">
+                      تحدي مباشر
+                    </span>
+
+                    <Badge
+                      variant="secondary"
+                      className="rounded-full text-xs"
+                    >
+                      مباشر
+                    </Badge>
+                  </div>
                 </div>
 
-                <div className="rounded-full bg-primary px-6 py-3 font-black text-primary-foreground">
-                  LIVE
-                </div>
+                <div className="p-5">
+                  <div className="grid grid-cols-2 gap-3">
 
-                <div className="text-center">
-                  <div className="text-5xl font-black text-fuchsia-500">
-                    480
+                    <TeamScore
+                      label="الفريق A"
+                      score={540}
+                    />
+
+                    <TeamScore
+                      label="الفريق B"
+                      score={480}
+                    />
+
                   </div>
 
-                  <p className="mt-2 text-sm text-muted-foreground">TEAM B</p>
-                </div>
-              </div>
-
-              <div className="mt-8 rounded-3xl border bg-card p-6 text-center">
-                <h3 className="text-2xl font-black leading-[1.8]">
-                  ما هي لغة البرمجة المستخدمة في تطوير React؟
-                </h3>
-              </div>
-            </div>
-          </div>
-        </div>
-      </section>
-
-      {/* LEADERBOARD */}
-
-      <section id="leaderboard" className="container mx-auto px-4 py-20">
-        <div className="text-center">
-          <Badge className="rounded-full px-4 py-2">لوحة الصدارة</Badge>
-
-          <h2 className="mt-6 text-4xl font-black">أفضل الطلاب</h2>
-        </div>
-
-        <div className="mx-auto mt-14 max-w-4xl space-y-5">
-          {leaderboard.map((student, index) => (
-            <Card
-              key={student.id}
-              className="rounded-[2rem] border-border/50 bg-card/80 backdrop-blur-xl"
-            >
-              <CardContent className="flex items-center justify-between p-6">
-                <div className="flex items-center gap-5">
-                  <div
-                    className="
-                        flex
-                        h-14
-                        w-14
-                        items-center
-                        justify-center
-                        rounded-2xl
-                        bg-primary/10
-                        text-2xl
-                        font-black
-                        text-primary
-                      "
-                  >
-                    {index + 1}
-                  </div>
-
-                  <Avatar className="h-14 w-14 border">
-                    <AvatarImage src={student.image || ""} />
-
-                    <AvatarFallback>{student.name?.[0]}</AvatarFallback>
-                  </Avatar>
-
-                  <div>
-                    <h3 className="text-xl font-black">{student.name}</h3>
-
-                    <p className="text-muted-foreground">
-                      Level {student.currentLevel}
+                  <div className="mt-4 rounded-xl border bg-muted/20 p-5">
+                    <p className="text-xs text-muted-foreground">
+                      سؤال تجريبي
                     </p>
+
+                    <h3
+                      className="
+                        mt-3
+                        text-base
+                        font-semibold
+                        leading-loose
+                      "
+                    >
+                      تعد ............ من أشهر لغات البرمجة
+                    </h3>
                   </div>
-                </div>
-
-                <div className="text-left">
-                  <div className="flex items-center gap-2 text-3xl font-black text-yellow-500">
-                    <Crown className="h-7 w-7" />
-
-                    {student.xp}
-                  </div>
-
-                  <p className="mt-1 text-sm text-muted-foreground">نقاط الخبرة</p>
                 </div>
               </CardContent>
             </Card>
-          ))}
+          </div>
         </div>
       </section>
 
-      {/* CTA */}
+      {/* =========================================
+          LEADERBOARD
+      ========================================= */}
 
-      <section className="container mx-auto px-4 py-24">
-        <div
-          className="
-            overflow-hidden
-            rounded-[3rem]
-            border
-            border-primary/20
-            bg-linear-to-r
-            from-primary
-            to-fuchsia-500
-            p-12
-            text-center
-            text-white
-            shadow-2xl
-          "
-        >
-          <h2 className="text-5xl font-black leading-normal">
-            ابدأ رحلتك التعليمية الآن{" "}
-            <ArrowUpRight className="ml-2 inline-block h-8 w-8 animate-bounce" />
-          </h2>
+      <section
+        id="leaderboard"
+        className="border-b border-border/60"
+      >
+        <div className="mx-auto max-w-5xl px-4 py-16 sm:px-6 lg:px-8">
 
-          <p className="mx-auto mt-6 max-w-3xl text-lg leading-9 text-white/80">
-            انضم إلى منصة Learn Game وابدأ في إنشاء تجربة تعليمية تفاعلية مختلفة
-            بالكامل.
-          </p>
+          <SectionHeader
+            eyebrow="لوحة الصدارة"
+            title="تقدم الطلاب"
+            description="عرض مختصر للطلاب الأعلى في نقاط الخبرة."
+          />
 
-          <Button
-            asChild
-            size="lg"
-            variant="secondary"
-            className="
-              mt-10
-              h-14
-              rounded-2xl
-              px-8
-              text-lg
-              font-black
-            "
-          >
-            <Link href="/auth/register">
-              ابدأ مجانًا الآن
-              <ArrowLeft className="mr-2 h-5 w-5" />
-            </Link>
-          </Button>
+          <div className="mt-10 overflow-hidden rounded-2xl border">
+            {leaderboard.length === 0 ? (
+              <div className="py-12 text-center text-sm text-muted-foreground">
+                لا توجد بيانات متاحة حاليًا.
+              </div>
+            ) : (
+              leaderboard.map((student, index) => (
+                <LeaderboardRow
+                  key={student.id}
+                  student={student}
+                  index={index}
+                  isLast={
+                    index ===
+                    leaderboard.length - 1
+                  }
+                />
+              ))
+            )}
+          </div>
         </div>
       </section>
+
+      {/* =========================================
+          CTA
+      ========================================= */}
+
+      {!session?.user && (
+        <section>
+          <div className="mx-auto max-w-5xl px-4 py-16 sm:px-6 lg:px-8">
+            <Card className="rounded-2xl">
+              <CardContent className="flex flex-col items-center justify-between gap-6 p-8 text-center sm:flex-row sm:text-right">
+
+                <div>
+                  <h2
+                    className="
+                      text-xl
+                      font-bold
+                      leading-[1.7]
+                    "
+                  >
+                    ابدأ باستخدام المنصة
+                  </h2>
+
+                  <p
+                    className="
+                      mt-2
+                      max-w-xl
+                      text-sm
+                      leading-loose
+                      text-muted-foreground
+                    "
+                  >
+                    أنشئ حسابًا وابدأ في استكشاف
+                    المحتوى والتحديات التعليمية.
+                  </p>
+                </div>
+
+                <Button
+                  asChild
+                  className="
+                    shrink-0
+                    rounded-xl
+                    px-6
+                    font-semibold
+                  "
+                >
+                  <Link href="/auth/register">
+                    إنشاء حساب
+                    <ArrowLeft className="mr-2 h-4 w-4" />
+                  </Link>
+                </Button>
+
+              </CardContent>
+            </Card>
+          </div>
+        </section>
+      )}
+
       <Footer />
     </main>
+  );
+}
+
+// =========================================
+// STAT CARD
+// =========================================
+
+function StatCard({
+  icon,
+  value,
+  label,
+}: {
+  icon: React.ReactNode;
+  value: number;
+  label: string;
+}) {
+  return (
+    <Card className="rounded-xl">
+      <CardContent className="flex items-center gap-3 p-4">
+
+        <div
+          className="
+            flex
+            h-10
+            w-10
+            shrink-0
+            items-center
+            justify-center
+            rounded-lg
+            bg-primary/10
+            text-primary
+          "
+        >
+          {icon}
+        </div>
+
+        <div className="min-w-0">
+          <div className="text-lg font-bold">
+            {value}
+          </div>
+
+          <p className="text-xs text-muted-foreground">
+            {label}
+          </p>
+        </div>
+
+      </CardContent>
+    </Card>
+  );
+}
+
+// =========================================
+// SECTION HEADER
+// =========================================
+
+function SectionHeader({
+  eyebrow,
+  title,
+  description,
+}: {
+  eyebrow: string;
+  title: string;
+  description: string;
+}) {
+  return (
+    <div className="max-w-2xl">
+
+      <Badge
+        variant="secondary"
+        className="rounded-full px-3 py-1 text-xs font-medium"
+      >
+        {eyebrow}
+      </Badge>
+
+      <h2
+        className="
+          mt-4
+          text-2xl
+          font-bold
+          leading-[1.6]
+          tracking-tight
+          sm:text-3xl
+        "
+      >
+        {title}
+      </h2>
+
+      <p
+        className="
+          mt-3
+          text-sm
+          leading-loose
+          text-muted-foreground
+          sm:text-base
+        "
+      >
+        {description}
+      </p>
+
+    </div>
+  );
+}
+
+// =========================================
+// FEATURE CARD
+// =========================================
+
+function FeatureCard({
+  icon,
+  title,
+  description,
+}: {
+  icon: React.ReactNode;
+  title: string;
+  description: string;
+}) {
+  return (
+    <Card className="rounded-2xl transition-colors hover:border-primary/40">
+      <CardContent className="p-6">
+
+        <div
+          className="
+            flex
+            h-10
+            w-10
+            items-center
+            justify-center
+            rounded-lg
+            bg-primary/10
+            text-primary
+          "
+        >
+          {icon}
+        </div>
+
+        <h3
+          className="
+            mt-5
+            text-base
+            font-bold
+            leading-[1.7]
+          "
+        >
+          {title}
+        </h3>
+
+        <p
+          className="
+            mt-2
+            text-sm
+            leading-loose
+            text-muted-foreground
+          "
+        >
+          {description}
+        </p>
+
+      </CardContent>
+    </Card>
+  );
+}
+
+// =========================================
+// FEATURE PILL
+// =========================================
+
+function FeaturePill({
+  icon,
+  text,
+}: {
+  icon: React.ReactNode;
+  text: string;
+}) {
+  return (
+    <div
+      className="
+        flex
+        items-center
+        gap-2
+        rounded-lg
+        border
+        bg-muted/20
+        px-3
+        py-2
+        text-xs
+        font-medium
+      "
+    >
+      <span className="text-primary">
+        {icon}
+      </span>
+
+      {text}
+    </div>
+  );
+}
+
+// =========================================
+// TEAM SCORE
+// =========================================
+
+function TeamScore({
+  label,
+  score,
+}: {
+  label: string;
+  score: number;
+}) {
+  return (
+    <div className="rounded-xl border bg-muted/20 p-4 text-center">
+
+      <p className="text-xs text-muted-foreground">
+        {label}
+      </p>
+
+      <p className="mt-1 text-2xl font-bold">
+        {score}
+      </p>
+
+      <p className="mt-1 text-[11px] text-muted-foreground">
+        نقطة
+      </p>
+
+    </div>
+  );
+}
+
+// =========================================
+// LEADERBOARD ROW
+// =========================================
+
+function LeaderboardRow({
+  student,
+  index,
+  isLast,
+}: {
+  student: {
+    id: string;
+    name: string | null;
+    image: string | null;
+    xp: number;
+    currentLevel: number;
+  };
+  index: number;
+  isLast: boolean;
+}) {
+  return (
+    <div
+      className={`
+        flex
+        items-center
+        justify-between
+        gap-4
+        px-4
+        py-4
+        sm:px-5
+        ${!isLast ? "border-b" : ""}
+      `}
+    >
+      <div className="flex min-w-0 items-center gap-3">
+
+        <div
+          className="
+            flex
+            h-8
+            w-8
+            shrink-0
+            items-center
+            justify-center
+            rounded-lg
+            bg-muted
+            text-xs
+            font-bold
+          "
+        >
+          {index + 1}
+        </div>
+
+        <Avatar className="h-10 w-10 shrink-0">
+          <AvatarImage
+            src={student.image || ""}
+            alt={student.name || "Student"}
+          />
+
+          <AvatarFallback>
+            {student.name?.charAt(0) || "U"}
+          </AvatarFallback>
+        </Avatar>
+
+        <div className="min-w-0">
+          <p className="truncate text-sm font-semibold">
+            {student.name || "بدون اسم"}
+          </p>
+
+          <p className="mt-0.5 text-xs text-muted-foreground">
+            المستوى {student.currentLevel}
+          </p>
+        </div>
+      </div>
+
+      <div className="flex shrink-0 items-center gap-2">
+        <Crown className="h-4 w-4 text-muted-foreground" />
+
+        <div className="text-left">
+          <p className="text-sm font-bold">
+            {student.xp}
+          </p>
+
+          <p className="text-[11px] text-muted-foreground">
+            XP
+          </p>
+        </div>
+      </div>
+    </div>
   );
 }

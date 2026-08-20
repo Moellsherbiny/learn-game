@@ -107,3 +107,13 @@ export type BattleQuestion = Prisma.BattleQuestionModel
  * 
  */
 export type BattleAnswer = Prisma.BattleAnswerModel
+/**
+ * Model Conversation
+ * 
+ */
+export type Conversation = Prisma.ConversationModel
+/**
+ * Model Message
+ * 
+ */
+export type Message = Prisma.MessageModel

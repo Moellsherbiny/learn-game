@@ -20,19 +20,20 @@ export const metadata: Metadata = {
     default: "Learn Game",
     template: "%s | Learn Game",
   },
-  description:
-    "منصة تعليمية تعتمد على التلعيب لتحويل التعلم إلى مغامرة ممتعة من خلال المستويات ونقاط الخبرة والتحديات الجماعية.",
+ description:
+  "Learn Game منصة تعليمية تفاعلية تعتمد على التلعيب لتقديم المحتوى، تقييم مستوى المتعلم، متابعة تقدمه، ودعم التحديات التعليمية الجماعية.",
   keywords: [
-    "Learn Game",
-    "Gamified Learning",
-    "التعلم بالتلعيب",
-    "منصة تعليمية",
-    "نقاط الخبرة",
-    "Levels",
-    "Interactive Learning",
-    "Team Battles",
-    "Programming Education",
-  ],
+  "Learn Game",
+  "Gamified Learning",
+  "Adaptive Learning",
+  "التعلم بالتلعيب",
+  "التعلم التكيفي",
+  "منصة تعليمية",
+  "التقييم الإلكتروني",
+  "التحديات التعليمية",
+  "التعلم التفاعلي",
+  "Computer Education",
+],
   authors: [
     {
       name: "Learn Game Team",
@@ -72,12 +73,12 @@ export default async function RootLayout({
   return (
     <html lang="ar" dir="rtl" suppressHydrationWarning>
       <body
-        className={`${alexandria.variable} ${alexandria.className} min-h-screen bg-background font-sans text-foreground antialiased`}
+        className={`${alexandria.variable} min-h-screen bg-background font-sans text-foreground antialiased`}
       >
         <SessionProvider session={session}>
           <ThemeProvider
             attribute="class"
-            defaultTheme="light"
+            
             enableSystem
             disableTransitionOnChange
           >

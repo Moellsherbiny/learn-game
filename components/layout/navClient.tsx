@@ -11,6 +11,7 @@ import {
   PlusCircle,
   Home,
   Menu,
+  Inbox,
 } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
@@ -39,6 +40,11 @@ const studentLinks = [
   { href: "/courses", label: "الدورات", icon: BookOpen },
   { href: "/leaderboard", label: "لوحة الصدارة", icon: Trophy },
   { href: "/student/battles", label: "التحديات", icon: Swords },
+  {
+    href: "/messages",
+    label: "المحادثات",
+    icon: Inbox,
+  },
 ];
 
 const teacherLinks = [
@@ -59,13 +65,23 @@ const teacherLinks = [
     label: "إنشاء تحدي",
     icon: Swords,
   },
+  {
+    href: "/messages",
+    label: "المحادثات",
+    icon: Inbox,
+  },
 ];
 
 const adminLinks = [
   { href: "/admin", label: "الرئيسية", icon: Home },
   { href: "/admin/teachers", label: "المعلمون", icon: GraduationCap },
   { href: "/courses", label: "الدورات", icon: BookOpen },
-]
+  {
+    href: "/messages",
+    label: "المحادثات",
+    icon: Inbox,
+  },
+];
 export default function DashboardNavbarClient({
   user,
 }: DashboardNavbarClientProps) {
@@ -74,11 +90,7 @@ export default function DashboardNavbarClient({
   const isTeacher = user.role === "TEACHER";
   const isAdmin = user.role === "ADMIN";
 
-  const links = isAdmin
-    ? adminLinks
-    : isTeacher
-    ? teacherLinks
-    : studentLinks;
+  const links = isAdmin ? adminLinks : isTeacher ? teacherLinks : studentLinks;
 
   return (
     <>
@@ -123,7 +135,11 @@ export default function DashboardNavbarClient({
 
           <DropdownMenuContent align="end" sideOffset={8} className="w-64">
             <DropdownMenuLabel>
-              {isTeacher ? "لوحة المعلم" : isAdmin ? "لوحة الإدارة" : "لوحة الطالب"}
+              {isTeacher
+                ? "لوحة المعلم"
+                : isAdmin
+                  ? "لوحة الإدارة"
+                  : "لوحة الطالب"}
             </DropdownMenuLabel>
 
             <DropdownMenuSeparator />

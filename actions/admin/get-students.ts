@@ -1,40 +1,56 @@
 "use server";
 
-import { auth } from "@/auth";
 import { prisma } from "@/lib/prisma";
 
-export async function getStudents() {
-  const session = await auth();
+export async function getStudents(search?: string) {
+  const students = await prisma.user.findMany({
+    where: {
+      role: "STUDENT",
 
-  if (!session?.user) {
-    throw new Error("Unauthorized");
-  }
+      ...(search?.trim()
+        ? {
+            OR: [
+              {
+                name: {
+                  contains: search.trim(),
+                  mode: "insensitive",
+                },
+              },
+              {
+                email: {
+                  contains: search.trim(),
+                  mode: "insensitive",
+                },
+              },
+              {
+                school: {
+                  contains: search.trim(),
+                  mode: "insensitive",
+                },
+              },
+            ],
+          }
+        : {}),
+    },
 
-  if (session.user.role !== "ADMIN") {
-    throw new Error("Forbidden");
-  }
+    orderBy: {
+      createdAt: "desc",
+    },
 
-  const students =
-    await prisma.user.findMany({
-      where: {
-        role: "STUDENT",
-      },
-
-      orderBy: {
-        createdAt: "desc",
-      },
-
-      select: {
-        id: true,
-        name: true,
-        email: true,
-        phone: true,
-        school: true,
-        xp: true,
-        currentLevel: true,
-        createdAt: true,
-      },
-    });
+    select: {
+      id: true,
+      name: true,
+      email: true,
+      image: true,
+      school: true,
+      level: true,
+      currentLevel: true,
+      xp: true,
+      streak: true,
+      coins: true,
+      createdAt: true,
+    },
+  });
 
   return students;
 }

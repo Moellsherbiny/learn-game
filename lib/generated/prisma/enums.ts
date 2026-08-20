@@ -52,3 +52,12 @@ export const TeamType = {
 } as const
 
 export type TeamType = (typeof TeamType)[keyof typeof TeamType]
+
+
+export const ConversationType = {
+  STUDENT_TEACHER: 'STUDENT_TEACHER',
+  ADMIN_STUDENT: 'ADMIN_STUDENT',
+  ADMIN_TEACHER: 'ADMIN_TEACHER'
+} as const
+
+export type ConversationType = (typeof ConversationType)[keyof typeof ConversationType]

@@ -151,11 +151,10 @@ export async function submitBattleAnswerAction(
   // FIREBASE PARTICIPANT
   // =========================================
 
-  const participantRef =
-    ref(
-      realtimeDb,
-      `battleRooms/${data.roomId}/participants/${data.studentId}`,
-    );
+const participantRef = ref(
+  realtimeDb,
+  `battles/${data.roomId}/participants/${data.studentId}`,
+);
 
   const participantSnapshot =
     await get(
@@ -276,11 +275,10 @@ export async function submitBattleAnswerAction(
   // CHECK IF ALL ANSWERED
   // =========================================
 
-  const roomRef =
-    ref(
-      realtimeDb,
-      `battleRooms/${data.roomId}`,
-    );
+const roomRef = ref(
+  realtimeDb,
+  `battles/${data.roomId}`,
+);
 
   const roomSnapshot =
     await get(roomRef);
