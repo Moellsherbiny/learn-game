@@ -321,16 +321,9 @@ export default async function CourseMapPage({ params }: PageProps) {
 
             <div className="space-y-10">
               {visibleModules.map((module, index) => {
-                const prevModuleCompleted =
-                  index === 0 ||
-                  visibleModules[index - 1].lessons.every(
-                    (lesson) => lesson.progress[0]?.completed,
-                  );
-
-                const isUnlocked =
-                  index <= startIndex ||
-                  (course.studentXp >= module.requiredXp &&
-                    prevModuleCompleted);
+              const isUnlocked =
+  index <= startIndex ||
+  course.studentXp >= module.requiredXp;
 
                 const isCurrent = module.id === recommendedModule?.id;
 
