@@ -349,6 +349,7 @@ export type UserWhereInput = {
   sentMessages?: Prisma.MessageListRelationFilter
   teacherBattleRooms?: Prisma.BattleRoomListRelationFilter
   battleParticipants?: Prisma.BattleParticipantListRelationFilter
+  battleInvitations?: Prisma.BattleInvitationListRelationFilter
   battleAnswers?: Prisma.BattleAnswerListRelationFilter
   placementResults?: Prisma.PlacementResultListRelationFilter
   coursesTeaching?: Prisma.CourseListRelationFilter
@@ -386,6 +387,7 @@ export type UserOrderByWithRelationInput = {
   sentMessages?: Prisma.MessageOrderByRelationAggregateInput
   teacherBattleRooms?: Prisma.BattleRoomOrderByRelationAggregateInput
   battleParticipants?: Prisma.BattleParticipantOrderByRelationAggregateInput
+  battleInvitations?: Prisma.BattleInvitationOrderByRelationAggregateInput
   battleAnswers?: Prisma.BattleAnswerOrderByRelationAggregateInput
   placementResults?: Prisma.PlacementResultOrderByRelationAggregateInput
   coursesTeaching?: Prisma.CourseOrderByRelationAggregateInput
@@ -426,6 +428,7 @@ export type UserWhereUniqueInput = Prisma.AtLeast<{
   sentMessages?: Prisma.MessageListRelationFilter
   teacherBattleRooms?: Prisma.BattleRoomListRelationFilter
   battleParticipants?: Prisma.BattleParticipantListRelationFilter
+  battleInvitations?: Prisma.BattleInvitationListRelationFilter
   battleAnswers?: Prisma.BattleAnswerListRelationFilter
   placementResults?: Prisma.PlacementResultListRelationFilter
   coursesTeaching?: Prisma.CourseListRelationFilter
@@ -515,6 +518,7 @@ export type UserCreateInput = {
   sentMessages?: Prisma.MessageCreateNestedManyWithoutSenderInput
   teacherBattleRooms?: Prisma.BattleRoomCreateNestedManyWithoutTeacherInput
   battleParticipants?: Prisma.BattleParticipantCreateNestedManyWithoutStudentInput
+  battleInvitations?: Prisma.BattleInvitationCreateNestedManyWithoutStudentInput
   battleAnswers?: Prisma.BattleAnswerCreateNestedManyWithoutStudentInput
   placementResults?: Prisma.PlacementResultCreateNestedManyWithoutStudentInput
   coursesTeaching?: Prisma.CourseCreateNestedManyWithoutTeacherInput
@@ -552,6 +556,7 @@ export type UserUncheckedCreateInput = {
   sentMessages?: Prisma.MessageUncheckedCreateNestedManyWithoutSenderInput
   teacherBattleRooms?: Prisma.BattleRoomUncheckedCreateNestedManyWithoutTeacherInput
   battleParticipants?: Prisma.BattleParticipantUncheckedCreateNestedManyWithoutStudentInput
+  battleInvitations?: Prisma.BattleInvitationUncheckedCreateNestedManyWithoutStudentInput
   battleAnswers?: Prisma.BattleAnswerUncheckedCreateNestedManyWithoutStudentInput
   placementResults?: Prisma.PlacementResultUncheckedCreateNestedManyWithoutStudentInput
   coursesTeaching?: Prisma.CourseUncheckedCreateNestedManyWithoutTeacherInput
@@ -589,6 +594,7 @@ export type UserUpdateInput = {
   sentMessages?: Prisma.MessageUpdateManyWithoutSenderNestedInput
   teacherBattleRooms?: Prisma.BattleRoomUpdateManyWithoutTeacherNestedInput
   battleParticipants?: Prisma.BattleParticipantUpdateManyWithoutStudentNestedInput
+  battleInvitations?: Prisma.BattleInvitationUpdateManyWithoutStudentNestedInput
   battleAnswers?: Prisma.BattleAnswerUpdateManyWithoutStudentNestedInput
   placementResults?: Prisma.PlacementResultUpdateManyWithoutStudentNestedInput
   coursesTeaching?: Prisma.CourseUpdateManyWithoutTeacherNestedInput
@@ -626,6 +632,7 @@ export type UserUncheckedUpdateInput = {
   sentMessages?: Prisma.MessageUncheckedUpdateManyWithoutSenderNestedInput
   teacherBattleRooms?: Prisma.BattleRoomUncheckedUpdateManyWithoutTeacherNestedInput
   battleParticipants?: Prisma.BattleParticipantUncheckedUpdateManyWithoutStudentNestedInput
+  battleInvitations?: Prisma.BattleInvitationUncheckedUpdateManyWithoutStudentNestedInput
   battleAnswers?: Prisma.BattleAnswerUncheckedUpdateManyWithoutStudentNestedInput
   placementResults?: Prisma.PlacementResultUncheckedUpdateManyWithoutStudentNestedInput
   coursesTeaching?: Prisma.CourseUncheckedUpdateManyWithoutTeacherNestedInput
@@ -980,6 +987,20 @@ export type UserUpdateOneRequiredWithoutBattleAnswersNestedInput = {
   update?: Prisma.XOR<Prisma.XOR<Prisma.UserUpdateToOneWithWhereWithoutBattleAnswersInput, Prisma.UserUpdateWithoutBattleAnswersInput>, Prisma.UserUncheckedUpdateWithoutBattleAnswersInput>
 }
 
+export type UserCreateNestedOneWithoutBattleInvitationsInput = {
+  create?: Prisma.XOR<Prisma.UserCreateWithoutBattleInvitationsInput, Prisma.UserUncheckedCreateWithoutBattleInvitationsInput>
+  connectOrCreate?: Prisma.UserCreateOrConnectWithoutBattleInvitationsInput
+  connect?: Prisma.UserWhereUniqueInput
+}
+
+export type UserUpdateOneRequiredWithoutBattleInvitationsNestedInput = {
+  create?: Prisma.XOR<Prisma.UserCreateWithoutBattleInvitationsInput, Prisma.UserUncheckedCreateWithoutBattleInvitationsInput>
+  connectOrCreate?: Prisma.UserCreateOrConnectWithoutBattleInvitationsInput
+  upsert?: Prisma.UserUpsertWithoutBattleInvitationsInput
+  connect?: Prisma.UserWhereUniqueInput
+  update?: Prisma.XOR<Prisma.XOR<Prisma.UserUpdateToOneWithWhereWithoutBattleInvitationsInput, Prisma.UserUpdateWithoutBattleInvitationsInput>, Prisma.UserUncheckedUpdateWithoutBattleInvitationsInput>
+}
+
 export type UserCreateNestedOneWithoutStudentConversationsInput = {
   create?: Prisma.XOR<Prisma.UserCreateWithoutStudentConversationsInput, Prisma.UserUncheckedCreateWithoutStudentConversationsInput>
   connectOrCreate?: Prisma.UserCreateOrConnectWithoutStudentConversationsInput
@@ -1070,6 +1091,7 @@ export type UserCreateWithoutAccountsInput = {
   sentMessages?: Prisma.MessageCreateNestedManyWithoutSenderInput
   teacherBattleRooms?: Prisma.BattleRoomCreateNestedManyWithoutTeacherInput
   battleParticipants?: Prisma.BattleParticipantCreateNestedManyWithoutStudentInput
+  battleInvitations?: Prisma.BattleInvitationCreateNestedManyWithoutStudentInput
   battleAnswers?: Prisma.BattleAnswerCreateNestedManyWithoutStudentInput
   placementResults?: Prisma.PlacementResultCreateNestedManyWithoutStudentInput
   coursesTeaching?: Prisma.CourseCreateNestedManyWithoutTeacherInput
@@ -1106,6 +1128,7 @@ export type UserUncheckedCreateWithoutAccountsInput = {
   sentMessages?: Prisma.MessageUncheckedCreateNestedManyWithoutSenderInput
   teacherBattleRooms?: Prisma.BattleRoomUncheckedCreateNestedManyWithoutTeacherInput
   battleParticipants?: Prisma.BattleParticipantUncheckedCreateNestedManyWithoutStudentInput
+  battleInvitations?: Prisma.BattleInvitationUncheckedCreateNestedManyWithoutStudentInput
   battleAnswers?: Prisma.BattleAnswerUncheckedCreateNestedManyWithoutStudentInput
   placementResults?: Prisma.PlacementResultUncheckedCreateNestedManyWithoutStudentInput
   coursesTeaching?: Prisma.CourseUncheckedCreateNestedManyWithoutTeacherInput
@@ -1158,6 +1181,7 @@ export type UserUpdateWithoutAccountsInput = {
   sentMessages?: Prisma.MessageUpdateManyWithoutSenderNestedInput
   teacherBattleRooms?: Prisma.BattleRoomUpdateManyWithoutTeacherNestedInput
   battleParticipants?: Prisma.BattleParticipantUpdateManyWithoutStudentNestedInput
+  battleInvitations?: Prisma.BattleInvitationUpdateManyWithoutStudentNestedInput
   battleAnswers?: Prisma.BattleAnswerUpdateManyWithoutStudentNestedInput
   placementResults?: Prisma.PlacementResultUpdateManyWithoutStudentNestedInput
   coursesTeaching?: Prisma.CourseUpdateManyWithoutTeacherNestedInput
@@ -1194,6 +1218,7 @@ export type UserUncheckedUpdateWithoutAccountsInput = {
   sentMessages?: Prisma.MessageUncheckedUpdateManyWithoutSenderNestedInput
   teacherBattleRooms?: Prisma.BattleRoomUncheckedUpdateManyWithoutTeacherNestedInput
   battleParticipants?: Prisma.BattleParticipantUncheckedUpdateManyWithoutStudentNestedInput
+  battleInvitations?: Prisma.BattleInvitationUncheckedUpdateManyWithoutStudentNestedInput
   battleAnswers?: Prisma.BattleAnswerUncheckedUpdateManyWithoutStudentNestedInput
   placementResults?: Prisma.PlacementResultUncheckedUpdateManyWithoutStudentNestedInput
   coursesTeaching?: Prisma.CourseUncheckedUpdateManyWithoutTeacherNestedInput
@@ -1230,6 +1255,7 @@ export type UserCreateWithoutSessionsInput = {
   sentMessages?: Prisma.MessageCreateNestedManyWithoutSenderInput
   teacherBattleRooms?: Prisma.BattleRoomCreateNestedManyWithoutTeacherInput
   battleParticipants?: Prisma.BattleParticipantCreateNestedManyWithoutStudentInput
+  battleInvitations?: Prisma.BattleInvitationCreateNestedManyWithoutStudentInput
   battleAnswers?: Prisma.BattleAnswerCreateNestedManyWithoutStudentInput
   placementResults?: Prisma.PlacementResultCreateNestedManyWithoutStudentInput
   coursesTeaching?: Prisma.CourseCreateNestedManyWithoutTeacherInput
@@ -1266,6 +1292,7 @@ export type UserUncheckedCreateWithoutSessionsInput = {
   sentMessages?: Prisma.MessageUncheckedCreateNestedManyWithoutSenderInput
   teacherBattleRooms?: Prisma.BattleRoomUncheckedCreateNestedManyWithoutTeacherInput
   battleParticipants?: Prisma.BattleParticipantUncheckedCreateNestedManyWithoutStudentInput
+  battleInvitations?: Prisma.BattleInvitationUncheckedCreateNestedManyWithoutStudentInput
   battleAnswers?: Prisma.BattleAnswerUncheckedCreateNestedManyWithoutStudentInput
   placementResults?: Prisma.PlacementResultUncheckedCreateNestedManyWithoutStudentInput
   coursesTeaching?: Prisma.CourseUncheckedCreateNestedManyWithoutTeacherInput
@@ -1318,6 +1345,7 @@ export type UserUpdateWithoutSessionsInput = {
   sentMessages?: Prisma.MessageUpdateManyWithoutSenderNestedInput
   teacherBattleRooms?: Prisma.BattleRoomUpdateManyWithoutTeacherNestedInput
   battleParticipants?: Prisma.BattleParticipantUpdateManyWithoutStudentNestedInput
+  battleInvitations?: Prisma.BattleInvitationUpdateManyWithoutStudentNestedInput
   battleAnswers?: Prisma.BattleAnswerUpdateManyWithoutStudentNestedInput
   placementResults?: Prisma.PlacementResultUpdateManyWithoutStudentNestedInput
   coursesTeaching?: Prisma.CourseUpdateManyWithoutTeacherNestedInput
@@ -1354,6 +1382,7 @@ export type UserUncheckedUpdateWithoutSessionsInput = {
   sentMessages?: Prisma.MessageUncheckedUpdateManyWithoutSenderNestedInput
   teacherBattleRooms?: Prisma.BattleRoomUncheckedUpdateManyWithoutTeacherNestedInput
   battleParticipants?: Prisma.BattleParticipantUncheckedUpdateManyWithoutStudentNestedInput
+  battleInvitations?: Prisma.BattleInvitationUncheckedUpdateManyWithoutStudentNestedInput
   battleAnswers?: Prisma.BattleAnswerUncheckedUpdateManyWithoutStudentNestedInput
   placementResults?: Prisma.PlacementResultUncheckedUpdateManyWithoutStudentNestedInput
   coursesTeaching?: Prisma.CourseUncheckedUpdateManyWithoutTeacherNestedInput
@@ -1390,6 +1419,7 @@ export type UserCreateWithoutAuthenticatorInput = {
   sentMessages?: Prisma.MessageCreateNestedManyWithoutSenderInput
   teacherBattleRooms?: Prisma.BattleRoomCreateNestedManyWithoutTeacherInput
   battleParticipants?: Prisma.BattleParticipantCreateNestedManyWithoutStudentInput
+  battleInvitations?: Prisma.BattleInvitationCreateNestedManyWithoutStudentInput
   battleAnswers?: Prisma.BattleAnswerCreateNestedManyWithoutStudentInput
   placementResults?: Prisma.PlacementResultCreateNestedManyWithoutStudentInput
   coursesTeaching?: Prisma.CourseCreateNestedManyWithoutTeacherInput
@@ -1426,6 +1456,7 @@ export type UserUncheckedCreateWithoutAuthenticatorInput = {
   sentMessages?: Prisma.MessageUncheckedCreateNestedManyWithoutSenderInput
   teacherBattleRooms?: Prisma.BattleRoomUncheckedCreateNestedManyWithoutTeacherInput
   battleParticipants?: Prisma.BattleParticipantUncheckedCreateNestedManyWithoutStudentInput
+  battleInvitations?: Prisma.BattleInvitationUncheckedCreateNestedManyWithoutStudentInput
   battleAnswers?: Prisma.BattleAnswerUncheckedCreateNestedManyWithoutStudentInput
   placementResults?: Prisma.PlacementResultUncheckedCreateNestedManyWithoutStudentInput
   coursesTeaching?: Prisma.CourseUncheckedCreateNestedManyWithoutTeacherInput
@@ -1478,6 +1509,7 @@ export type UserUpdateWithoutAuthenticatorInput = {
   sentMessages?: Prisma.MessageUpdateManyWithoutSenderNestedInput
   teacherBattleRooms?: Prisma.BattleRoomUpdateManyWithoutTeacherNestedInput
   battleParticipants?: Prisma.BattleParticipantUpdateManyWithoutStudentNestedInput
+  battleInvitations?: Prisma.BattleInvitationUpdateManyWithoutStudentNestedInput
   battleAnswers?: Prisma.BattleAnswerUpdateManyWithoutStudentNestedInput
   placementResults?: Prisma.PlacementResultUpdateManyWithoutStudentNestedInput
   coursesTeaching?: Prisma.CourseUpdateManyWithoutTeacherNestedInput
@@ -1514,6 +1546,7 @@ export type UserUncheckedUpdateWithoutAuthenticatorInput = {
   sentMessages?: Prisma.MessageUncheckedUpdateManyWithoutSenderNestedInput
   teacherBattleRooms?: Prisma.BattleRoomUncheckedUpdateManyWithoutTeacherNestedInput
   battleParticipants?: Prisma.BattleParticipantUncheckedUpdateManyWithoutStudentNestedInput
+  battleInvitations?: Prisma.BattleInvitationUncheckedUpdateManyWithoutStudentNestedInput
   battleAnswers?: Prisma.BattleAnswerUncheckedUpdateManyWithoutStudentNestedInput
   placementResults?: Prisma.PlacementResultUncheckedUpdateManyWithoutStudentNestedInput
   coursesTeaching?: Prisma.CourseUncheckedUpdateManyWithoutTeacherNestedInput
@@ -1551,6 +1584,7 @@ export type UserCreateWithoutCoursesTeachingInput = {
   sentMessages?: Prisma.MessageCreateNestedManyWithoutSenderInput
   teacherBattleRooms?: Prisma.BattleRoomCreateNestedManyWithoutTeacherInput
   battleParticipants?: Prisma.BattleParticipantCreateNestedManyWithoutStudentInput
+  battleInvitations?: Prisma.BattleInvitationCreateNestedManyWithoutStudentInput
   battleAnswers?: Prisma.BattleAnswerCreateNestedManyWithoutStudentInput
   placementResults?: Prisma.PlacementResultCreateNestedManyWithoutStudentInput
   enrollments?: Prisma.EnrollmentCreateNestedManyWithoutStudentInput
@@ -1587,6 +1621,7 @@ export type UserUncheckedCreateWithoutCoursesTeachingInput = {
   sentMessages?: Prisma.MessageUncheckedCreateNestedManyWithoutSenderInput
   teacherBattleRooms?: Prisma.BattleRoomUncheckedCreateNestedManyWithoutTeacherInput
   battleParticipants?: Prisma.BattleParticipantUncheckedCreateNestedManyWithoutStudentInput
+  battleInvitations?: Prisma.BattleInvitationUncheckedCreateNestedManyWithoutStudentInput
   battleAnswers?: Prisma.BattleAnswerUncheckedCreateNestedManyWithoutStudentInput
   placementResults?: Prisma.PlacementResultUncheckedCreateNestedManyWithoutStudentInput
   enrollments?: Prisma.EnrollmentUncheckedCreateNestedManyWithoutStudentInput
@@ -1639,6 +1674,7 @@ export type UserUpdateWithoutCoursesTeachingInput = {
   sentMessages?: Prisma.MessageUpdateManyWithoutSenderNestedInput
   teacherBattleRooms?: Prisma.BattleRoomUpdateManyWithoutTeacherNestedInput
   battleParticipants?: Prisma.BattleParticipantUpdateManyWithoutStudentNestedInput
+  battleInvitations?: Prisma.BattleInvitationUpdateManyWithoutStudentNestedInput
   battleAnswers?: Prisma.BattleAnswerUpdateManyWithoutStudentNestedInput
   placementResults?: Prisma.PlacementResultUpdateManyWithoutStudentNestedInput
   enrollments?: Prisma.EnrollmentUpdateManyWithoutStudentNestedInput
@@ -1675,6 +1711,7 @@ export type UserUncheckedUpdateWithoutCoursesTeachingInput = {
   sentMessages?: Prisma.MessageUncheckedUpdateManyWithoutSenderNestedInput
   teacherBattleRooms?: Prisma.BattleRoomUncheckedUpdateManyWithoutTeacherNestedInput
   battleParticipants?: Prisma.BattleParticipantUncheckedUpdateManyWithoutStudentNestedInput
+  battleInvitations?: Prisma.BattleInvitationUncheckedUpdateManyWithoutStudentNestedInput
   battleAnswers?: Prisma.BattleAnswerUncheckedUpdateManyWithoutStudentNestedInput
   placementResults?: Prisma.PlacementResultUncheckedUpdateManyWithoutStudentNestedInput
   enrollments?: Prisma.EnrollmentUncheckedUpdateManyWithoutStudentNestedInput
@@ -1711,6 +1748,7 @@ export type UserCreateWithoutProgressInput = {
   sentMessages?: Prisma.MessageCreateNestedManyWithoutSenderInput
   teacherBattleRooms?: Prisma.BattleRoomCreateNestedManyWithoutTeacherInput
   battleParticipants?: Prisma.BattleParticipantCreateNestedManyWithoutStudentInput
+  battleInvitations?: Prisma.BattleInvitationCreateNestedManyWithoutStudentInput
   battleAnswers?: Prisma.BattleAnswerCreateNestedManyWithoutStudentInput
   placementResults?: Prisma.PlacementResultCreateNestedManyWithoutStudentInput
   coursesTeaching?: Prisma.CourseCreateNestedManyWithoutTeacherInput
@@ -1747,6 +1785,7 @@ export type UserUncheckedCreateWithoutProgressInput = {
   sentMessages?: Prisma.MessageUncheckedCreateNestedManyWithoutSenderInput
   teacherBattleRooms?: Prisma.BattleRoomUncheckedCreateNestedManyWithoutTeacherInput
   battleParticipants?: Prisma.BattleParticipantUncheckedCreateNestedManyWithoutStudentInput
+  battleInvitations?: Prisma.BattleInvitationUncheckedCreateNestedManyWithoutStudentInput
   battleAnswers?: Prisma.BattleAnswerUncheckedCreateNestedManyWithoutStudentInput
   placementResults?: Prisma.PlacementResultUncheckedCreateNestedManyWithoutStudentInput
   coursesTeaching?: Prisma.CourseUncheckedCreateNestedManyWithoutTeacherInput
@@ -1799,6 +1838,7 @@ export type UserUpdateWithoutProgressInput = {
   sentMessages?: Prisma.MessageUpdateManyWithoutSenderNestedInput
   teacherBattleRooms?: Prisma.BattleRoomUpdateManyWithoutTeacherNestedInput
   battleParticipants?: Prisma.BattleParticipantUpdateManyWithoutStudentNestedInput
+  battleInvitations?: Prisma.BattleInvitationUpdateManyWithoutStudentNestedInput
   battleAnswers?: Prisma.BattleAnswerUpdateManyWithoutStudentNestedInput
   placementResults?: Prisma.PlacementResultUpdateManyWithoutStudentNestedInput
   coursesTeaching?: Prisma.CourseUpdateManyWithoutTeacherNestedInput
@@ -1835,6 +1875,7 @@ export type UserUncheckedUpdateWithoutProgressInput = {
   sentMessages?: Prisma.MessageUncheckedUpdateManyWithoutSenderNestedInput
   teacherBattleRooms?: Prisma.BattleRoomUncheckedUpdateManyWithoutTeacherNestedInput
   battleParticipants?: Prisma.BattleParticipantUncheckedUpdateManyWithoutStudentNestedInput
+  battleInvitations?: Prisma.BattleInvitationUncheckedUpdateManyWithoutStudentNestedInput
   battleAnswers?: Prisma.BattleAnswerUncheckedUpdateManyWithoutStudentNestedInput
   placementResults?: Prisma.PlacementResultUncheckedUpdateManyWithoutStudentNestedInput
   coursesTeaching?: Prisma.CourseUncheckedUpdateManyWithoutTeacherNestedInput
@@ -1871,6 +1912,7 @@ export type UserCreateWithoutEnrollmentsInput = {
   sentMessages?: Prisma.MessageCreateNestedManyWithoutSenderInput
   teacherBattleRooms?: Prisma.BattleRoomCreateNestedManyWithoutTeacherInput
   battleParticipants?: Prisma.BattleParticipantCreateNestedManyWithoutStudentInput
+  battleInvitations?: Prisma.BattleInvitationCreateNestedManyWithoutStudentInput
   battleAnswers?: Prisma.BattleAnswerCreateNestedManyWithoutStudentInput
   placementResults?: Prisma.PlacementResultCreateNestedManyWithoutStudentInput
   coursesTeaching?: Prisma.CourseCreateNestedManyWithoutTeacherInput
@@ -1907,6 +1949,7 @@ export type UserUncheckedCreateWithoutEnrollmentsInput = {
   sentMessages?: Prisma.MessageUncheckedCreateNestedManyWithoutSenderInput
   teacherBattleRooms?: Prisma.BattleRoomUncheckedCreateNestedManyWithoutTeacherInput
   battleParticipants?: Prisma.BattleParticipantUncheckedCreateNestedManyWithoutStudentInput
+  battleInvitations?: Prisma.BattleInvitationUncheckedCreateNestedManyWithoutStudentInput
   battleAnswers?: Prisma.BattleAnswerUncheckedCreateNestedManyWithoutStudentInput
   placementResults?: Prisma.PlacementResultUncheckedCreateNestedManyWithoutStudentInput
   coursesTeaching?: Prisma.CourseUncheckedCreateNestedManyWithoutTeacherInput
@@ -1959,6 +2002,7 @@ export type UserUpdateWithoutEnrollmentsInput = {
   sentMessages?: Prisma.MessageUpdateManyWithoutSenderNestedInput
   teacherBattleRooms?: Prisma.BattleRoomUpdateManyWithoutTeacherNestedInput
   battleParticipants?: Prisma.BattleParticipantUpdateManyWithoutStudentNestedInput
+  battleInvitations?: Prisma.BattleInvitationUpdateManyWithoutStudentNestedInput
   battleAnswers?: Prisma.BattleAnswerUpdateManyWithoutStudentNestedInput
   placementResults?: Prisma.PlacementResultUpdateManyWithoutStudentNestedInput
   coursesTeaching?: Prisma.CourseUpdateManyWithoutTeacherNestedInput
@@ -1995,6 +2039,7 @@ export type UserUncheckedUpdateWithoutEnrollmentsInput = {
   sentMessages?: Prisma.MessageUncheckedUpdateManyWithoutSenderNestedInput
   teacherBattleRooms?: Prisma.BattleRoomUncheckedUpdateManyWithoutTeacherNestedInput
   battleParticipants?: Prisma.BattleParticipantUncheckedUpdateManyWithoutStudentNestedInput
+  battleInvitations?: Prisma.BattleInvitationUncheckedUpdateManyWithoutStudentNestedInput
   battleAnswers?: Prisma.BattleAnswerUncheckedUpdateManyWithoutStudentNestedInput
   placementResults?: Prisma.PlacementResultUncheckedUpdateManyWithoutStudentNestedInput
   coursesTeaching?: Prisma.CourseUncheckedUpdateManyWithoutTeacherNestedInput
@@ -2031,6 +2076,7 @@ export type UserCreateWithoutLeaderboardInput = {
   sentMessages?: Prisma.MessageCreateNestedManyWithoutSenderInput
   teacherBattleRooms?: Prisma.BattleRoomCreateNestedManyWithoutTeacherInput
   battleParticipants?: Prisma.BattleParticipantCreateNestedManyWithoutStudentInput
+  battleInvitations?: Prisma.BattleInvitationCreateNestedManyWithoutStudentInput
   battleAnswers?: Prisma.BattleAnswerCreateNestedManyWithoutStudentInput
   placementResults?: Prisma.PlacementResultCreateNestedManyWithoutStudentInput
   coursesTeaching?: Prisma.CourseCreateNestedManyWithoutTeacherInput
@@ -2067,6 +2113,7 @@ export type UserUncheckedCreateWithoutLeaderboardInput = {
   sentMessages?: Prisma.MessageUncheckedCreateNestedManyWithoutSenderInput
   teacherBattleRooms?: Prisma.BattleRoomUncheckedCreateNestedManyWithoutTeacherInput
   battleParticipants?: Prisma.BattleParticipantUncheckedCreateNestedManyWithoutStudentInput
+  battleInvitations?: Prisma.BattleInvitationUncheckedCreateNestedManyWithoutStudentInput
   battleAnswers?: Prisma.BattleAnswerUncheckedCreateNestedManyWithoutStudentInput
   placementResults?: Prisma.PlacementResultUncheckedCreateNestedManyWithoutStudentInput
   coursesTeaching?: Prisma.CourseUncheckedCreateNestedManyWithoutTeacherInput
@@ -2119,6 +2166,7 @@ export type UserUpdateWithoutLeaderboardInput = {
   sentMessages?: Prisma.MessageUpdateManyWithoutSenderNestedInput
   teacherBattleRooms?: Prisma.BattleRoomUpdateManyWithoutTeacherNestedInput
   battleParticipants?: Prisma.BattleParticipantUpdateManyWithoutStudentNestedInput
+  battleInvitations?: Prisma.BattleInvitationUpdateManyWithoutStudentNestedInput
   battleAnswers?: Prisma.BattleAnswerUpdateManyWithoutStudentNestedInput
   placementResults?: Prisma.PlacementResultUpdateManyWithoutStudentNestedInput
   coursesTeaching?: Prisma.CourseUpdateManyWithoutTeacherNestedInput
@@ -2155,6 +2203,7 @@ export type UserUncheckedUpdateWithoutLeaderboardInput = {
   sentMessages?: Prisma.MessageUncheckedUpdateManyWithoutSenderNestedInput
   teacherBattleRooms?: Prisma.BattleRoomUncheckedUpdateManyWithoutTeacherNestedInput
   battleParticipants?: Prisma.BattleParticipantUncheckedUpdateManyWithoutStudentNestedInput
+  battleInvitations?: Prisma.BattleInvitationUncheckedUpdateManyWithoutStudentNestedInput
   battleAnswers?: Prisma.BattleAnswerUncheckedUpdateManyWithoutStudentNestedInput
   placementResults?: Prisma.PlacementResultUncheckedUpdateManyWithoutStudentNestedInput
   coursesTeaching?: Prisma.CourseUncheckedUpdateManyWithoutTeacherNestedInput
@@ -2191,6 +2240,7 @@ export type UserCreateWithoutPlacementResultsInput = {
   sentMessages?: Prisma.MessageCreateNestedManyWithoutSenderInput
   teacherBattleRooms?: Prisma.BattleRoomCreateNestedManyWithoutTeacherInput
   battleParticipants?: Prisma.BattleParticipantCreateNestedManyWithoutStudentInput
+  battleInvitations?: Prisma.BattleInvitationCreateNestedManyWithoutStudentInput
   battleAnswers?: Prisma.BattleAnswerCreateNestedManyWithoutStudentInput
   coursesTeaching?: Prisma.CourseCreateNestedManyWithoutTeacherInput
   enrollments?: Prisma.EnrollmentCreateNestedManyWithoutStudentInput
@@ -2227,6 +2277,7 @@ export type UserUncheckedCreateWithoutPlacementResultsInput = {
   sentMessages?: Prisma.MessageUncheckedCreateNestedManyWithoutSenderInput
   teacherBattleRooms?: Prisma.BattleRoomUncheckedCreateNestedManyWithoutTeacherInput
   battleParticipants?: Prisma.BattleParticipantUncheckedCreateNestedManyWithoutStudentInput
+  battleInvitations?: Prisma.BattleInvitationUncheckedCreateNestedManyWithoutStudentInput
   battleAnswers?: Prisma.BattleAnswerUncheckedCreateNestedManyWithoutStudentInput
   coursesTeaching?: Prisma.CourseUncheckedCreateNestedManyWithoutTeacherInput
   enrollments?: Prisma.EnrollmentUncheckedCreateNestedManyWithoutStudentInput
@@ -2279,6 +2330,7 @@ export type UserUpdateWithoutPlacementResultsInput = {
   sentMessages?: Prisma.MessageUpdateManyWithoutSenderNestedInput
   teacherBattleRooms?: Prisma.BattleRoomUpdateManyWithoutTeacherNestedInput
   battleParticipants?: Prisma.BattleParticipantUpdateManyWithoutStudentNestedInput
+  battleInvitations?: Prisma.BattleInvitationUpdateManyWithoutStudentNestedInput
   battleAnswers?: Prisma.BattleAnswerUpdateManyWithoutStudentNestedInput
   coursesTeaching?: Prisma.CourseUpdateManyWithoutTeacherNestedInput
   enrollments?: Prisma.EnrollmentUpdateManyWithoutStudentNestedInput
@@ -2315,6 +2367,7 @@ export type UserUncheckedUpdateWithoutPlacementResultsInput = {
   sentMessages?: Prisma.MessageUncheckedUpdateManyWithoutSenderNestedInput
   teacherBattleRooms?: Prisma.BattleRoomUncheckedUpdateManyWithoutTeacherNestedInput
   battleParticipants?: Prisma.BattleParticipantUncheckedUpdateManyWithoutStudentNestedInput
+  battleInvitations?: Prisma.BattleInvitationUncheckedUpdateManyWithoutStudentNestedInput
   battleAnswers?: Prisma.BattleAnswerUncheckedUpdateManyWithoutStudentNestedInput
   coursesTeaching?: Prisma.CourseUncheckedUpdateManyWithoutTeacherNestedInput
   enrollments?: Prisma.EnrollmentUncheckedUpdateManyWithoutStudentNestedInput
@@ -2350,6 +2403,7 @@ export type UserCreateWithoutTeacherBattleRoomsInput = {
   adminConversations?: Prisma.ConversationCreateNestedManyWithoutAdminInput
   sentMessages?: Prisma.MessageCreateNestedManyWithoutSenderInput
   battleParticipants?: Prisma.BattleParticipantCreateNestedManyWithoutStudentInput
+  battleInvitations?: Prisma.BattleInvitationCreateNestedManyWithoutStudentInput
   battleAnswers?: Prisma.BattleAnswerCreateNestedManyWithoutStudentInput
   placementResults?: Prisma.PlacementResultCreateNestedManyWithoutStudentInput
   coursesTeaching?: Prisma.CourseCreateNestedManyWithoutTeacherInput
@@ -2386,6 +2440,7 @@ export type UserUncheckedCreateWithoutTeacherBattleRoomsInput = {
   adminConversations?: Prisma.ConversationUncheckedCreateNestedManyWithoutAdminInput
   sentMessages?: Prisma.MessageUncheckedCreateNestedManyWithoutSenderInput
   battleParticipants?: Prisma.BattleParticipantUncheckedCreateNestedManyWithoutStudentInput
+  battleInvitations?: Prisma.BattleInvitationUncheckedCreateNestedManyWithoutStudentInput
   battleAnswers?: Prisma.BattleAnswerUncheckedCreateNestedManyWithoutStudentInput
   placementResults?: Prisma.PlacementResultUncheckedCreateNestedManyWithoutStudentInput
   coursesTeaching?: Prisma.CourseUncheckedCreateNestedManyWithoutTeacherInput
@@ -2438,6 +2493,7 @@ export type UserUpdateWithoutTeacherBattleRoomsInput = {
   adminConversations?: Prisma.ConversationUpdateManyWithoutAdminNestedInput
   sentMessages?: Prisma.MessageUpdateManyWithoutSenderNestedInput
   battleParticipants?: Prisma.BattleParticipantUpdateManyWithoutStudentNestedInput
+  battleInvitations?: Prisma.BattleInvitationUpdateManyWithoutStudentNestedInput
   battleAnswers?: Prisma.BattleAnswerUpdateManyWithoutStudentNestedInput
   placementResults?: Prisma.PlacementResultUpdateManyWithoutStudentNestedInput
   coursesTeaching?: Prisma.CourseUpdateManyWithoutTeacherNestedInput
@@ -2474,6 +2530,7 @@ export type UserUncheckedUpdateWithoutTeacherBattleRoomsInput = {
   adminConversations?: Prisma.ConversationUncheckedUpdateManyWithoutAdminNestedInput
   sentMessages?: Prisma.MessageUncheckedUpdateManyWithoutSenderNestedInput
   battleParticipants?: Prisma.BattleParticipantUncheckedUpdateManyWithoutStudentNestedInput
+  battleInvitations?: Prisma.BattleInvitationUncheckedUpdateManyWithoutStudentNestedInput
   battleAnswers?: Prisma.BattleAnswerUncheckedUpdateManyWithoutStudentNestedInput
   placementResults?: Prisma.PlacementResultUncheckedUpdateManyWithoutStudentNestedInput
   coursesTeaching?: Prisma.CourseUncheckedUpdateManyWithoutTeacherNestedInput
@@ -2510,6 +2567,7 @@ export type UserCreateWithoutBattleParticipantsInput = {
   adminConversations?: Prisma.ConversationCreateNestedManyWithoutAdminInput
   sentMessages?: Prisma.MessageCreateNestedManyWithoutSenderInput
   teacherBattleRooms?: Prisma.BattleRoomCreateNestedManyWithoutTeacherInput
+  battleInvitations?: Prisma.BattleInvitationCreateNestedManyWithoutStudentInput
   battleAnswers?: Prisma.BattleAnswerCreateNestedManyWithoutStudentInput
   placementResults?: Prisma.PlacementResultCreateNestedManyWithoutStudentInput
   coursesTeaching?: Prisma.CourseCreateNestedManyWithoutTeacherInput
@@ -2546,6 +2604,7 @@ export type UserUncheckedCreateWithoutBattleParticipantsInput = {
   adminConversations?: Prisma.ConversationUncheckedCreateNestedManyWithoutAdminInput
   sentMessages?: Prisma.MessageUncheckedCreateNestedManyWithoutSenderInput
   teacherBattleRooms?: Prisma.BattleRoomUncheckedCreateNestedManyWithoutTeacherInput
+  battleInvitations?: Prisma.BattleInvitationUncheckedCreateNestedManyWithoutStudentInput
   battleAnswers?: Prisma.BattleAnswerUncheckedCreateNestedManyWithoutStudentInput
   placementResults?: Prisma.PlacementResultUncheckedCreateNestedManyWithoutStudentInput
   coursesTeaching?: Prisma.CourseUncheckedCreateNestedManyWithoutTeacherInput
@@ -2598,6 +2657,7 @@ export type UserUpdateWithoutBattleParticipantsInput = {
   adminConversations?: Prisma.ConversationUpdateManyWithoutAdminNestedInput
   sentMessages?: Prisma.MessageUpdateManyWithoutSenderNestedInput
   teacherBattleRooms?: Prisma.BattleRoomUpdateManyWithoutTeacherNestedInput
+  battleInvitations?: Prisma.BattleInvitationUpdateManyWithoutStudentNestedInput
   battleAnswers?: Prisma.BattleAnswerUpdateManyWithoutStudentNestedInput
   placementResults?: Prisma.PlacementResultUpdateManyWithoutStudentNestedInput
   coursesTeaching?: Prisma.CourseUpdateManyWithoutTeacherNestedInput
@@ -2634,6 +2694,7 @@ export type UserUncheckedUpdateWithoutBattleParticipantsInput = {
   adminConversations?: Prisma.ConversationUncheckedUpdateManyWithoutAdminNestedInput
   sentMessages?: Prisma.MessageUncheckedUpdateManyWithoutSenderNestedInput
   teacherBattleRooms?: Prisma.BattleRoomUncheckedUpdateManyWithoutTeacherNestedInput
+  battleInvitations?: Prisma.BattleInvitationUncheckedUpdateManyWithoutStudentNestedInput
   battleAnswers?: Prisma.BattleAnswerUncheckedUpdateManyWithoutStudentNestedInput
   placementResults?: Prisma.PlacementResultUncheckedUpdateManyWithoutStudentNestedInput
   coursesTeaching?: Prisma.CourseUncheckedUpdateManyWithoutTeacherNestedInput
@@ -2671,6 +2732,7 @@ export type UserCreateWithoutBattleAnswersInput = {
   sentMessages?: Prisma.MessageCreateNestedManyWithoutSenderInput
   teacherBattleRooms?: Prisma.BattleRoomCreateNestedManyWithoutTeacherInput
   battleParticipants?: Prisma.BattleParticipantCreateNestedManyWithoutStudentInput
+  battleInvitations?: Prisma.BattleInvitationCreateNestedManyWithoutStudentInput
   placementResults?: Prisma.PlacementResultCreateNestedManyWithoutStudentInput
   coursesTeaching?: Prisma.CourseCreateNestedManyWithoutTeacherInput
   enrollments?: Prisma.EnrollmentCreateNestedManyWithoutStudentInput
@@ -2707,6 +2769,7 @@ export type UserUncheckedCreateWithoutBattleAnswersInput = {
   sentMessages?: Prisma.MessageUncheckedCreateNestedManyWithoutSenderInput
   teacherBattleRooms?: Prisma.BattleRoomUncheckedCreateNestedManyWithoutTeacherInput
   battleParticipants?: Prisma.BattleParticipantUncheckedCreateNestedManyWithoutStudentInput
+  battleInvitations?: Prisma.BattleInvitationUncheckedCreateNestedManyWithoutStudentInput
   placementResults?: Prisma.PlacementResultUncheckedCreateNestedManyWithoutStudentInput
   coursesTeaching?: Prisma.CourseUncheckedCreateNestedManyWithoutTeacherInput
   enrollments?: Prisma.EnrollmentUncheckedCreateNestedManyWithoutStudentInput
@@ -2759,6 +2822,7 @@ export type UserUpdateWithoutBattleAnswersInput = {
   sentMessages?: Prisma.MessageUpdateManyWithoutSenderNestedInput
   teacherBattleRooms?: Prisma.BattleRoomUpdateManyWithoutTeacherNestedInput
   battleParticipants?: Prisma.BattleParticipantUpdateManyWithoutStudentNestedInput
+  battleInvitations?: Prisma.BattleInvitationUpdateManyWithoutStudentNestedInput
   placementResults?: Prisma.PlacementResultUpdateManyWithoutStudentNestedInput
   coursesTeaching?: Prisma.CourseUpdateManyWithoutTeacherNestedInput
   enrollments?: Prisma.EnrollmentUpdateManyWithoutStudentNestedInput
@@ -2795,6 +2859,171 @@ export type UserUncheckedUpdateWithoutBattleAnswersInput = {
   sentMessages?: Prisma.MessageUncheckedUpdateManyWithoutSenderNestedInput
   teacherBattleRooms?: Prisma.BattleRoomUncheckedUpdateManyWithoutTeacherNestedInput
   battleParticipants?: Prisma.BattleParticipantUncheckedUpdateManyWithoutStudentNestedInput
+  battleInvitations?: Prisma.BattleInvitationUncheckedUpdateManyWithoutStudentNestedInput
+  placementResults?: Prisma.PlacementResultUncheckedUpdateManyWithoutStudentNestedInput
+  coursesTeaching?: Prisma.CourseUncheckedUpdateManyWithoutTeacherNestedInput
+  enrollments?: Prisma.EnrollmentUncheckedUpdateManyWithoutStudentNestedInput
+  progress?: Prisma.ProgressUncheckedUpdateManyWithoutStudentNestedInput
+  leaderboard?: Prisma.LeaderboardUncheckedUpdateManyWithoutStudentNestedInput
+}
+
+export type UserCreateWithoutBattleInvitationsInput = {
+  id?: string
+  name?: string | null
+  email: string
+  phone?: string | null
+  school?: string | null
+  emailVerified?: Date | string | null
+  image?: string | null
+  password?: string | null
+  role?: $Enums.UserRole
+  level?: $Enums.StudentLevel
+  xp?: number
+  currentLevel?: number
+  streak?: number
+  coins?: number
+  otp?: string | null
+  otp_expires_at?: Date | string | null
+  is_otp_verified?: boolean | null
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  accounts?: Prisma.AccountCreateNestedManyWithoutUserInput
+  sessions?: Prisma.SessionCreateNestedManyWithoutUserInput
+  Authenticator?: Prisma.AuthenticatorCreateNestedManyWithoutUserInput
+  studentConversations?: Prisma.ConversationCreateNestedManyWithoutStudentInput
+  teacherConversations?: Prisma.ConversationCreateNestedManyWithoutTeacherInput
+  adminConversations?: Prisma.ConversationCreateNestedManyWithoutAdminInput
+  sentMessages?: Prisma.MessageCreateNestedManyWithoutSenderInput
+  teacherBattleRooms?: Prisma.BattleRoomCreateNestedManyWithoutTeacherInput
+  battleParticipants?: Prisma.BattleParticipantCreateNestedManyWithoutStudentInput
+  battleAnswers?: Prisma.BattleAnswerCreateNestedManyWithoutStudentInput
+  placementResults?: Prisma.PlacementResultCreateNestedManyWithoutStudentInput
+  coursesTeaching?: Prisma.CourseCreateNestedManyWithoutTeacherInput
+  enrollments?: Prisma.EnrollmentCreateNestedManyWithoutStudentInput
+  progress?: Prisma.ProgressCreateNestedManyWithoutStudentInput
+  leaderboard?: Prisma.LeaderboardCreateNestedManyWithoutStudentInput
+}
+
+export type UserUncheckedCreateWithoutBattleInvitationsInput = {
+  id?: string
+  name?: string | null
+  email: string
+  phone?: string | null
+  school?: string | null
+  emailVerified?: Date | string | null
+  image?: string | null
+  password?: string | null
+  role?: $Enums.UserRole
+  level?: $Enums.StudentLevel
+  xp?: number
+  currentLevel?: number
+  streak?: number
+  coins?: number
+  otp?: string | null
+  otp_expires_at?: Date | string | null
+  is_otp_verified?: boolean | null
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  accounts?: Prisma.AccountUncheckedCreateNestedManyWithoutUserInput
+  sessions?: Prisma.SessionUncheckedCreateNestedManyWithoutUserInput
+  Authenticator?: Prisma.AuthenticatorUncheckedCreateNestedManyWithoutUserInput
+  studentConversations?: Prisma.ConversationUncheckedCreateNestedManyWithoutStudentInput
+  teacherConversations?: Prisma.ConversationUncheckedCreateNestedManyWithoutTeacherInput
+  adminConversations?: Prisma.ConversationUncheckedCreateNestedManyWithoutAdminInput
+  sentMessages?: Prisma.MessageUncheckedCreateNestedManyWithoutSenderInput
+  teacherBattleRooms?: Prisma.BattleRoomUncheckedCreateNestedManyWithoutTeacherInput
+  battleParticipants?: Prisma.BattleParticipantUncheckedCreateNestedManyWithoutStudentInput
+  battleAnswers?: Prisma.BattleAnswerUncheckedCreateNestedManyWithoutStudentInput
+  placementResults?: Prisma.PlacementResultUncheckedCreateNestedManyWithoutStudentInput
+  coursesTeaching?: Prisma.CourseUncheckedCreateNestedManyWithoutTeacherInput
+  enrollments?: Prisma.EnrollmentUncheckedCreateNestedManyWithoutStudentInput
+  progress?: Prisma.ProgressUncheckedCreateNestedManyWithoutStudentInput
+  leaderboard?: Prisma.LeaderboardUncheckedCreateNestedManyWithoutStudentInput
+}
+
+export type UserCreateOrConnectWithoutBattleInvitationsInput = {
+  where: Prisma.UserWhereUniqueInput
+  create: Prisma.XOR<Prisma.UserCreateWithoutBattleInvitationsInput, Prisma.UserUncheckedCreateWithoutBattleInvitationsInput>
+}
+
+export type UserUpsertWithoutBattleInvitationsInput = {
+  update: Prisma.XOR<Prisma.UserUpdateWithoutBattleInvitationsInput, Prisma.UserUncheckedUpdateWithoutBattleInvitationsInput>
+  create: Prisma.XOR<Prisma.UserCreateWithoutBattleInvitationsInput, Prisma.UserUncheckedCreateWithoutBattleInvitationsInput>
+  where?: Prisma.UserWhereInput
+}
+
+export type UserUpdateToOneWithWhereWithoutBattleInvitationsInput = {
+  where?: Prisma.UserWhereInput
+  data: Prisma.XOR<Prisma.UserUpdateWithoutBattleInvitationsInput, Prisma.UserUncheckedUpdateWithoutBattleInvitationsInput>
+}
+
+export type UserUpdateWithoutBattleInvitationsInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  name?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  email?: Prisma.StringFieldUpdateOperationsInput | string
+  phone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  school?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  emailVerified?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  image?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  password?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  role?: Prisma.EnumUserRoleFieldUpdateOperationsInput | $Enums.UserRole
+  level?: Prisma.EnumStudentLevelFieldUpdateOperationsInput | $Enums.StudentLevel
+  xp?: Prisma.IntFieldUpdateOperationsInput | number
+  currentLevel?: Prisma.IntFieldUpdateOperationsInput | number
+  streak?: Prisma.IntFieldUpdateOperationsInput | number
+  coins?: Prisma.IntFieldUpdateOperationsInput | number
+  otp?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  otp_expires_at?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  is_otp_verified?: Prisma.NullableBoolFieldUpdateOperationsInput | boolean | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  accounts?: Prisma.AccountUpdateManyWithoutUserNestedInput
+  sessions?: Prisma.SessionUpdateManyWithoutUserNestedInput
+  Authenticator?: Prisma.AuthenticatorUpdateManyWithoutUserNestedInput
+  studentConversations?: Prisma.ConversationUpdateManyWithoutStudentNestedInput
+  teacherConversations?: Prisma.ConversationUpdateManyWithoutTeacherNestedInput
+  adminConversations?: Prisma.ConversationUpdateManyWithoutAdminNestedInput
+  sentMessages?: Prisma.MessageUpdateManyWithoutSenderNestedInput
+  teacherBattleRooms?: Prisma.BattleRoomUpdateManyWithoutTeacherNestedInput
+  battleParticipants?: Prisma.BattleParticipantUpdateManyWithoutStudentNestedInput
+  battleAnswers?: Prisma.BattleAnswerUpdateManyWithoutStudentNestedInput
+  placementResults?: Prisma.PlacementResultUpdateManyWithoutStudentNestedInput
+  coursesTeaching?: Prisma.CourseUpdateManyWithoutTeacherNestedInput
+  enrollments?: Prisma.EnrollmentUpdateManyWithoutStudentNestedInput
+  progress?: Prisma.ProgressUpdateManyWithoutStudentNestedInput
+  leaderboard?: Prisma.LeaderboardUpdateManyWithoutStudentNestedInput
+}
+
+export type UserUncheckedUpdateWithoutBattleInvitationsInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  name?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  email?: Prisma.StringFieldUpdateOperationsInput | string
+  phone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  school?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  emailVerified?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  image?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  password?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  role?: Prisma.EnumUserRoleFieldUpdateOperationsInput | $Enums.UserRole
+  level?: Prisma.EnumStudentLevelFieldUpdateOperationsInput | $Enums.StudentLevel
+  xp?: Prisma.IntFieldUpdateOperationsInput | number
+  currentLevel?: Prisma.IntFieldUpdateOperationsInput | number
+  streak?: Prisma.IntFieldUpdateOperationsInput | number
+  coins?: Prisma.IntFieldUpdateOperationsInput | number
+  otp?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  otp_expires_at?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  is_otp_verified?: Prisma.NullableBoolFieldUpdateOperationsInput | boolean | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  accounts?: Prisma.AccountUncheckedUpdateManyWithoutUserNestedInput
+  sessions?: Prisma.SessionUncheckedUpdateManyWithoutUserNestedInput
+  Authenticator?: Prisma.AuthenticatorUncheckedUpdateManyWithoutUserNestedInput
+  studentConversations?: Prisma.ConversationUncheckedUpdateManyWithoutStudentNestedInput
+  teacherConversations?: Prisma.ConversationUncheckedUpdateManyWithoutTeacherNestedInput
+  adminConversations?: Prisma.ConversationUncheckedUpdateManyWithoutAdminNestedInput
+  sentMessages?: Prisma.MessageUncheckedUpdateManyWithoutSenderNestedInput
+  teacherBattleRooms?: Prisma.BattleRoomUncheckedUpdateManyWithoutTeacherNestedInput
+  battleParticipants?: Prisma.BattleParticipantUncheckedUpdateManyWithoutStudentNestedInput
+  battleAnswers?: Prisma.BattleAnswerUncheckedUpdateManyWithoutStudentNestedInput
   placementResults?: Prisma.PlacementResultUncheckedUpdateManyWithoutStudentNestedInput
   coursesTeaching?: Prisma.CourseUncheckedUpdateManyWithoutTeacherNestedInput
   enrollments?: Prisma.EnrollmentUncheckedUpdateManyWithoutStudentNestedInput
@@ -2830,6 +3059,7 @@ export type UserCreateWithoutStudentConversationsInput = {
   sentMessages?: Prisma.MessageCreateNestedManyWithoutSenderInput
   teacherBattleRooms?: Prisma.BattleRoomCreateNestedManyWithoutTeacherInput
   battleParticipants?: Prisma.BattleParticipantCreateNestedManyWithoutStudentInput
+  battleInvitations?: Prisma.BattleInvitationCreateNestedManyWithoutStudentInput
   battleAnswers?: Prisma.BattleAnswerCreateNestedManyWithoutStudentInput
   placementResults?: Prisma.PlacementResultCreateNestedManyWithoutStudentInput
   coursesTeaching?: Prisma.CourseCreateNestedManyWithoutTeacherInput
@@ -2866,6 +3096,7 @@ export type UserUncheckedCreateWithoutStudentConversationsInput = {
   sentMessages?: Prisma.MessageUncheckedCreateNestedManyWithoutSenderInput
   teacherBattleRooms?: Prisma.BattleRoomUncheckedCreateNestedManyWithoutTeacherInput
   battleParticipants?: Prisma.BattleParticipantUncheckedCreateNestedManyWithoutStudentInput
+  battleInvitations?: Prisma.BattleInvitationUncheckedCreateNestedManyWithoutStudentInput
   battleAnswers?: Prisma.BattleAnswerUncheckedCreateNestedManyWithoutStudentInput
   placementResults?: Prisma.PlacementResultUncheckedCreateNestedManyWithoutStudentInput
   coursesTeaching?: Prisma.CourseUncheckedCreateNestedManyWithoutTeacherInput
@@ -2907,6 +3138,7 @@ export type UserCreateWithoutTeacherConversationsInput = {
   sentMessages?: Prisma.MessageCreateNestedManyWithoutSenderInput
   teacherBattleRooms?: Prisma.BattleRoomCreateNestedManyWithoutTeacherInput
   battleParticipants?: Prisma.BattleParticipantCreateNestedManyWithoutStudentInput
+  battleInvitations?: Prisma.BattleInvitationCreateNestedManyWithoutStudentInput
   battleAnswers?: Prisma.BattleAnswerCreateNestedManyWithoutStudentInput
   placementResults?: Prisma.PlacementResultCreateNestedManyWithoutStudentInput
   coursesTeaching?: Prisma.CourseCreateNestedManyWithoutTeacherInput
@@ -2943,6 +3175,7 @@ export type UserUncheckedCreateWithoutTeacherConversationsInput = {
   sentMessages?: Prisma.MessageUncheckedCreateNestedManyWithoutSenderInput
   teacherBattleRooms?: Prisma.BattleRoomUncheckedCreateNestedManyWithoutTeacherInput
   battleParticipants?: Prisma.BattleParticipantUncheckedCreateNestedManyWithoutStudentInput
+  battleInvitations?: Prisma.BattleInvitationUncheckedCreateNestedManyWithoutStudentInput
   battleAnswers?: Prisma.BattleAnswerUncheckedCreateNestedManyWithoutStudentInput
   placementResults?: Prisma.PlacementResultUncheckedCreateNestedManyWithoutStudentInput
   coursesTeaching?: Prisma.CourseUncheckedCreateNestedManyWithoutTeacherInput
@@ -2984,6 +3217,7 @@ export type UserCreateWithoutAdminConversationsInput = {
   sentMessages?: Prisma.MessageCreateNestedManyWithoutSenderInput
   teacherBattleRooms?: Prisma.BattleRoomCreateNestedManyWithoutTeacherInput
   battleParticipants?: Prisma.BattleParticipantCreateNestedManyWithoutStudentInput
+  battleInvitations?: Prisma.BattleInvitationCreateNestedManyWithoutStudentInput
   battleAnswers?: Prisma.BattleAnswerCreateNestedManyWithoutStudentInput
   placementResults?: Prisma.PlacementResultCreateNestedManyWithoutStudentInput
   coursesTeaching?: Prisma.CourseCreateNestedManyWithoutTeacherInput
@@ -3020,6 +3254,7 @@ export type UserUncheckedCreateWithoutAdminConversationsInput = {
   sentMessages?: Prisma.MessageUncheckedCreateNestedManyWithoutSenderInput
   teacherBattleRooms?: Prisma.BattleRoomUncheckedCreateNestedManyWithoutTeacherInput
   battleParticipants?: Prisma.BattleParticipantUncheckedCreateNestedManyWithoutStudentInput
+  battleInvitations?: Prisma.BattleInvitationUncheckedCreateNestedManyWithoutStudentInput
   battleAnswers?: Prisma.BattleAnswerUncheckedCreateNestedManyWithoutStudentInput
   placementResults?: Prisma.PlacementResultUncheckedCreateNestedManyWithoutStudentInput
   coursesTeaching?: Prisma.CourseUncheckedCreateNestedManyWithoutTeacherInput
@@ -3072,6 +3307,7 @@ export type UserUpdateWithoutStudentConversationsInput = {
   sentMessages?: Prisma.MessageUpdateManyWithoutSenderNestedInput
   teacherBattleRooms?: Prisma.BattleRoomUpdateManyWithoutTeacherNestedInput
   battleParticipants?: Prisma.BattleParticipantUpdateManyWithoutStudentNestedInput
+  battleInvitations?: Prisma.BattleInvitationUpdateManyWithoutStudentNestedInput
   battleAnswers?: Prisma.BattleAnswerUpdateManyWithoutStudentNestedInput
   placementResults?: Prisma.PlacementResultUpdateManyWithoutStudentNestedInput
   coursesTeaching?: Prisma.CourseUpdateManyWithoutTeacherNestedInput
@@ -3108,6 +3344,7 @@ export type UserUncheckedUpdateWithoutStudentConversationsInput = {
   sentMessages?: Prisma.MessageUncheckedUpdateManyWithoutSenderNestedInput
   teacherBattleRooms?: Prisma.BattleRoomUncheckedUpdateManyWithoutTeacherNestedInput
   battleParticipants?: Prisma.BattleParticipantUncheckedUpdateManyWithoutStudentNestedInput
+  battleInvitations?: Prisma.BattleInvitationUncheckedUpdateManyWithoutStudentNestedInput
   battleAnswers?: Prisma.BattleAnswerUncheckedUpdateManyWithoutStudentNestedInput
   placementResults?: Prisma.PlacementResultUncheckedUpdateManyWithoutStudentNestedInput
   coursesTeaching?: Prisma.CourseUncheckedUpdateManyWithoutTeacherNestedInput
@@ -3155,6 +3392,7 @@ export type UserUpdateWithoutTeacherConversationsInput = {
   sentMessages?: Prisma.MessageUpdateManyWithoutSenderNestedInput
   teacherBattleRooms?: Prisma.BattleRoomUpdateManyWithoutTeacherNestedInput
   battleParticipants?: Prisma.BattleParticipantUpdateManyWithoutStudentNestedInput
+  battleInvitations?: Prisma.BattleInvitationUpdateManyWithoutStudentNestedInput
   battleAnswers?: Prisma.BattleAnswerUpdateManyWithoutStudentNestedInput
   placementResults?: Prisma.PlacementResultUpdateManyWithoutStudentNestedInput
   coursesTeaching?: Prisma.CourseUpdateManyWithoutTeacherNestedInput
@@ -3191,6 +3429,7 @@ export type UserUncheckedUpdateWithoutTeacherConversationsInput = {
   sentMessages?: Prisma.MessageUncheckedUpdateManyWithoutSenderNestedInput
   teacherBattleRooms?: Prisma.BattleRoomUncheckedUpdateManyWithoutTeacherNestedInput
   battleParticipants?: Prisma.BattleParticipantUncheckedUpdateManyWithoutStudentNestedInput
+  battleInvitations?: Prisma.BattleInvitationUncheckedUpdateManyWithoutStudentNestedInput
   battleAnswers?: Prisma.BattleAnswerUncheckedUpdateManyWithoutStudentNestedInput
   placementResults?: Prisma.PlacementResultUncheckedUpdateManyWithoutStudentNestedInput
   coursesTeaching?: Prisma.CourseUncheckedUpdateManyWithoutTeacherNestedInput
@@ -3238,6 +3477,7 @@ export type UserUpdateWithoutAdminConversationsInput = {
   sentMessages?: Prisma.MessageUpdateManyWithoutSenderNestedInput
   teacherBattleRooms?: Prisma.BattleRoomUpdateManyWithoutTeacherNestedInput
   battleParticipants?: Prisma.BattleParticipantUpdateManyWithoutStudentNestedInput
+  battleInvitations?: Prisma.BattleInvitationUpdateManyWithoutStudentNestedInput
   battleAnswers?: Prisma.BattleAnswerUpdateManyWithoutStudentNestedInput
   placementResults?: Prisma.PlacementResultUpdateManyWithoutStudentNestedInput
   coursesTeaching?: Prisma.CourseUpdateManyWithoutTeacherNestedInput
@@ -3274,6 +3514,7 @@ export type UserUncheckedUpdateWithoutAdminConversationsInput = {
   sentMessages?: Prisma.MessageUncheckedUpdateManyWithoutSenderNestedInput
   teacherBattleRooms?: Prisma.BattleRoomUncheckedUpdateManyWithoutTeacherNestedInput
   battleParticipants?: Prisma.BattleParticipantUncheckedUpdateManyWithoutStudentNestedInput
+  battleInvitations?: Prisma.BattleInvitationUncheckedUpdateManyWithoutStudentNestedInput
   battleAnswers?: Prisma.BattleAnswerUncheckedUpdateManyWithoutStudentNestedInput
   placementResults?: Prisma.PlacementResultUncheckedUpdateManyWithoutStudentNestedInput
   coursesTeaching?: Prisma.CourseUncheckedUpdateManyWithoutTeacherNestedInput
@@ -3310,6 +3551,7 @@ export type UserCreateWithoutSentMessagesInput = {
   adminConversations?: Prisma.ConversationCreateNestedManyWithoutAdminInput
   teacherBattleRooms?: Prisma.BattleRoomCreateNestedManyWithoutTeacherInput
   battleParticipants?: Prisma.BattleParticipantCreateNestedManyWithoutStudentInput
+  battleInvitations?: Prisma.BattleInvitationCreateNestedManyWithoutStudentInput
   battleAnswers?: Prisma.BattleAnswerCreateNestedManyWithoutStudentInput
   placementResults?: Prisma.PlacementResultCreateNestedManyWithoutStudentInput
   coursesTeaching?: Prisma.CourseCreateNestedManyWithoutTeacherInput
@@ -3346,6 +3588,7 @@ export type UserUncheckedCreateWithoutSentMessagesInput = {
   adminConversations?: Prisma.ConversationUncheckedCreateNestedManyWithoutAdminInput
   teacherBattleRooms?: Prisma.BattleRoomUncheckedCreateNestedManyWithoutTeacherInput
   battleParticipants?: Prisma.BattleParticipantUncheckedCreateNestedManyWithoutStudentInput
+  battleInvitations?: Prisma.BattleInvitationUncheckedCreateNestedManyWithoutStudentInput
   battleAnswers?: Prisma.BattleAnswerUncheckedCreateNestedManyWithoutStudentInput
   placementResults?: Prisma.PlacementResultUncheckedCreateNestedManyWithoutStudentInput
   coursesTeaching?: Prisma.CourseUncheckedCreateNestedManyWithoutTeacherInput
@@ -3398,6 +3641,7 @@ export type UserUpdateWithoutSentMessagesInput = {
   adminConversations?: Prisma.ConversationUpdateManyWithoutAdminNestedInput
   teacherBattleRooms?: Prisma.BattleRoomUpdateManyWithoutTeacherNestedInput
   battleParticipants?: Prisma.BattleParticipantUpdateManyWithoutStudentNestedInput
+  battleInvitations?: Prisma.BattleInvitationUpdateManyWithoutStudentNestedInput
   battleAnswers?: Prisma.BattleAnswerUpdateManyWithoutStudentNestedInput
   placementResults?: Prisma.PlacementResultUpdateManyWithoutStudentNestedInput
   coursesTeaching?: Prisma.CourseUpdateManyWithoutTeacherNestedInput
@@ -3434,6 +3678,7 @@ export type UserUncheckedUpdateWithoutSentMessagesInput = {
   adminConversations?: Prisma.ConversationUncheckedUpdateManyWithoutAdminNestedInput
   teacherBattleRooms?: Prisma.BattleRoomUncheckedUpdateManyWithoutTeacherNestedInput
   battleParticipants?: Prisma.BattleParticipantUncheckedUpdateManyWithoutStudentNestedInput
+  battleInvitations?: Prisma.BattleInvitationUncheckedUpdateManyWithoutStudentNestedInput
   battleAnswers?: Prisma.BattleAnswerUncheckedUpdateManyWithoutStudentNestedInput
   placementResults?: Prisma.PlacementResultUncheckedUpdateManyWithoutStudentNestedInput
   coursesTeaching?: Prisma.CourseUncheckedUpdateManyWithoutTeacherNestedInput
@@ -3457,6 +3702,7 @@ export type UserCountOutputType = {
   sentMessages: number
   teacherBattleRooms: number
   battleParticipants: number
+  battleInvitations: number
   battleAnswers: number
   placementResults: number
   coursesTeaching: number
@@ -3475,6 +3721,7 @@ export type UserCountOutputTypeSelect<ExtArgs extends runtime.Types.Extensions.I
   sentMessages?: boolean | UserCountOutputTypeCountSentMessagesArgs
   teacherBattleRooms?: boolean | UserCountOutputTypeCountTeacherBattleRoomsArgs
   battleParticipants?: boolean | UserCountOutputTypeCountBattleParticipantsArgs
+  battleInvitations?: boolean | UserCountOutputTypeCountBattleInvitationsArgs
   battleAnswers?: boolean | UserCountOutputTypeCountBattleAnswersArgs
   placementResults?: boolean | UserCountOutputTypeCountPlacementResultsArgs
   coursesTeaching?: boolean | UserCountOutputTypeCountCoursesTeachingArgs
@@ -3559,6 +3806,13 @@ export type UserCountOutputTypeCountBattleParticipantsArgs<ExtArgs extends runti
 /**
  * UserCountOutputType without action
  */
+export type UserCountOutputTypeCountBattleInvitationsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  where?: Prisma.BattleInvitationWhereInput
+}
+
+/**
+ * UserCountOutputType without action
+ */
 export type UserCountOutputTypeCountBattleAnswersArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   where?: Prisma.BattleAnswerWhereInput
 }
@@ -3628,6 +3882,7 @@ export type UserSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = r
   sentMessages?: boolean | Prisma.User$sentMessagesArgs<ExtArgs>
   teacherBattleRooms?: boolean | Prisma.User$teacherBattleRoomsArgs<ExtArgs>
   battleParticipants?: boolean | Prisma.User$battleParticipantsArgs<ExtArgs>
+  battleInvitations?: boolean | Prisma.User$battleInvitationsArgs<ExtArgs>
   battleAnswers?: boolean | Prisma.User$battleAnswersArgs<ExtArgs>
   placementResults?: boolean | Prisma.User$placementResultsArgs<ExtArgs>
   coursesTeaching?: boolean | Prisma.User$coursesTeachingArgs<ExtArgs>
@@ -3714,6 +3969,7 @@ export type UserInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = 
   sentMessages?: boolean | Prisma.User$sentMessagesArgs<ExtArgs>
   teacherBattleRooms?: boolean | Prisma.User$teacherBattleRoomsArgs<ExtArgs>
   battleParticipants?: boolean | Prisma.User$battleParticipantsArgs<ExtArgs>
+  battleInvitations?: boolean | Prisma.User$battleInvitationsArgs<ExtArgs>
   battleAnswers?: boolean | Prisma.User$battleAnswersArgs<ExtArgs>
   placementResults?: boolean | Prisma.User$placementResultsArgs<ExtArgs>
   coursesTeaching?: boolean | Prisma.User$coursesTeachingArgs<ExtArgs>
@@ -3737,6 +3993,7 @@ export type $UserPayload<ExtArgs extends runtime.Types.Extensions.InternalArgs =
     sentMessages: Prisma.$MessagePayload<ExtArgs>[]
     teacherBattleRooms: Prisma.$BattleRoomPayload<ExtArgs>[]
     battleParticipants: Prisma.$BattleParticipantPayload<ExtArgs>[]
+    battleInvitations: Prisma.$BattleInvitationPayload<ExtArgs>[]
     battleAnswers: Prisma.$BattleAnswerPayload<ExtArgs>[]
     placementResults: Prisma.$PlacementResultPayload<ExtArgs>[]
     coursesTeaching: Prisma.$CoursePayload<ExtArgs>[]
@@ -4167,6 +4424,7 @@ export interface Prisma__UserClient<T, Null = never, ExtArgs extends runtime.Typ
   sentMessages<T extends Prisma.User$sentMessagesArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.User$sentMessagesArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$MessagePayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   teacherBattleRooms<T extends Prisma.User$teacherBattleRoomsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.User$teacherBattleRoomsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$BattleRoomPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   battleParticipants<T extends Prisma.User$battleParticipantsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.User$battleParticipantsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$BattleParticipantPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+  battleInvitations<T extends Prisma.User$battleInvitationsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.User$battleInvitationsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$BattleInvitationPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   battleAnswers<T extends Prisma.User$battleAnswersArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.User$battleAnswersArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$BattleAnswerPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   placementResults<T extends Prisma.User$placementResultsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.User$placementResultsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$PlacementResultPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   coursesTeaching<T extends Prisma.User$coursesTeachingArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.User$coursesTeachingArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$CoursePayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
@@ -4827,6 +5085,30 @@ export type User$battleParticipantsArgs<ExtArgs extends runtime.Types.Extensions
   take?: number
   skip?: number
   distinct?: Prisma.BattleParticipantScalarFieldEnum | Prisma.BattleParticipantScalarFieldEnum[]
+}
+
+/**
+ * User.battleInvitations
+ */
+export type User$battleInvitationsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the BattleInvitation
+   */
+  select?: Prisma.BattleInvitationSelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the BattleInvitation
+   */
+  omit?: Prisma.BattleInvitationOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.BattleInvitationInclude<ExtArgs> | null
+  where?: Prisma.BattleInvitationWhereInput
+  orderBy?: Prisma.BattleInvitationOrderByWithRelationInput | Prisma.BattleInvitationOrderByWithRelationInput[]
+  cursor?: Prisma.BattleInvitationWhereUniqueInput
+  take?: number
+  skip?: number
+  distinct?: Prisma.BattleInvitationScalarFieldEnum | Prisma.BattleInvitationScalarFieldEnum[]
 }
 
 /**

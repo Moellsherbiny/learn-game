@@ -5,20 +5,6 @@
 import {
   prisma,
 } from "@/lib/prisma";
-
-import {
-  realtimeDb,
-} from "@/lib/firebase";
-
-import {
-  ref,
-  update,
-  get,
-} from "firebase/database";
-
-import {
-  revalidatePath,
-} from "next/cache";
 import { auth } from "@/auth";
 
 
@@ -42,16 +28,259 @@ async function requireStudent() {
 
 interface SubmitBattleAnswerInput {
   roomId: string;
-
   questionId: string;
-
-  studentId: string;
-
   answer: string;
-
   responseTime: number;
 }
 
+// =========================================
+// GET STUDENT BATTLE
+// =========================================
+
+export async function getStudentBattleAction(
+  battleId: string,
+) {
+  try {
+    // =========================================
+    // AUTH
+    // =========================================
+
+    const session = await auth();
+
+    if (!session?.user?.id) {
+      return {
+        success: false as const,
+        error: "يجب تسجيل الدخول أولًا",
+        data: null,
+      };
+    }
+
+    if (session.user.role !== "STUDENT") {
+      return {
+        success: false as const,
+        error: "غير مصرح لك بالوصول إلى التحدي",
+        data: null,
+      };
+    }
+
+    const studentId = session.user.id;
+
+    // =========================================
+    // VALIDATE ID
+    // =========================================
+
+    if (!battleId) {
+      return {
+        success: false as const,
+        error: "معرف التحدي غير صالح",
+        data: null,
+      };
+    }
+
+    // =========================================
+    // GET BATTLE
+    // =========================================
+
+    const battle =
+      await prisma.battleRoom.findFirst({
+        where: {
+          id: battleId,
+
+          // الطالب لازم يكون مدعوًا
+          invitations: {
+            some: {
+              studentId,
+            },
+          },
+        },
+
+        include: {
+          // =====================================
+          // QUESTIONS
+          // =====================================
+
+          questions: {
+            orderBy: {
+              order: "asc",
+            },
+
+            select: {
+              id: true,
+              question: true,
+              type: true,
+
+              optionA: true,
+              optionB: true,
+              optionC: true,
+              optionD: true,
+
+              leftText: true,
+              rightText: true,
+
+              points: true,
+              timeLimit: true,
+              order: true,
+            },
+          },
+
+          // =====================================
+          // MY INVITATION
+          // =====================================
+
+          invitations: {
+            where: {
+              studentId,
+            },
+
+            select: {
+              id: true,
+              team: true,
+              status: true,
+            },
+          },
+
+          // =====================================
+          // PARTICIPANTS
+          // =====================================
+
+          participants: {
+            include: {
+              student: {
+                select: {
+                  id: true,
+                  name: true,
+                  image: true,
+                  level: true,
+                },
+              },
+            },
+
+            orderBy: {
+              joinedAt: "asc",
+            },
+          },
+        },
+      });
+
+    // =========================================
+    // NOT FOUND
+    // =========================================
+
+    if (!battle) {
+      return {
+        success: false as const,
+        error:
+          "التحدي غير موجود أو غير متاح لك",
+        data: null,
+      };
+    }
+
+    // =========================================
+    // MY INVITATION
+    // =========================================
+
+    const myInvitation =
+      battle.invitations[0] ?? null;
+
+    // =========================================
+    // MY PARTICIPATION
+    // =========================================
+
+    const myParticipant =
+      battle.participants.find(
+        (participant) =>
+          participant.studentId ===
+          studentId,
+      ) ?? null;
+
+    // =========================================
+    // SUCCESS
+    // =========================================
+
+    return {
+  success: true as const,
+
+  data: {
+    id: battle.id,
+    title: battle.title,
+    code: battle.code,
+
+    status: battle.status,
+
+    currentQuestion:
+      battle.currentQuestion,
+
+    // =====================================
+    // MY DATA
+    // =====================================
+
+    team:
+      myInvitation?.team ??
+      myParticipant?.team ??
+      null,
+
+    invitationStatus:
+      myInvitation?.status ??
+      null,
+
+    participant:
+      myParticipant
+        ? {
+            id: myParticipant.id,
+            score: myParticipant.score,
+            joinedAt:
+              myParticipant.joinedAt,
+          }
+        : null,
+
+    // =====================================
+    // PLAYERS
+    // =====================================
+
+    players:
+      battle.participants.map(
+        (participant) => ({
+          id: participant.id,
+
+          studentId:
+            participant.studentId,
+
+          team: participant.team,
+
+          score: participant.score,
+
+          joinedAt:
+            participant.joinedAt,
+
+          student:
+            participant.student,
+        }),
+      ),
+
+    // =====================================
+    // QUESTIONS
+    // =====================================
+
+    questions:
+      battle.questions,
+  },
+};
+  } catch (error) {
+    console.error(
+      "GET_STUDENT_BATTLE_ERROR:",
+      error,
+    );
+
+    return {
+      success: false as const,
+      error:
+        error instanceof Error
+          ? error.message
+          : "حدث خطأ أثناء تحميل التحدي",
+      data: null,
+    };
+  }
+}
 // =========================================
 // SUBMIT ANSWER
 // =========================================
@@ -59,374 +288,250 @@ interface SubmitBattleAnswerInput {
 export async function submitBattleAnswerAction(
   data: SubmitBattleAnswerInput,
 ) {
-  // =========================================
-  // AUTH
-  // =========================================
+  try {
+    // =========================================
+    // AUTH
+    // =========================================
 
-  const currentStudentId =
-    await requireStudent();
+    const session = await auth();
 
-  if (
-    currentStudentId !==
-    data.studentId
-  ) {
-    throw new Error(
-      "غير مصرح لك",
-    );
-  }
+    if (!session?.user?.id) {
+      return {
+        success: false as const,
+        error: "يجب تسجيل الدخول أولًا",
+      };
+    }
 
-  // =========================================
-  // ROOM
-  // =========================================
+    if (session.user.role !== "STUDENT") {
+      return {
+        success: false as const,
+        error: "غير مصرح لك بإرسال إجابة",
+      };
+    }
 
-  const room =
-    await prisma.battleRoom.findUnique(
-      {
+    const studentId = session.user.id;
+
+    // =========================================
+    // VALIDATION
+    // =========================================
+
+    if (!data.roomId) {
+      return {
+        success: false as const,
+        error: "معرف التحدي غير صالح",
+      };
+    }
+
+    if (!data.questionId) {
+      return {
+        success: false as const,
+        error: "معرف السؤال غير صالح",
+      };
+    }
+
+    if (!data.answer) {
+      return {
+        success: false as const,
+        error: "يجب اختيار إجابة",
+      };
+    }
+
+    if (data.responseTime < 0) {
+      return {
+        success: false as const,
+        error: "وقت الإجابة غير صالح",
+      };
+    }
+
+    // =========================================
+    // PARTICIPANT
+    // =========================================
+
+    const participant =
+      await prisma.battleParticipant.findFirst({
+        where: {
+          roomId: data.roomId,
+          studentId,
+        },
+      });
+
+    if (!participant) {
+      return {
+        success: false as const,
+        error:
+          "أنت لست مشاركًا في هذا التحدي",
+      };
+    }
+
+    // =========================================
+    // BATTLE
+    // =========================================
+
+    const battle =
+      await prisma.battleRoom.findUnique({
         where: {
           id: data.roomId,
         },
 
-        include: {
-          participants: true,
-
-          questions: true,
+        select: {
+          id: true,
+          status: true,
+          currentQuestion: true,
         },
-      },
-    );
+      });
 
-  if (!room) {
-    throw new Error(
-      "الغرفة غير موجودة",
-    );
-  }
+    if (!battle) {
+      return {
+        success: false as const,
+        error: "التحدي غير موجود",
+      };
+    }
 
-  // =========================================
-  // STATUS
-  // =========================================
-
-  if (
-    room.status !==
-    "LIVE"
-  ) {
-    throw new Error(
-      "التحدي غير نشط",
-    );
-  }
-
-  // =========================================
-  // PARTICIPANT
-  // =========================================
-
-  const participant =
-    room.participants.find(
-      (p) =>
-        p.studentId ===
-        data.studentId,
-    );
-
-  if (!participant) {
-    throw new Error(
-      "أنت غير مشارك في هذا التحدي",
-    );
-  }
-
-  // =========================================
-  // QUESTION
-  // =========================================
-
-  const question =
-    room.questions.find(
-      (q) =>
-        q.id ===
-        data.questionId,
-    );
-
-  if (!question) {
-    throw new Error(
-      "السؤال غير موجود",
-    );
-  }
-
-  // =========================================
-  // FIREBASE PARTICIPANT
-  // =========================================
-
-const participantRef = ref(
-  realtimeDb,
-  `battles/${data.roomId}/participants/${data.studentId}`,
-);
-
-  const participantSnapshot =
-    await get(
-      participantRef,
-    );
-
-  const participantData =
-    participantSnapshot.val();
-
-  if (
-    participantData
-      ?.answered
-  ) {
-    throw new Error(
-      "لقد أجبت بالفعل",
-    );
-  }
-
-  // =========================================
-  // CHECK ANSWER
-  // =========================================
-
-  const normalize =
-    (
-      text?: string | null,
-    ) =>
-      text
-        ?.trim()
-        .toLowerCase();
-
-  const isCorrect =
-    normalize(
-      data.answer,
-    ) ===
-    normalize(
-      question.answer,
-    );
-
-  // =========================================
-  // POINTS
-  // =========================================
-
-  let earnedPoints = 0;
-
-  if (isCorrect) {
-    earnedPoints =
-      Math.max(
-        10,
-        question.points -
-          data.responseTime,
-      );
-  }
-
-  // =========================================
-  // SAVE ANSWER
-  // =========================================
-
-  await prisma.battleAnswer.create(
-    {
-      data: {
-        questionId:
-          question.id,
-
-        studentId:
-          data.studentId,
-
-        answer:
-          data.answer,
-
-        isCorrect,
-
-        responseTime:
-          data.responseTime,
-      },
-    },
-  );
-
-  // =========================================
-  // UPDATE PARTICIPANT SCORE
-  // =========================================
-
-  const updatedParticipant =
-    await prisma.battleParticipant.update(
-      {
-        where: {
-          id:
-            participant.id,
-        },
-
-        data: {
-          score: {
-            increment:
-              earnedPoints,
-          },
-        },
-      },
-    );
-
-  // =========================================
-  // FIREBASE UPDATE
-  // =========================================
-
-  await update(
-    participantRef,
-
-    {
-      answered: true,
-
-      lastAnswer:
-        data.answer,
-
-      score:
-        updatedParticipant.score,
-    },
-  );
-
-  // =========================================
-  // CHECK IF ALL ANSWERED
-  // =========================================
-
-const roomRef = ref(
-  realtimeDb,
-  `battles/${data.roomId}`,
-);
-
-  const roomSnapshot =
-    await get(roomRef);
-
-  const roomData =
-    roomSnapshot.val();
-
-  const participants =
-    Object.values(
-      roomData
-        ?.participants ??
-        {},
-    ) as any[];
-
-  const allAnswered =
-    participants.every(
-      (participant) =>
-        participant.answered,
-    );
-
-  // =========================================
-  // AUTO NEXT QUESTION
-  // =========================================
-
-  if (
-    allAnswered
-  ) {
-    const nextIndex =
-      (
-        roomData?.currentQuestionIndex ??
-        0
-      ) + 1;
+    if (battle.status !== "LIVE") {
+      return {
+        success: false as const,
+        error:
+          "التحدي غير متاح للإجابة حاليًا",
+      };
+    }
 
     // =========================================
-    // FINISHED
+    // QUESTION
+    // =========================================
+
+    const question =
+      await prisma.battleQuestion.findFirst({
+        where: {
+          id: data.questionId,
+          roomId: data.roomId,
+        },
+
+        select: {
+          id: true,
+          order: true,
+          answer: true,
+          points: true,
+        },
+      });
+
+    if (!question) {
+      return {
+        success: false as const,
+        error: "السؤال غير موجود",
+      };
+    }
+
+    // =========================================
+    // CURRENT QUESTION CHECK
     // =========================================
 
     if (
-      nextIndex >=
-      room.questions.length
+      question.order !==
+      battle.currentQuestion
     ) {
-      // DB
+      return {
+        success: false as const,
+        error:
+          "هذا السؤال لم يعد السؤال الحالي",
+      };
+    }
 
-      await prisma.battleRoom.update(
-        {
-          where: {
-            id: room.id,
-          },
+    // =========================================
+    // PREVENT DUPLICATE ANSWER
+    // =========================================
 
+    const existingAnswer =
+      await prisma.battleAnswer.findFirst({
+        where: {
+          id: data.roomId,
+          questionId: data.questionId,
+          studentId,
+        },
+      });
+
+    if (existingAnswer) {
+      return {
+        success: false as const,
+        error:
+          "تم تسجيل إجابتك بالفعل",
+      };
+    }
+
+    // =========================================
+    // GRADING
+    // =========================================
+
+    const isCorrect =
+      data.answer === question.answer;
+
+    const earnedPoints =
+      isCorrect
+        ? question.points
+        : 0;
+
+    // =========================================
+    // SAVE ANSWER + UPDATE SCORE
+    // =========================================
+
+    await prisma.$transaction(
+      async (tx) => {
+        await tx.battleAnswer.create({
           data: {
-            status:
-              "FINISHED",
+            id: data.roomId,
+            questionId: data.questionId,
+            studentId,
+
+            answer: data.answer,
+
+            isCorrect,
+
+
+            responseTime:
+              data.responseTime,
           },
-        },
-      );
+        });
 
-      // FIREBASE
+        if (earnedPoints > 0) {
+          await tx.battleParticipant.update({
+            where: {
+              id: participant.id,
+            },
 
-      await update(
-        roomRef,
-
-        {
-          status:
-            "FINISHED",
-
-          questionStarted: false,
-        },
-      );
-    }
+            data: {
+              score: {
+                increment:
+                  earnedPoints,
+              },
+            },
+          });
+        }
+      },
+    );
 
     // =========================================
-    // NEXT QUESTION
+    // SUCCESS
     // =========================================
 
-    else {
-      const nextQuestion =
-        room.questions[
-          nextIndex
-        ];
+    return {
+      success: true as const,
 
-      // RESET ANSWERS
+      data: {
+        isCorrect,
+        points: earnedPoints,
+      },
+    };
+  } catch (error) {
+    console.error(
+      "SUBMIT_BATTLE_ANSWER_ERROR:",
+      error,
+    );
 
-      const updates: Record<
-        string,
-        any
-      > = {};
-
-      participants.forEach(
-        (
-          participant: any,
-        ) => {
-          updates[
-            `participants/${participant.studentId}/answered`
-          ] = false;
-        },
-      );
-
-      // UPDATE ROOM
-
-      updates[
-        "currentQuestionIndex"
-      ] = nextIndex;
-
-      updates[
-        "questionStartedAt"
-      ] = Date.now();
-
-      updates[
-        "questionEndsAt"
-      ] =
-        Date.now() +
-        nextQuestion.timeLimit *
-          1000;
-
-      // FIREBASE UPDATE
-
-      await update(
-        roomRef,
-        updates,
-      );
-    }
+    return {
+      success: false as const,
+      error:
+        error instanceof Error
+          ? error.message
+          : "حدث خطأ أثناء تسجيل الإجابة",
+    };
   }
-
-  // =========================================
-  // REVALIDATE
-  // =========================================
-
-  revalidatePath(
-    `/student/battles/${room.id}`,
-  );
-
-  revalidatePath(
-    `/teacher/battles/${room.id}`,
-  );
-
-  revalidatePath(
-    `/teacher/battles/${room.id}/live`,
-  );
-
-  // =========================================
-  // RETURN
-  // =========================================
-
-  return {
-    success: true,
-
-    isCorrect,
-
-    earnedPoints,
-  };
 }

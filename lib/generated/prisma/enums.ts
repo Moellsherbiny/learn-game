@@ -54,6 +54,15 @@ export const TeamType = {
 export type TeamType = (typeof TeamType)[keyof typeof TeamType]
 
 
+export const BattleInvitationStatus = {
+  PENDING: 'PENDING',
+  ACCEPTED: 'ACCEPTED',
+  DECLINED: 'DECLINED'
+} as const
+
+export type BattleInvitationStatus = (typeof BattleInvitationStatus)[keyof typeof BattleInvitationStatus]
+
+
 export const ConversationType = {
   STUDENT_TEACHER: 'STUDENT_TEACHER',
   ADMIN_STUDENT: 'ADMIN_STUDENT',

@@ -51,6 +51,7 @@ model User {
   // Battle Participation as Student
   battleParticipants BattleParticipant[] @relation("StudentBattleParticipants")
 
+  battleInvitations BattleInvitation[]
   // Battle Answers
   battleAnswers   BattleAnswer[] @relation("StudentBattleAnswers")
   xp              Int             @default(0)
@@ -303,7 +304,7 @@ model BattleRoom {
 
   teacherId String
   teacher   User   @relation("TeacherBattleRooms", fields: [teacherId], references: [id],onDelete: Cascade)
-
+  invitations BattleInvitation[]
   status BattleStatus @default(WAITING)
 
   currentQuestion Int @default(0)
@@ -385,6 +386,32 @@ model BattleAnswer {
   createdAt DateTime @default(now())
 
   @@unique([questionId, studentId])
+}
+
+enum BattleInvitationStatus {
+  PENDING
+  ACCEPTED
+  DECLINED
+}
+
+model BattleInvitation {
+  id String @id @default(cuid())
+
+  roomId String
+  room BattleRoom @relation(fields: [roomId],references: [id],onDelete: Cascade)
+
+  studentId String
+  student User @relation(fields: [studentId],references: [id], onDelete: Cascade)
+
+  team TeamType
+
+  status BattleInvitationStatus @default(PENDING)
+
+  createdAt DateTime @default(now())
+  respondedAt DateTime?
+
+  @@unique([roomId, studentId])
+  @@index([studentId, status])
 }
 
 enum ConversationType {

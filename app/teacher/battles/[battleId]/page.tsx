@@ -1,48 +1,34 @@
 import Link from "next/link";
-
 import { notFound, redirect } from "next/navigation";
 
 import {
-  Swords,
-  Users,
-  Trophy,
-  Play,
-  Pencil,
-  Plus,
-  Clock3,
-  CheckCircle2,
-  XCircle,
-  Crown,
   ArrowRight,
+  Copy,
+  FileQuestion,
+  Swords,
 } from "lucide-react";
 
 import { auth } from "@/auth";
 
-import { getBattleRoomAction } from "@/actions/teacher/battle";
+import { getTeacherBattleAction } from "@/actions/teacher/battle-controle";
 
-import {
-  Card,
-  CardContent,
-  CardHeader,
-  CardTitle,
-  CardDescription,
-} from "@/components/ui/card";
+import { TeacherBattleRealtime } from "@/components/battle/teacher-battle-realtime";
 
 import { Badge } from "@/components/ui/badge";
-import StartBattleButton from "@/components/teacher/battle/start-battle-button";
 import { Button } from "@/components/ui/button";
-import LiveReadyStatus from "@/components/teacher/battle/live-ready-status";
-export const dynamic = "force-dynamic";
+
 interface PageProps {
   params: Promise<{
     battleId: string;
   }>;
 }
 
-export default async function BattleRoomPage({ params }: PageProps) {
-  // =========================================
+export default async function TeacherBattlePage({
+  params,
+}: PageProps) {
+  // =========================================================
   // AUTH
-  // =========================================
+  // =========================================================
 
   const session = await auth();
 
@@ -54,421 +40,334 @@ export default async function BattleRoomPage({ params }: PageProps) {
     redirect("/");
   }
 
-  // =========================================
-  // PARAMS
-  // =========================================
+  // =========================================================
+  // DATA
+  // =========================================================
 
   const { battleId } = await params;
 
-  // =========================================
-  // DATA
-  // =========================================
+  const result =
+    await getTeacherBattleAction(
+      battleId,
+    );
 
-  const battle = await getBattleRoomAction(battleId);
-
-  if (!battle) {
+  if (!result.success) {
     notFound();
   }
 
-  // =========================================
-  // TEAMS
-  // =========================================
+  const battle = result.data;
 
-  const teamA = battle.participants.filter(
-    (participant) => participant.team === "TEAM_A",
-  );
+  // =========================================================
+  // STATUS
+  // =========================================================
 
-  const teamB = battle.participants.filter(
-    (participant) => participant.team === "TEAM_B",
-  );
+  const status =
+    battle.status === "LIVE"
+      ? {
+          label: "مباشر الآن",
+          icon: "●",
+        }
+      : battle.status === "WAITING"
+        ? {
+            label: "غرفة الانتظار",
+            icon: "◷",
+          }
+        : {
+            label: "انتهى",
+            icon: "✓",
+          };
 
-  // =========================================
-  // UI
-  // =========================================
+  // =========================================================
+  // RENDER
+  // =========================================================
 
   return (
-    <main className="min-h-screen bg-background">
-      <div className="container mx-auto max-w-7xl px-4 py-10">
-        {/* ========================================= */}
-        {/* HEADER */}
-        {/* ========================================= */}
+    <main
+      dir="rtl"
+      className="min-h-screen bg-background/50 py-10"
+    >
+      <div className="mx-auto max-w-375 px-4 py-5 sm:px-6 lg:px-8">
 
-        <div className="mb-10 flex flex-col gap-6 xl:flex-row xl:items-center xl:justify-between">
-          <div>
-            <div className="mb-4 flex flex-wrap items-center gap-3">
-              <Badge
-                variant={
+        {/* ================================================= */}
+        {/* TOP NAVIGATION */}
+        {/* ================================================= */}
+
+        <div className="mb-5 flex items-center justify-between">
+
+          <Link
+            href="/teacher/battles"
+            className="group inline-flex items-center gap-2 text-sm font-medium text-muted-foreground transition-colors hover:text-foreground"
+          >
+            <ArrowRight className="h-4 w-4 transition-transform group-hover:-translate-x-1" />
+
+            جميع التحديات
+          </Link>
+
+          {/* STATUS */}
+
+          <div className="flex items-center gap-2">
+
+            <span className="relative flex h-2.5 w-2.5">
+
+              {battle.status === "LIVE" && (
+                <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-emerald-400 opacity-75" />
+              )}
+
+              <span
+                className={[
+                  "relative inline-flex h-2.5 w-2.5 rounded-full",
+
                   battle.status === "LIVE"
-                    ? "default"
-                    : battle.status === "WAITING"
-                      ? "secondary"
-                      : "outline"
-                }
-                className="rounded-xl px-4 py-1.5"
-              >
-                {battle.status === "LIVE"
-                  ? "🔥 مباشر الآن"
-                  : battle.status === "WAITING"
-                    ? "⏳ بانتظار البدء"
-                    : "🏁 انتهى"}
-              </Badge>
+                    ? "bg-emerald-500"
+                    : battle.status ===
+                        "WAITING"
+                      ? "bg-amber-500"
+                      : "bg-muted-foreground",
+                ].join(" ")}
+              />
 
-              <Badge variant="outline" className="rounded-xl px-4 py-1.5">
-                كود الغرفة:
-                <span className="ml-2 font-black text-primary">
-                  {battle.code}
-                </span>
-              </Badge>
+            </span>
+
+            <span className="text-xs font-semibold text-muted-foreground">
+              {status.label}
+            </span>
+
+          </div>
+
+        </div>
+
+        {/* ================================================= */}
+        {/* BATTLE HEADER */}
+        {/* ================================================= */}
+
+        <section className="relative mb-5 overflow-hidden rounded-[28px] border bg-background shadow-sm">
+
+          {/* Decorative background */}
+
+          <div className="pointer-events-none absolute inset-0 overflow-hidden">
+
+            <div className="absolute -right-20 -top-32 h-72 w-72 rounded-full bg-primary/5 blur-3xl" />
+
+            <div className="absolute -bottom-32 -left-20 h-72 w-72 rounded-full bg-primary/4 blur-3xl" />
+
+          </div>
+
+          <div className="relative p-6 sm:p-8">
+
+            <div className="flex flex-col gap-7 lg:flex-row lg:items-center lg:justify-between">
+
+              {/* ================================================= */}
+              {/* TITLE */}
+              {/* ================================================= */}
+
+              <div className="flex items-start gap-4">
+
+                <div className="flex h-16 w-16 shrink-0 items-center justify-center rounded-[20px] bg-primary text-primary-foreground shadow-lg shadow-primary/20">
+
+                  <Swords className="h-8 w-8" />
+
+                </div>
+
+                <div>
+
+                  <div className="mb-2 flex flex-wrap items-center gap-2">
+
+                    <Badge
+                      variant="secondary"
+                      className="rounded-lg px-2.5 py-1 text-[11px]"
+                    >
+                      تحدي جماعي
+                    </Badge>
+
+                    <span className="text-xs text-muted-foreground">
+                      {battle.questions.length} سؤال
+                    </span>
+
+                  </div>
+
+                  <h1 className="text-2xl font-black tracking-tight sm:text-3xl">
+                    {battle.title}
+                  </h1>
+
+                  <p className="mt-2 text-sm text-muted-foreground">
+                    تحكم في غرفة التحدي وتابع جاهزية اللاعبين قبل البداية.
+                  </p>
+
+                </div>
+
+              </div>
+
+              {/* ================================================= */}
+              {/* JOIN CODE */}
+              {/* ================================================= */}
+
+              <div className="rounded-2xl border bg-muted/30 p-4">
+
+                <div className="flex items-center gap-5">
+
+                  <div>
+
+                    <p className="text-[11px] font-semibold text-muted-foreground">
+                      كود التحدي
+                    </p>
+
+                    <p className="mt-1 font-mono text-2xl font-black tracking-[0.22em]">
+                      {battle.code}
+                    </p>
+
+                  </div>
+
+                  <Button
+                    size="icon"
+                    variant="secondary"
+                    className="h-10 w-10 rounded-xl"
+                    title="نسخ الكود"
+                    type="button"
+                  >
+                    <Copy className="h-4 w-4" />
+                  </Button>
+
+                </div>
+
+              </div>
+
             </div>
 
-            <h1 className="flex items-center gap-3 text-4xl font-black">
-              <div className="rounded-3xl bg-primary/10 p-4 text-primary">
-                <Swords className="h-8 w-8" />
-              </div>
-
-              {battle.title}
-            </h1>
-
-            <p className="mt-3 text-muted-foreground">
-              إدارة التحدي ومتابعة الطلاب مباشرة
-            </p>
           </div>
 
-          {/* ACTIONS */}
+        </section>
 
-          <div className="flex flex-wrap gap-3">
-            <StartBattleButton
-              battleId={battle.id}
-              status={battle.status}
-              participants={battle.participants}
-            />
+        {/* ================================================= */}
+        {/* REALTIME LOBBY + TEAMS */}
+        {/* ================================================= */}
 
-            <Button asChild size="lg" variant="outline" className="rounded-2xl">
-              <Link href={`/teacher/battles/${battle.id}/edit`}>
-                <Pencil className="mr-2 h-5 w-5" />
-                تعديل
-              </Link>
-            </Button>
-          </div>
-        </div>
+        <TeacherBattleRealtime
+          battleId={battle.id}
+          invitations={battle.invitations}
+          participants={battle.participants}
+          initialStatus={battle.status}
+        />
 
-        {/* ========================================= */}
-        {/* STATS */}
-        {/* ========================================= */}
+        {/* ================================================= */}
+        {/* QUESTIONS */}
+        {/* ================================================= */}
 
-        <div className="mb-8 grid gap-6 md:grid-cols-2 xl:grid-cols-4">
-          <Card className="rounded-3xl">
-            <CardContent className="flex items-center gap-4 p-6">
-              <div className="rounded-2xl bg-primary/10 p-4 text-primary">
-                <Users className="h-7 w-7" />
-              </div>
+        <section className="mb-28 rounded-[28px] border bg-background shadow-sm">
 
-              <div>
-                <p className="text-sm text-muted-foreground">المشاركون</p>
+          {/* HEADER */}
 
-                <h2 className="text-3xl font-black">
-                  {battle.participants.length}
-                </h2>
-              </div>
-            </CardContent>
-          </Card>
+          <div className="flex items-center justify-between border-b px-5 py-5 sm:px-6">
 
-          <Card className="rounded-3xl">
-            <CardContent className="flex items-center gap-4 p-6">
-              <div className="rounded-2xl bg-amber-500/10 p-4 text-amber-500">
-                <Trophy className="h-7 w-7" />
-              </div>
+            <div>
 
-              <div>
-                <p className="text-sm text-muted-foreground">الأسئلة</p>
+              <div className="flex items-center gap-2">
 
-                <h2 className="text-3xl font-black">
-                  {battle.questions.length}
-                </h2>
-              </div>
-            </CardContent>
-          </Card>
+                <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-primary/10 text-primary">
 
-          <Card className="rounded-3xl">
-            <CardContent className="flex items-center gap-4 p-6">
-              <div className="rounded-2xl bg-blue-500/10 p-4 text-blue-500">
-                <Clock3 className="h-7 w-7" />
-              </div>
+                  <FileQuestion className="h-4 w-4" />
 
-              <div>
-                <p className="text-sm text-muted-foreground">السؤال الحالي</p>
-
-                <h2 className="text-3xl font-black">
-                  {battle.activeQuestion
-                    ? battle.activeQuestion.question
-                    : "لا يوجد سؤال حالي"}
-                </h2>
-              </div>
-            </CardContent>
-          </Card>
-
-          <Card className="rounded-3xl">
-            <CardContent className="flex items-center gap-4 p-6">
-              <div className="rounded-2xl bg-emerald-500/10 p-4 text-emerald-500">
-                <Crown className="h-7 w-7" />
-              </div>
-
-              <div>
-                <p className="text-sm text-muted-foreground">المتصدر</p>
-
-                <h2 className="text-xl font-black">
-                  {battle.teamAScore > battle.teamBScore
-                    ? "الفريق A"
-                    : battle.teamBScore > battle.teamAScore
-                      ? "الفريق B"
-                      : "تعادل"}
-                </h2>
-              </div>
-            </CardContent>
-          </Card>
-        </div>
-
-        {/* ========================================= */}
-        {/* CONTENT */}
-        {/* ========================================= */}
-
-        <div className="grid gap-8 xl:grid-cols-3">
-          {/* ========================================= */}
-          {/* QUESTIONS */}
-          {/* ========================================= */}
-
-          <div className="xl:col-span-2">
-            <Card className="rounded-3xl">
-              <CardHeader className="flex flex-row items-center justify-between">
-                <div>
-                  <CardTitle className="text-2xl font-black">
-                    أسئلة التحدي
-                  </CardTitle>
-
-                  <CardDescription className="mt-2">
-                    إدارة جميع أسئلة التحدي
-                  </CardDescription>
                 </div>
 
-                <Button asChild className="rounded-2xl">
-                  <Link href={`/teacher/battles/${battle.id}/questions/new`}>
-                    <Plus className="mr-2 h-5 w-5" />
-                    إضافة سؤال
-                  </Link>
-                </Button>
-              </CardHeader>
+                <h2 className="font-black">
+                  أسئلة التحدي
+                </h2>
 
-              <CardContent>
-                {battle.questions.length === 0 ? (
-                  <div className="rounded-3xl border border-dashed p-16 text-center">
-                    <Trophy className="mx-auto mb-5 h-12 w-12 text-muted-foreground" />
+              </div>
 
-                    <h3 className="text-2xl font-black">لا توجد أسئلة</h3>
+              <p className="mt-2 text-xs text-muted-foreground">
+                ترتيب الأسئلة ووقت ونقاط كل سؤال.
+              </p>
 
-                    <p className="mt-3 text-muted-foreground">
-                      أضف أول سؤال للتحدي
-                    </p>
-                  </div>
-                ) : (
-                  <div className="space-y-5">
-                    {battle.questions.map((question, index) => (
-                      <div
-                        key={question.id}
-                        className="rounded-3xl border bg-card p-6 transition-all hover:border-primary/40"
-                      >
-                        <div className="mb-5 flex flex-wrap items-center justify-between gap-4">
-                          <div className="flex items-center gap-3">
-                            <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-primary/10 font-black text-primary">
-                              {index + 1}
-                            </div>
+            </div>
 
-                            <div>
-                              <h3 className="font-black">
-                                {question.question}
-                              </h3>
+            <Badge
+              variant="secondary"
+              className="rounded-xl"
+            >
+              {battle.questions.length}
+            </Badge>
 
-                              <div className="mt-2 flex gap-2">
-                                <Badge className="rounded-xl">
-                                  {question.type}
-                                </Badge>
-
-                                <Badge variant="outline" className="rounded-xl">
-                                  {question.points} نقطة
-                                </Badge>
-                              </div>
-                            </div>
-                          </div>
-
-                          <Button
-                            asChild
-                            variant="outline"
-                            className="rounded-2xl"
-                          >
-                            <Link
-                              href={`/teacher/battles/questions/${question.id}`}
-                            >
-                              <ArrowRight className="h-5 w-5" />
-                            </Link>
-                          </Button>
-                        </div>
-
-                        {/* ANSWERS */}
-
-                        {question.answers.length > 0 && (
-                          <div className="space-y-3">
-                            {question.answers.map((answer) => (
-                              <div
-                                key={answer.id}
-                                className="flex items-center justify-between rounded-2xl border p-4"
-                              >
-                                <div className="flex items-center gap-3">
-                                  <div className="flex h-10 w-10 items-center justify-center rounded-full bg-primary/10 font-bold text-primary">
-                                    {answer.student.name?.charAt(0)}
-                                  </div>
-
-                                  <div>
-                                    <p className="font-semibold">
-                                      {answer.student.name}
-                                    </p>
-
-                                    <p className="text-sm text-muted-foreground">
-                                      {answer.answer}
-                                    </p>
-                                  </div>
-                                </div>
-
-                                {answer.isCorrect ? (
-                                  <CheckCircle2 className="h-5 w-5 text-emerald-500" />
-                                ) : (
-                                  <XCircle className="h-5 w-5 text-red-500" />
-                                )}
-                              </div>
-                            ))}
-                          </div>
-                        )}
-                      </div>
-                    ))}
-                  </div>
-                )}
-              </CardContent>
-            </Card>
           </div>
 
-          {/* ========================================= */}
-          {/* TEAMS */}
-          {/* ========================================= */}
-          <LiveReadyStatus
-            battleId={battle.id}
-            participants={battle.participants}
-          />
-          <div className="space-y-8">
-            {/* TEAM A */}
+          {/* QUESTIONS LIST */}
 
-            <Card className="rounded-3xl border-red-500/30">
-              <CardHeader>
-                <div className="flex items-center justify-between">
-                  <CardTitle className="text-2xl font-black text-red-500">
-                    🔴 الفريق A
-                  </CardTitle>
+          <div className="divide-y">
 
-                  <Badge className="rounded-xl bg-red-500">
-                    {battle.teamAScore} نقطة
-                  </Badge>
-                </div>
-              </CardHeader>
+            {battle.questions.map(
+              (question, index) => {
+                const isCurrent =
+                  index ===
+                  battle.currentQuestion;
 
-              <CardContent className="space-y-4">
-                {teamA.length === 0 ? (
-                  <div className="rounded-2xl border border-dashed p-8 text-center text-muted-foreground">
-                    لا يوجد طلاب
-                  </div>
-                ) : (
-                  teamA.map((participant) => (
+                return (
+                  <div
+                    key={question.id}
+                    className={[
+                      "flex items-center gap-4 px-5 py-4 transition-colors sm:px-6",
+
+                      isCurrent
+                        ? "bg-primary/[0.035]"
+                        : "",
+                    ].join(" ")}
+                  >
+
+                    {/* QUESTION NUMBER */}
+
                     <div
-                      key={participant.id}
-                      className="flex items-center justify-between rounded-2xl border p-4"
+                      className={[
+                        "flex h-9 w-9 shrink-0 items-center justify-center rounded-xl text-xs font-black",
+
+                        isCurrent
+                          ? "bg-primary text-primary-foreground"
+                          : "bg-muted text-muted-foreground",
+                      ].join(" ")}
                     >
-                      <div className="flex items-center gap-3">
-                        <div className="flex h-11 w-11 items-center justify-center rounded-full bg-red-500/10 font-black text-red-500">
-                          {participant.student.name?.charAt(0)}
-                        </div>
+                      {String(
+                        index + 1,
+                      ).padStart(2, "0")}
+                    </div>
 
-                        <div>
-                          <p className="font-bold">
-                            {participant.student.name}
-                          </p>
+                    {/* QUESTION */}
 
-                          <p className="text-xs text-muted-foreground">
-                            {participant.score} نقطة
-                          </p>
-                        </div>
+                    <div className="min-w-0 flex-1">
+
+                      <p className="line-clamp-2 text-sm font-semibold">
+                        {question.question}
+                      </p>
+
+                      <div className="mt-1.5 flex items-center gap-3 text-[11px] text-muted-foreground">
+
+                        <span>
+                          {question.points} نقطة
+                        </span>
+
+                        <span className="h-1 w-1 rounded-full bg-muted-foreground/40" />
+
+                        <span>
+                          {question.timeLimit} ثانية
+                        </span>
+
                       </div>
 
-                      {participant.isReady ? (
-                        <CheckCircle2 className="h-5 w-5 text-emerald-500" />
-                      ) : (
-                        <XCircle className="h-5 w-5 text-muted-foreground" />
-                      )}
                     </div>
-                  ))
-                )}
-              </CardContent>
-            </Card>
 
-            {/* TEAM B */}
+                    {/* CURRENT */}
 
-            <Card className="rounded-3xl border-blue-500/30">
-              <CardHeader>
-                <div className="flex items-center justify-between">
-                  <CardTitle className="text-2xl font-black text-blue-500">
-                    🔵 الفريق B
-                  </CardTitle>
+                    {isCurrent && (
+                      <Badge className="hidden rounded-lg sm:flex">
+                        السؤال الحالي
+                      </Badge>
+                    )}
 
-                  <Badge className="rounded-xl bg-blue-500">
-                    {battle.teamBScore} نقطة
-                  </Badge>
-                </div>
-              </CardHeader>
-
-              <CardContent className="space-y-4">
-                {teamB.length === 0 ? (
-                  <div className="rounded-2xl border border-dashed p-8 text-center text-muted-foreground">
-                    لا يوجد طلاب
                   </div>
-                ) : (
-                  teamB.map((participant) => (
-                    <div
-                      key={participant.id}
-                      className="flex items-center justify-between rounded-2xl border p-4"
-                    >
-                      <div className="flex items-center gap-3">
-                        <div className="flex h-11 w-11 items-center justify-center rounded-full bg-blue-500/10 font-black text-blue-500">
-                          {participant.student.name?.charAt(0)}
-                        </div>
+                );
+              },
+            )}
 
-                        <div>
-                          <p className="font-bold">
-                            {participant.student.name}
-                          </p>
-
-                          <p className="text-xs text-muted-foreground">
-                            {participant.score} نقطة
-                          </p>
-                        </div>
-                      </div>
-
-                      {participant.isReady ? (
-                        <CheckCircle2 className="h-5 w-5 text-emerald-500" />
-                      ) : (
-                        <XCircle className="h-5 w-5 text-muted-foreground" />
-                      )}
-                    </div>
-                  ))
-                )}
-              </CardContent>
-            </Card>
           </div>
-        </div>
+
+        </section>
+
       </div>
     </main>
   );

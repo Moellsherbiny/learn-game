@@ -132,6 +132,11 @@ export type BattleQuestion = Prisma.BattleQuestionModel
  */
 export type BattleAnswer = Prisma.BattleAnswerModel
 /**
+ * Model BattleInvitation
+ * 
+ */
+export type BattleInvitation = Prisma.BattleInvitationModel
+/**
  * Model Conversation
  * 
  */

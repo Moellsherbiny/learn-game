@@ -429,6 +429,23 @@ export type EnumTeamTypeWithAggregatesFilter<$PrismaModel = never> = {
   _max?: Prisma.NestedEnumTeamTypeFilter<$PrismaModel>
 }
 
+export type EnumBattleInvitationStatusFilter<$PrismaModel = never> = {
+  equals?: $Enums.BattleInvitationStatus | Prisma.EnumBattleInvitationStatusFieldRefInput<$PrismaModel>
+  in?: $Enums.BattleInvitationStatus[] | Prisma.ListEnumBattleInvitationStatusFieldRefInput<$PrismaModel>
+  notIn?: $Enums.BattleInvitationStatus[] | Prisma.ListEnumBattleInvitationStatusFieldRefInput<$PrismaModel>
+  not?: Prisma.NestedEnumBattleInvitationStatusFilter<$PrismaModel> | $Enums.BattleInvitationStatus
+}
+
+export type EnumBattleInvitationStatusWithAggregatesFilter<$PrismaModel = never> = {
+  equals?: $Enums.BattleInvitationStatus | Prisma.EnumBattleInvitationStatusFieldRefInput<$PrismaModel>
+  in?: $Enums.BattleInvitationStatus[] | Prisma.ListEnumBattleInvitationStatusFieldRefInput<$PrismaModel>
+  notIn?: $Enums.BattleInvitationStatus[] | Prisma.ListEnumBattleInvitationStatusFieldRefInput<$PrismaModel>
+  not?: Prisma.NestedEnumBattleInvitationStatusWithAggregatesFilter<$PrismaModel> | $Enums.BattleInvitationStatus
+  _count?: Prisma.NestedIntFilter<$PrismaModel>
+  _min?: Prisma.NestedEnumBattleInvitationStatusFilter<$PrismaModel>
+  _max?: Prisma.NestedEnumBattleInvitationStatusFilter<$PrismaModel>
+}
+
 export type EnumConversationTypeFilter<$PrismaModel = never> = {
   equals?: $Enums.ConversationType | Prisma.EnumConversationTypeFieldRefInput<$PrismaModel>
   in?: $Enums.ConversationType[] | Prisma.ListEnumConversationTypeFieldRefInput<$PrismaModel>
@@ -807,6 +824,23 @@ export type NestedEnumTeamTypeWithAggregatesFilter<$PrismaModel = never> = {
   _count?: Prisma.NestedIntFilter<$PrismaModel>
   _min?: Prisma.NestedEnumTeamTypeFilter<$PrismaModel>
   _max?: Prisma.NestedEnumTeamTypeFilter<$PrismaModel>
+}
+
+export type NestedEnumBattleInvitationStatusFilter<$PrismaModel = never> = {
+  equals?: $Enums.BattleInvitationStatus | Prisma.EnumBattleInvitationStatusFieldRefInput<$PrismaModel>
+  in?: $Enums.BattleInvitationStatus[] | Prisma.ListEnumBattleInvitationStatusFieldRefInput<$PrismaModel>
+  notIn?: $Enums.BattleInvitationStatus[] | Prisma.ListEnumBattleInvitationStatusFieldRefInput<$PrismaModel>
+  not?: Prisma.NestedEnumBattleInvitationStatusFilter<$PrismaModel> | $Enums.BattleInvitationStatus
+}
+
+export type NestedEnumBattleInvitationStatusWithAggregatesFilter<$PrismaModel = never> = {
+  equals?: $Enums.BattleInvitationStatus | Prisma.EnumBattleInvitationStatusFieldRefInput<$PrismaModel>
+  in?: $Enums.BattleInvitationStatus[] | Prisma.ListEnumBattleInvitationStatusFieldRefInput<$PrismaModel>
+  notIn?: $Enums.BattleInvitationStatus[] | Prisma.ListEnumBattleInvitationStatusFieldRefInput<$PrismaModel>
+  not?: Prisma.NestedEnumBattleInvitationStatusWithAggregatesFilter<$PrismaModel> | $Enums.BattleInvitationStatus
+  _count?: Prisma.NestedIntFilter<$PrismaModel>
+  _min?: Prisma.NestedEnumBattleInvitationStatusFilter<$PrismaModel>
+  _max?: Prisma.NestedEnumBattleInvitationStatusFilter<$PrismaModel>
 }
 
 export type NestedEnumConversationTypeFilter<$PrismaModel = never> = {

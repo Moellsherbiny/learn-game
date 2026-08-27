@@ -606,7 +606,7 @@ export default function StudentBattleGame({
                 questionId:
                   currentQuestion.id,
 
-                studentId,
+               
 
                 answer,
 
@@ -617,7 +617,7 @@ export default function StudentBattleGame({
             );
 
           setAnswerState(
-            result.isCorrect
+            result.data?.isCorrect
               ? "correct"
               : "wrong",
           );
@@ -627,7 +627,7 @@ export default function StudentBattleGame({
           );
 
           if (
-            result.isCorrect
+            result.data?.isCorrect
           ) {
             setCombo(
               (prev) =>
@@ -645,7 +645,7 @@ export default function StudentBattleGame({
             );
 
             toast.success(
-              `+${result.earnedPoints} نقطة ⚡`,
+              `+${result.data?.points} نقطة ⚡`,
             );
           } else {
             setCombo(0);

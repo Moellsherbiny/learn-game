@@ -241,6 +241,7 @@ export type BattleRoomWhereInput = {
   createdAt?: Prisma.DateTimeFilter<"BattleRoom"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"BattleRoom"> | Date | string
   teacher?: Prisma.XOR<Prisma.UserScalarRelationFilter, Prisma.UserWhereInput>
+  invitations?: Prisma.BattleInvitationListRelationFilter
   participants?: Prisma.BattleParticipantListRelationFilter
   questions?: Prisma.BattleQuestionListRelationFilter
 }
@@ -255,6 +256,7 @@ export type BattleRoomOrderByWithRelationInput = {
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
   teacher?: Prisma.UserOrderByWithRelationInput
+  invitations?: Prisma.BattleInvitationOrderByRelationAggregateInput
   participants?: Prisma.BattleParticipantOrderByRelationAggregateInput
   questions?: Prisma.BattleQuestionOrderByRelationAggregateInput
 }
@@ -272,6 +274,7 @@ export type BattleRoomWhereUniqueInput = Prisma.AtLeast<{
   createdAt?: Prisma.DateTimeFilter<"BattleRoom"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"BattleRoom"> | Date | string
   teacher?: Prisma.XOR<Prisma.UserScalarRelationFilter, Prisma.UserWhereInput>
+  invitations?: Prisma.BattleInvitationListRelationFilter
   participants?: Prisma.BattleParticipantListRelationFilter
   questions?: Prisma.BattleQuestionListRelationFilter
 }, "id" | "code">
@@ -315,6 +318,7 @@ export type BattleRoomCreateInput = {
   createdAt?: Date | string
   updatedAt?: Date | string
   teacher: Prisma.UserCreateNestedOneWithoutTeacherBattleRoomsInput
+  invitations?: Prisma.BattleInvitationCreateNestedManyWithoutRoomInput
   participants?: Prisma.BattleParticipantCreateNestedManyWithoutRoomInput
   questions?: Prisma.BattleQuestionCreateNestedManyWithoutRoomInput
 }
@@ -328,6 +332,7 @@ export type BattleRoomUncheckedCreateInput = {
   currentQuestion?: number
   createdAt?: Date | string
   updatedAt?: Date | string
+  invitations?: Prisma.BattleInvitationUncheckedCreateNestedManyWithoutRoomInput
   participants?: Prisma.BattleParticipantUncheckedCreateNestedManyWithoutRoomInput
   questions?: Prisma.BattleQuestionUncheckedCreateNestedManyWithoutRoomInput
 }
@@ -341,6 +346,7 @@ export type BattleRoomUpdateInput = {
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   teacher?: Prisma.UserUpdateOneRequiredWithoutTeacherBattleRoomsNestedInput
+  invitations?: Prisma.BattleInvitationUpdateManyWithoutRoomNestedInput
   participants?: Prisma.BattleParticipantUpdateManyWithoutRoomNestedInput
   questions?: Prisma.BattleQuestionUpdateManyWithoutRoomNestedInput
 }
@@ -354,6 +360,7 @@ export type BattleRoomUncheckedUpdateInput = {
   currentQuestion?: Prisma.IntFieldUpdateOperationsInput | number
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  invitations?: Prisma.BattleInvitationUncheckedUpdateManyWithoutRoomNestedInput
   participants?: Prisma.BattleParticipantUncheckedUpdateManyWithoutRoomNestedInput
   questions?: Prisma.BattleQuestionUncheckedUpdateManyWithoutRoomNestedInput
 }
@@ -520,6 +527,20 @@ export type BattleRoomUpdateOneRequiredWithoutQuestionsNestedInput = {
   update?: Prisma.XOR<Prisma.XOR<Prisma.BattleRoomUpdateToOneWithWhereWithoutQuestionsInput, Prisma.BattleRoomUpdateWithoutQuestionsInput>, Prisma.BattleRoomUncheckedUpdateWithoutQuestionsInput>
 }
 
+export type BattleRoomCreateNestedOneWithoutInvitationsInput = {
+  create?: Prisma.XOR<Prisma.BattleRoomCreateWithoutInvitationsInput, Prisma.BattleRoomUncheckedCreateWithoutInvitationsInput>
+  connectOrCreate?: Prisma.BattleRoomCreateOrConnectWithoutInvitationsInput
+  connect?: Prisma.BattleRoomWhereUniqueInput
+}
+
+export type BattleRoomUpdateOneRequiredWithoutInvitationsNestedInput = {
+  create?: Prisma.XOR<Prisma.BattleRoomCreateWithoutInvitationsInput, Prisma.BattleRoomUncheckedCreateWithoutInvitationsInput>
+  connectOrCreate?: Prisma.BattleRoomCreateOrConnectWithoutInvitationsInput
+  upsert?: Prisma.BattleRoomUpsertWithoutInvitationsInput
+  connect?: Prisma.BattleRoomWhereUniqueInput
+  update?: Prisma.XOR<Prisma.XOR<Prisma.BattleRoomUpdateToOneWithWhereWithoutInvitationsInput, Prisma.BattleRoomUpdateWithoutInvitationsInput>, Prisma.BattleRoomUncheckedUpdateWithoutInvitationsInput>
+}
+
 export type BattleRoomCreateWithoutTeacherInput = {
   id?: string
   title: string
@@ -528,6 +549,7 @@ export type BattleRoomCreateWithoutTeacherInput = {
   currentQuestion?: number
   createdAt?: Date | string
   updatedAt?: Date | string
+  invitations?: Prisma.BattleInvitationCreateNestedManyWithoutRoomInput
   participants?: Prisma.BattleParticipantCreateNestedManyWithoutRoomInput
   questions?: Prisma.BattleQuestionCreateNestedManyWithoutRoomInput
 }
@@ -540,6 +562,7 @@ export type BattleRoomUncheckedCreateWithoutTeacherInput = {
   currentQuestion?: number
   createdAt?: Date | string
   updatedAt?: Date | string
+  invitations?: Prisma.BattleInvitationUncheckedCreateNestedManyWithoutRoomInput
   participants?: Prisma.BattleParticipantUncheckedCreateNestedManyWithoutRoomInput
   questions?: Prisma.BattleQuestionUncheckedCreateNestedManyWithoutRoomInput
 }
@@ -593,6 +616,7 @@ export type BattleRoomCreateWithoutParticipantsInput = {
   createdAt?: Date | string
   updatedAt?: Date | string
   teacher: Prisma.UserCreateNestedOneWithoutTeacherBattleRoomsInput
+  invitations?: Prisma.BattleInvitationCreateNestedManyWithoutRoomInput
   questions?: Prisma.BattleQuestionCreateNestedManyWithoutRoomInput
 }
 
@@ -605,6 +629,7 @@ export type BattleRoomUncheckedCreateWithoutParticipantsInput = {
   currentQuestion?: number
   createdAt?: Date | string
   updatedAt?: Date | string
+  invitations?: Prisma.BattleInvitationUncheckedCreateNestedManyWithoutRoomInput
   questions?: Prisma.BattleQuestionUncheckedCreateNestedManyWithoutRoomInput
 }
 
@@ -633,6 +658,7 @@ export type BattleRoomUpdateWithoutParticipantsInput = {
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   teacher?: Prisma.UserUpdateOneRequiredWithoutTeacherBattleRoomsNestedInput
+  invitations?: Prisma.BattleInvitationUpdateManyWithoutRoomNestedInput
   questions?: Prisma.BattleQuestionUpdateManyWithoutRoomNestedInput
 }
 
@@ -645,6 +671,7 @@ export type BattleRoomUncheckedUpdateWithoutParticipantsInput = {
   currentQuestion?: Prisma.IntFieldUpdateOperationsInput | number
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  invitations?: Prisma.BattleInvitationUncheckedUpdateManyWithoutRoomNestedInput
   questions?: Prisma.BattleQuestionUncheckedUpdateManyWithoutRoomNestedInput
 }
 
@@ -657,6 +684,7 @@ export type BattleRoomCreateWithoutQuestionsInput = {
   createdAt?: Date | string
   updatedAt?: Date | string
   teacher: Prisma.UserCreateNestedOneWithoutTeacherBattleRoomsInput
+  invitations?: Prisma.BattleInvitationCreateNestedManyWithoutRoomInput
   participants?: Prisma.BattleParticipantCreateNestedManyWithoutRoomInput
 }
 
@@ -669,6 +697,7 @@ export type BattleRoomUncheckedCreateWithoutQuestionsInput = {
   currentQuestion?: number
   createdAt?: Date | string
   updatedAt?: Date | string
+  invitations?: Prisma.BattleInvitationUncheckedCreateNestedManyWithoutRoomInput
   participants?: Prisma.BattleParticipantUncheckedCreateNestedManyWithoutRoomInput
 }
 
@@ -697,6 +726,7 @@ export type BattleRoomUpdateWithoutQuestionsInput = {
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   teacher?: Prisma.UserUpdateOneRequiredWithoutTeacherBattleRoomsNestedInput
+  invitations?: Prisma.BattleInvitationUpdateManyWithoutRoomNestedInput
   participants?: Prisma.BattleParticipantUpdateManyWithoutRoomNestedInput
 }
 
@@ -709,7 +739,76 @@ export type BattleRoomUncheckedUpdateWithoutQuestionsInput = {
   currentQuestion?: Prisma.IntFieldUpdateOperationsInput | number
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  invitations?: Prisma.BattleInvitationUncheckedUpdateManyWithoutRoomNestedInput
   participants?: Prisma.BattleParticipantUncheckedUpdateManyWithoutRoomNestedInput
+}
+
+export type BattleRoomCreateWithoutInvitationsInput = {
+  id?: string
+  title: string
+  code: string
+  status?: $Enums.BattleStatus
+  currentQuestion?: number
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  teacher: Prisma.UserCreateNestedOneWithoutTeacherBattleRoomsInput
+  participants?: Prisma.BattleParticipantCreateNestedManyWithoutRoomInput
+  questions?: Prisma.BattleQuestionCreateNestedManyWithoutRoomInput
+}
+
+export type BattleRoomUncheckedCreateWithoutInvitationsInput = {
+  id?: string
+  title: string
+  code: string
+  teacherId: string
+  status?: $Enums.BattleStatus
+  currentQuestion?: number
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  participants?: Prisma.BattleParticipantUncheckedCreateNestedManyWithoutRoomInput
+  questions?: Prisma.BattleQuestionUncheckedCreateNestedManyWithoutRoomInput
+}
+
+export type BattleRoomCreateOrConnectWithoutInvitationsInput = {
+  where: Prisma.BattleRoomWhereUniqueInput
+  create: Prisma.XOR<Prisma.BattleRoomCreateWithoutInvitationsInput, Prisma.BattleRoomUncheckedCreateWithoutInvitationsInput>
+}
+
+export type BattleRoomUpsertWithoutInvitationsInput = {
+  update: Prisma.XOR<Prisma.BattleRoomUpdateWithoutInvitationsInput, Prisma.BattleRoomUncheckedUpdateWithoutInvitationsInput>
+  create: Prisma.XOR<Prisma.BattleRoomCreateWithoutInvitationsInput, Prisma.BattleRoomUncheckedCreateWithoutInvitationsInput>
+  where?: Prisma.BattleRoomWhereInput
+}
+
+export type BattleRoomUpdateToOneWithWhereWithoutInvitationsInput = {
+  where?: Prisma.BattleRoomWhereInput
+  data: Prisma.XOR<Prisma.BattleRoomUpdateWithoutInvitationsInput, Prisma.BattleRoomUncheckedUpdateWithoutInvitationsInput>
+}
+
+export type BattleRoomUpdateWithoutInvitationsInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  title?: Prisma.StringFieldUpdateOperationsInput | string
+  code?: Prisma.StringFieldUpdateOperationsInput | string
+  status?: Prisma.EnumBattleStatusFieldUpdateOperationsInput | $Enums.BattleStatus
+  currentQuestion?: Prisma.IntFieldUpdateOperationsInput | number
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  teacher?: Prisma.UserUpdateOneRequiredWithoutTeacherBattleRoomsNestedInput
+  participants?: Prisma.BattleParticipantUpdateManyWithoutRoomNestedInput
+  questions?: Prisma.BattleQuestionUpdateManyWithoutRoomNestedInput
+}
+
+export type BattleRoomUncheckedUpdateWithoutInvitationsInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  title?: Prisma.StringFieldUpdateOperationsInput | string
+  code?: Prisma.StringFieldUpdateOperationsInput | string
+  teacherId?: Prisma.StringFieldUpdateOperationsInput | string
+  status?: Prisma.EnumBattleStatusFieldUpdateOperationsInput | $Enums.BattleStatus
+  currentQuestion?: Prisma.IntFieldUpdateOperationsInput | number
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  participants?: Prisma.BattleParticipantUncheckedUpdateManyWithoutRoomNestedInput
+  questions?: Prisma.BattleQuestionUncheckedUpdateManyWithoutRoomNestedInput
 }
 
 export type BattleRoomCreateManyTeacherInput = {
@@ -730,6 +829,7 @@ export type BattleRoomUpdateWithoutTeacherInput = {
   currentQuestion?: Prisma.IntFieldUpdateOperationsInput | number
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  invitations?: Prisma.BattleInvitationUpdateManyWithoutRoomNestedInput
   participants?: Prisma.BattleParticipantUpdateManyWithoutRoomNestedInput
   questions?: Prisma.BattleQuestionUpdateManyWithoutRoomNestedInput
 }
@@ -742,6 +842,7 @@ export type BattleRoomUncheckedUpdateWithoutTeacherInput = {
   currentQuestion?: Prisma.IntFieldUpdateOperationsInput | number
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  invitations?: Prisma.BattleInvitationUncheckedUpdateManyWithoutRoomNestedInput
   participants?: Prisma.BattleParticipantUncheckedUpdateManyWithoutRoomNestedInput
   questions?: Prisma.BattleQuestionUncheckedUpdateManyWithoutRoomNestedInput
 }
@@ -762,11 +863,13 @@ export type BattleRoomUncheckedUpdateManyWithoutTeacherInput = {
  */
 
 export type BattleRoomCountOutputType = {
+  invitations: number
   participants: number
   questions: number
 }
 
 export type BattleRoomCountOutputTypeSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  invitations?: boolean | BattleRoomCountOutputTypeCountInvitationsArgs
   participants?: boolean | BattleRoomCountOutputTypeCountParticipantsArgs
   questions?: boolean | BattleRoomCountOutputTypeCountQuestionsArgs
 }
@@ -779,6 +882,13 @@ export type BattleRoomCountOutputTypeDefaultArgs<ExtArgs extends runtime.Types.E
    * Select specific fields to fetch from the BattleRoomCountOutputType
    */
   select?: Prisma.BattleRoomCountOutputTypeSelect<ExtArgs> | null
+}
+
+/**
+ * BattleRoomCountOutputType without action
+ */
+export type BattleRoomCountOutputTypeCountInvitationsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  where?: Prisma.BattleInvitationWhereInput
 }
 
 /**
@@ -806,6 +916,7 @@ export type BattleRoomSelect<ExtArgs extends runtime.Types.Extensions.InternalAr
   createdAt?: boolean
   updatedAt?: boolean
   teacher?: boolean | Prisma.UserDefaultArgs<ExtArgs>
+  invitations?: boolean | Prisma.BattleRoom$invitationsArgs<ExtArgs>
   participants?: boolean | Prisma.BattleRoom$participantsArgs<ExtArgs>
   questions?: boolean | Prisma.BattleRoom$questionsArgs<ExtArgs>
   _count?: boolean | Prisma.BattleRoomCountOutputTypeDefaultArgs<ExtArgs>
@@ -849,6 +960,7 @@ export type BattleRoomSelectScalar = {
 export type BattleRoomOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "title" | "code" | "teacherId" | "status" | "currentQuestion" | "createdAt" | "updatedAt", ExtArgs["result"]["battleRoom"]>
 export type BattleRoomInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   teacher?: boolean | Prisma.UserDefaultArgs<ExtArgs>
+  invitations?: boolean | Prisma.BattleRoom$invitationsArgs<ExtArgs>
   participants?: boolean | Prisma.BattleRoom$participantsArgs<ExtArgs>
   questions?: boolean | Prisma.BattleRoom$questionsArgs<ExtArgs>
   _count?: boolean | Prisma.BattleRoomCountOutputTypeDefaultArgs<ExtArgs>
@@ -864,6 +976,7 @@ export type $BattleRoomPayload<ExtArgs extends runtime.Types.Extensions.Internal
   name: "BattleRoom"
   objects: {
     teacher: Prisma.$UserPayload<ExtArgs>
+    invitations: Prisma.$BattleInvitationPayload<ExtArgs>[]
     participants: Prisma.$BattleParticipantPayload<ExtArgs>[]
     questions: Prisma.$BattleQuestionPayload<ExtArgs>[]
   }
@@ -1271,6 +1384,7 @@ readonly fields: BattleRoomFieldRefs;
 export interface Prisma__BattleRoomClient<T, Null = never, ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs, GlobalOmitOptions = {}> extends Prisma.PrismaPromise<T> {
   readonly [Symbol.toStringTag]: "PrismaPromise"
   teacher<T extends Prisma.UserDefaultArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.UserDefaultArgs<ExtArgs>>): Prisma.Prisma__UserClient<runtime.Types.Result.GetResult<Prisma.$UserPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
+  invitations<T extends Prisma.BattleRoom$invitationsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.BattleRoom$invitationsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$BattleInvitationPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   participants<T extends Prisma.BattleRoom$participantsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.BattleRoom$participantsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$BattleParticipantPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   questions<T extends Prisma.BattleRoom$questionsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.BattleRoom$questionsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$BattleQuestionPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   /**
@@ -1708,6 +1822,30 @@ export type BattleRoomDeleteManyArgs<ExtArgs extends runtime.Types.Extensions.In
    * Limit how many BattleRooms to delete.
    */
   limit?: number
+}
+
+/**
+ * BattleRoom.invitations
+ */
+export type BattleRoom$invitationsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the BattleInvitation
+   */
+  select?: Prisma.BattleInvitationSelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the BattleInvitation
+   */
+  omit?: Prisma.BattleInvitationOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.BattleInvitationInclude<ExtArgs> | null
+  where?: Prisma.BattleInvitationWhereInput
+  orderBy?: Prisma.BattleInvitationOrderByWithRelationInput | Prisma.BattleInvitationOrderByWithRelationInput[]
+  cursor?: Prisma.BattleInvitationWhereUniqueInput
+  take?: number
+  skip?: number
+  distinct?: Prisma.BattleInvitationScalarFieldEnum | Prisma.BattleInvitationScalarFieldEnum[]
 }
 
 /**

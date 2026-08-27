@@ -127,142 +127,198 @@ export function ModuleCard({
   allLessonsCompleted,
   moduleIndex,
 }: ModuleCardProps) {
- const visibleLessons = module.lessons.filter((lesson) => {
-  if (lesson.order <= 2) {
-    return true;
-  }
+  const visibleLessons = module.lessons.filter((lesson) => {
+    if (lesson.order <= 2) {
+      return true;
+    }
 
-  return module.showAdaptiveLessons;
-});
+    return module.showAdaptiveLessons;
+  });
   const completedLessons = visibleLessons.filter(
     (lesson) => lesson.progress[0]?.completed,
   ).length;
 
   const totalLessons = visibleLessons.length;
 
-    const moduleProgress =
+  const moduleProgress =
     totalLessons === 0
       ? 0
       : Math.round((completedLessons / totalLessons) * 100);
-    const isComplete =
-    totalLessons === 4 &&
-    completedLessons === totalLessons;
+  const isComplete = totalLessons === 4 && completedLessons === totalLessons;
 
   return (
-    <div
-      className={cn(
-        "relative transition-all duration-300",
+    <div className="relative">
+      {!isUnlocked ? (
+        /* ================= LOCKED MODULE ================= */
+        <div className="relative overflow-hidden rounded-2xl border border-border/60 bg-muted/20">
+          {/* subtle accent */}
+          <div className="absolute inset-y-0 right-0 w-1 bg-border" />
 
-        !isUnlocked && "opacity-80",
-      )}
-    >
-      {/* MAIN CARD */}
-      <div
-        className={cn(
-          "relative overflow-hidden rounded-[28px] border bg-white p-5 shadow-sm transition-all duration-300",
-
-          isUnlocked
-            ? "border-border/60 hover:border-primary/20 hover:shadow-md"
-            : "border-border/40 bg-muted/20",
-
-          isComplete && "border-emerald-200 bg-emerald-50/40",
-        )}
-      >
-        {/* LOCK OVERLAY */}
-        {!isUnlocked && (
-          <div className="absolute inset-0 z-20 flex items-center justify-center rounded-[28px] bg-white/80 backdrop-blur-xs">
-            <div className="rounded-2xl border border-border/60 bg-white px-5 py-4 text-center shadow-sm">
-              <div className="mb-3 flex justify-center">
-                <IconBox className="border-muted bg-muted/40 text-muted-foreground">
-                  <Lock className="h-5 w-5" />
-                </IconBox>
+          <div className="p-5 sm:p-6">
+            {/* Header */}
+            <div className="flex items-start gap-3">
+              {/* Module Number */}
+              <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl border border-border bg-background text-xs font-bold text-muted-foreground">
+                {String(moduleIndex + 1).padStart(2, "0")}
               </div>
 
-              <p className="text-sm font-bold">
-                يتطلب {module.requiredXp} نقاط خبرة
-              </p>
+              {/* Title */}
+              <div className="min-w-0 flex-1">
+                <div className="flex items-start justify-between gap-3">
+                  <h3 className="min-w-0 text-base font-bold leading-7 text-foreground/75 sm:text-xl">
+                    {module.title}
+                  </h3>
 
-              <p className="mt-1 text-xs text-muted-foreground">
-                لديك {studentXp} نقاط خبرة
-              </p>
-            </div>
-          </div>
-        )}
+                  {/* Lock */}
+                  <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full border border-border bg-background text-muted-foreground">
+                    <Lock className="h-3.5 w-3.5" />
+                  </div>
+                </div>
 
-        {/* HEADER */}
-        <div className="mb-5 flex items-start justify-between gap-4">
-          {/* LEFT */}
-          <div className="flex items-start gap-4">
-            <div
-              className={cn(
-                "flex h-12 w-12 items-center justify-center rounded-2xl border text-sm font-black shadow-sm",
-
-                isComplete
-                  ? "border-emerald-200 bg-emerald-100 text-emerald-600"
-                  : isUnlocked
-                    ? "border-primary/10 bg-primary/10 text-primary"
-                    : "border-border bg-muted text-muted-foreground",
-              )}
-            >
-              {isComplete ? (
-                <CheckCircle2 className="h-5 w-5" />
-              ) : (
-                moduleIndex + 1
-              )}
+                {module.description && (
+                  <p className="mt-1.5 line-clamp-2 text-sm leading-7 text-muted-foreground/75">
+                    {module.description}
+                  </p>
+                )}
+              </div>
             </div>
 
-            <div>
-              <h3 className="text-lg font-black text-foreground sm:text-xl">
-                {module.title}
-              </h3>
+            {/* Unlock Area */}
+            <div className="mt-6 rounded-xl border border-border/50 bg-background/70 p-4 sm:p-5">
+              <div className="flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
+                <div>
+                  <p className="text-xs font-medium text-muted-foreground">
+                    متطلبات فتح الوحدة
+                  </p>
 
-              {module.description && (
-                <p className="mt-2 max-w-xl text-sm leading-7 text-muted-foreground">
-                  {module.description}
-                </p>
-              )}
+                  <div className="mt-1 flex items-baseline gap-1.5">
+                    <span className="text-2xl font-bold tracking-tight">
+                      {module.requiredXp}
+                    </span>
+
+                    <span className="text-sm font-medium text-muted-foreground">
+                      XP
+                    </span>
+                  </div>
+                </div>
+
+                <div className="sm:text-left">
+                  <p className="text-xs text-muted-foreground">رصيدك الحالي</p>
+
+                  <p className="mt-1 text-sm font-bold">{studentXp} XP</p>
+                </div>
+              </div>
+
+              {/* Progress */}
+              <div className="mt-4">
+                <div className="h-2 overflow-hidden rounded-full bg-muted">
+                  <div
+                    className="h-full rounded-full bg-primary/60 transition-all duration-500"
+                    style={{
+                      width: `${Math.min(
+                        100,
+                        (studentXp / module.requiredXp) * 100,
+                      )}%`,
+                    }}
+                  />
+                </div>
+
+                <div className="mt-2 flex items-center justify-between gap-3">
+                  <span className="text-[11px] text-muted-foreground">
+                    التقدم نحو فتح الوحدة
+                  </span>
+
+                  <span className="text-xs font-semibold text-primary">
+                    {Math.max(module.requiredXp - studentXp, 0)} XP متبقية
+                  </span>
+                </div>
+              </div>
             </div>
-          </div>
 
-          {/* LEVEL */}
-          <div
-            className={cn(
-              "rounded-xl border px-3 py-1.5 text-xs font-bold shadow-sm",
-              getLevelColor(module.level),
-            )}
-          >
-            {getLevelLabel(module.level)}
+            {/* Bottom Hint */}
+            <div className="mt-4 flex items-center gap-2 text-xs text-muted-foreground">
+              <Sparkles className="h-3.5 w-3.5 text-primary/70" />
+
+              <span>اجمع نقاط الخبرة من الدروس والأنشطة لفتحها.</span>
+            </div>
           </div>
         </div>
-
-        {/* PROGRESS */}
-        {isUnlocked && totalLessons > 0 && (
-          <div className="mb-6">
-            <div className="mb-2 flex items-center justify-between text-sm">
-              <span className="text-muted-foreground">التقدم</span>
-
-              <span className="font-bold">
-                {completedLessons}/{totalLessons} درس
-              </span>
-            </div>
-
-            <div className="h-3 overflow-hidden rounded-full bg-muted">
+      ) : (
+        /* ================= UNLOCKED MODULE ================= */
+        <div
+          className={cn(
+            "relative overflow-hidden rounded-2xl border bg-card p-5 transition-all duration-300",
+            "border-border/60 hover:border-primary/25 hover:shadow-sm",
+            isComplete && "border-emerald-200 bg-emerald-50/40",
+          )}
+        >
+          {/* HEADER */}
+          <div className="mb-6 flex items-start justify-between gap-4">
+            <div className="flex min-w-0 items-start gap-3">
               <div
                 className={cn(
-                  "h-full rounded-full transition-all duration-700",
-
-                  isComplete ? "bg-emerald-500" : "bg-primary",
+                  "flex h-10 w-10 shrink-0 items-center justify-center rounded-xl border text-sm font-bold",
+                  isComplete
+                    ? "border-emerald-200 bg-emerald-50 text-emerald-600"
+                    : "border-primary/10 bg-primary/5 text-primary",
                 )}
-                style={{
-                  width: `${moduleProgress}%`,
-                }}
-              />
+              >
+                {isComplete ? (
+                  <CheckCircle2 className="h-4 w-4" />
+                ) : (
+                  moduleIndex + 1
+                )}
+              </div>
+
+              <div className="min-w-0">
+                <h3 className="text-lg font-bold leading-7 sm:text-xl">
+                  {module.title}
+                </h3>
+
+                {module.description && (
+                  <p className="mt-1.5 max-w-2xl text-sm leading-7 text-muted-foreground">
+                    {module.description}
+                  </p>
+                )}
+              </div>
+            </div>
+
+            <div
+              className={cn(
+                "shrink-0 rounded-lg border px-2.5 py-1 text-xs font-semibold",
+                getLevelColor(module.level),
+              )}
+            >
+              {getLevelLabel(module.level)}
             </div>
           </div>
-        )}
 
-        {/* LESSONS */}
-        {isUnlocked && (
+          {/* PROGRESS */}
+          {totalLessons > 0 && (
+            <div className="mb-6">
+              <div className="mb-2 flex items-center justify-between text-sm">
+                <span className="text-muted-foreground">التقدم</span>
+
+                <span className="font-bold">
+                  {completedLessons}/{totalLessons} درس
+                </span>
+              </div>
+
+              <div className="h-2 overflow-hidden rounded-full bg-muted">
+                <div
+                  className={cn(
+                    "h-full rounded-full transition-all duration-700",
+                    isComplete ? "bg-emerald-500" : "bg-primary",
+                  )}
+                  style={{
+                    width: `${moduleProgress}%`,
+                  }}
+                />
+              </div>
+            </div>
+          )}
+
+          {/* LESSONS */}
           <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 xl:grid-cols-3">
             {visibleLessons.map((lesson, lessonIdx) => {
               const progress = lesson.progress[0];
@@ -290,8 +346,8 @@ export function ModuleCard({
               );
             })}
           </div>
-        )}
-      </div>
+        </div>
+      )}
     </div>
   );
 }

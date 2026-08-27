@@ -402,6 +402,7 @@ export const ModelName = {
   BattleParticipant: 'BattleParticipant',
   BattleQuestion: 'BattleQuestion',
   BattleAnswer: 'BattleAnswer',
+  BattleInvitation: 'BattleInvitation',
   Conversation: 'Conversation',
   Message: 'Message'
 } as const
@@ -419,7 +420,7 @@ export type TypeMap<ExtArgs extends runtime.Types.Extensions.InternalArgs = runt
     omit: GlobalOmitOptions
   }
   meta: {
-    modelProps: "user" | "account" | "session" | "verificationToken" | "authenticator" | "course" | "module" | "lesson" | "lessonContent" | "progress" | "enrollment" | "leaderboard" | "placementTest" | "placementResult" | "battleRoom" | "battleParticipant" | "battleQuestion" | "battleAnswer" | "conversation" | "message"
+    modelProps: "user" | "account" | "session" | "verificationToken" | "authenticator" | "course" | "module" | "lesson" | "lessonContent" | "progress" | "enrollment" | "leaderboard" | "placementTest" | "placementResult" | "battleRoom" | "battleParticipant" | "battleQuestion" | "battleAnswer" | "battleInvitation" | "conversation" | "message"
     txIsolationLevel: TransactionIsolationLevel
   }
   model: {
@@ -1755,6 +1756,80 @@ export type TypeMap<ExtArgs extends runtime.Types.Extensions.InternalArgs = runt
         }
       }
     }
+    BattleInvitation: {
+      payload: Prisma.$BattleInvitationPayload<ExtArgs>
+      fields: Prisma.BattleInvitationFieldRefs
+      operations: {
+        findUnique: {
+          args: Prisma.BattleInvitationFindUniqueArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$BattleInvitationPayload> | null
+        }
+        findUniqueOrThrow: {
+          args: Prisma.BattleInvitationFindUniqueOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$BattleInvitationPayload>
+        }
+        findFirst: {
+          args: Prisma.BattleInvitationFindFirstArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$BattleInvitationPayload> | null
+        }
+        findFirstOrThrow: {
+          args: Prisma.BattleInvitationFindFirstOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$BattleInvitationPayload>
+        }
+        findMany: {
+          args: Prisma.BattleInvitationFindManyArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$BattleInvitationPayload>[]
+        }
+        create: {
+          args: Prisma.BattleInvitationCreateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$BattleInvitationPayload>
+        }
+        createMany: {
+          args: Prisma.BattleInvitationCreateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        createManyAndReturn: {
+          args: Prisma.BattleInvitationCreateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$BattleInvitationPayload>[]
+        }
+        delete: {
+          args: Prisma.BattleInvitationDeleteArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$BattleInvitationPayload>
+        }
+        update: {
+          args: Prisma.BattleInvitationUpdateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$BattleInvitationPayload>
+        }
+        deleteMany: {
+          args: Prisma.BattleInvitationDeleteManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateMany: {
+          args: Prisma.BattleInvitationUpdateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateManyAndReturn: {
+          args: Prisma.BattleInvitationUpdateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$BattleInvitationPayload>[]
+        }
+        upsert: {
+          args: Prisma.BattleInvitationUpsertArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$BattleInvitationPayload>
+        }
+        aggregate: {
+          args: Prisma.BattleInvitationAggregateArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.AggregateBattleInvitation>
+        }
+        groupBy: {
+          args: Prisma.BattleInvitationGroupByArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.BattleInvitationGroupByOutputType>[]
+        }
+        count: {
+          args: Prisma.BattleInvitationCountArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.BattleInvitationCountAggregateOutputType> | number
+        }
+      }
+    }
     Conversation: {
       payload: Prisma.$ConversationPayload<ExtArgs>
       fields: Prisma.ConversationFieldRefs
@@ -2215,6 +2290,19 @@ export const BattleAnswerScalarFieldEnum = {
 export type BattleAnswerScalarFieldEnum = (typeof BattleAnswerScalarFieldEnum)[keyof typeof BattleAnswerScalarFieldEnum]
 
 
+export const BattleInvitationScalarFieldEnum = {
+  id: 'id',
+  roomId: 'roomId',
+  studentId: 'studentId',
+  team: 'team',
+  status: 'status',
+  createdAt: 'createdAt',
+  respondedAt: 'respondedAt'
+} as const
+
+export type BattleInvitationScalarFieldEnum = (typeof BattleInvitationScalarFieldEnum)[keyof typeof BattleInvitationScalarFieldEnum]
+
+
 export const ConversationScalarFieldEnum = {
   id: 'id',
   type: 'type',
@@ -2442,6 +2530,20 @@ export type ListEnumTeamTypeFieldRefInput<$PrismaModel> = FieldRefInputType<$Pri
 
 
 /**
+ * Reference to a field of type 'BattleInvitationStatus'
+ */
+export type EnumBattleInvitationStatusFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'BattleInvitationStatus'>
+    
+
+
+/**
+ * Reference to a field of type 'BattleInvitationStatus[]'
+ */
+export type ListEnumBattleInvitationStatusFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'BattleInvitationStatus[]'>
+    
+
+
+/**
  * Reference to a field of type 'ConversationType'
  */
 export type EnumConversationTypeFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'ConversationType'>
@@ -2582,6 +2684,7 @@ export type GlobalOmitConfig = {
   battleParticipant?: Prisma.BattleParticipantOmit
   battleQuestion?: Prisma.BattleQuestionOmit
   battleAnswer?: Prisma.BattleAnswerOmit
+  battleInvitation?: Prisma.BattleInvitationOmit
   conversation?: Prisma.ConversationOmit
   message?: Prisma.MessageOmit
 }

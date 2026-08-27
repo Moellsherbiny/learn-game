@@ -1,20 +1,9 @@
-import {
-  notFound,
-  redirect,
-} from "next/navigation";
+import { redirect, notFound } from "next/navigation";
 
-import {
-  auth,
-} from "@/auth";
+import { auth } from "@/auth";
+import { getStudentBattleAction } from "@/actions/student/battle";
 
-import {
-  prisma,
-} from "@/lib/prisma";
-
-import StudentBattleGame from "@/components/student/battle/student-battle-game";
-
-export const dynamic =
-  "force-dynamic";
+import { StudentBattleClient } from "@/components/battle/student-battle-client";
 
 interface PageProps {
   params: Promise<{
@@ -25,178 +14,30 @@ interface PageProps {
 export default async function StudentBattlePage({
   params,
 }: PageProps) {
+  const session = await auth();
 
-  // =========================================
-  // SESSION
-  // =========================================
-
-  const session =
-    await auth();
-
-  if (
-    !session?.user?.id
-  ) {
-    redirect(
-      "/auth/login",
-    );
+  if (!session?.user?.id) {
+    redirect("/login");
   }
 
-  // =========================================
-  // PARAMS
-  // =========================================
+  if (session.user.role !== "STUDENT") {
+    redirect("/");
+  }
 
-  const {
-    battleId,
-  } = await params;
+  const { battleId } = await params;
 
-  // =========================================
-  // PARTICIPANT
-  // =========================================
-
-  const participant =
-    await prisma.battleParticipant.findFirst(
-      {
-        where: {
-          roomId:
-            battleId,
-
-          studentId:
-            session.user.id,
-        },
-
-        include: {
-          room: {
-            include: {
-              teacher: {
-                select: {
-                  name: true,
-                },
-              },
-
-              questions: {
-                orderBy: {
-                  order:
-                    "asc",
-                },
-
-                select: {
-                  id: true,
-
-                  question: true,
-
-                  type: true,
-
-                  answer: true,
-
-                  optionA: true,
-
-                  optionB: true,
-
-                  optionC: true,
-
-                  optionD: true,
-
-                  leftText: true,
-
-                  rightText: true,
-
-                  points: true,
-
-                  timeLimit: true,
-
-                  order: true,
-                },
-              },
-            },
-          },
-
-          student: {
-            select: {
-              id: true,
-
-              name: true,
-
-              image: true,
-            },
-          },
-        },
-      },
+  const result =
+    await getStudentBattleAction(
+      battleId,
     );
 
-  // =========================================
-  // EXISTS
-  // =========================================
-
-  if (!participant) {
+  if (!result.success) {
     notFound();
   }
 
-  // =========================================
-  // UI
-  // =========================================
-
   return (
-    <StudentBattleGame
-
-      // battle
-
-      battleId={
-        participant.room.id
-      }
-
-      // participant
-
-      participantId={
-        participant.id
-      }
-
-      studentId={
-        participant.studentId
-      }
-
-      studentName={
-        participant.student
-          .name ?? ""
-      }
-
-      studentImage={
-        participant.student
-          .image ?? ""
-      }
-
-      team={
-        participant.team
-      }
-
-      // battle info
-
-      battle={{
-
-        id:
-          participant
-            .room.id,
-
-        title:
-          participant
-            .room.title,
-
-        code:
-          participant
-            .room.code,
-
-        status:
-          participant
-            .room.status,
-
-        teacher:
-          participant
-            .room.teacher
-            ?.name ?? "",
-
-        questions:
-          participant
-            .room.questions,
-      }}
+    <StudentBattleClient
+      battle={result.data}
     />
   );
 }

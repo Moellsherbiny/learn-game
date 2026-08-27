@@ -69,6 +69,7 @@ export const ModelName = {
   BattleParticipant: 'BattleParticipant',
   BattleQuestion: 'BattleQuestion',
   BattleAnswer: 'BattleAnswer',
+  BattleInvitation: 'BattleInvitation',
   Conversation: 'Conversation',
   Message: 'Message'
 } as const
@@ -360,6 +361,19 @@ export const BattleAnswerScalarFieldEnum = {
 } as const
 
 export type BattleAnswerScalarFieldEnum = (typeof BattleAnswerScalarFieldEnum)[keyof typeof BattleAnswerScalarFieldEnum]
+
+
+export const BattleInvitationScalarFieldEnum = {
+  id: 'id',
+  roomId: 'roomId',
+  studentId: 'studentId',
+  team: 'team',
+  status: 'status',
+  createdAt: 'createdAt',
+  respondedAt: 'respondedAt'
+} as const
+
+export type BattleInvitationScalarFieldEnum = (typeof BattleInvitationScalarFieldEnum)[keyof typeof BattleInvitationScalarFieldEnum]
 
 
 export const ConversationScalarFieldEnum = {

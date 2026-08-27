@@ -84,7 +84,7 @@ export default async function CourseMapPage({ params }: PageProps) {
 
   const recommendedModule = visibleModules[0];
 
-  const startIndex = 0
+  const startIndex = 0;
   const xpInfo = getXpForLevel(course.studentXp);
 
   // =========================
@@ -122,8 +122,20 @@ export default async function CourseMapPage({ params }: PageProps) {
       ? 0
       : Math.round((completedLessons / totalLessons) * 100);
 
+  const completedModules = visibleModules.filter((module) => {
+    const lessons = module.lessons;
+
+    return (
+      lessons.length > 0 &&
+      lessons.every((lesson) => lesson.progress[0]?.completed)
+    );
+  }).length;
+
+  const nextLesson = visibleModules
+    .flatMap((module) => module.lessons)
+    .find((lesson) => !lesson.progress[0]?.completed);
   return (
-    <main className="min-h-screen bg-background" dir="rtl">
+    <main dir="rtl" className="min-h-screen bg-background text-foreground">
       {/* BACKGROUND */}
 
       <div className="fixed inset-0 -z-10 bg-[radial-gradient(circle_at_top,rgba(0,0,0,0.04),transparent_45%)]" />
@@ -143,19 +155,13 @@ export default async function CourseMapPage({ params }: PageProps) {
             HERO
         ===================================== */}
 
-        <section className="border-b border-border/60 bg-background/80 backdrop-blur-xl">
-          <div className="mx-auto max-w-7xl px-4 py-10">
-            {/* BREADCRUMB */}
-
-            <div className="mb-6 flex items-center gap-2 text-sm">
+        <section className="border-b border-border/60 bg-background">
+          <div className="mx-auto max-w-7xl px-4 py-8 sm:py-10">
+            {/* Breadcrumb */}
+            <div className="mb-7 flex items-center gap-2 text-sm">
               <Link
                 href="/student/courses"
-                className="
-                  flex items-center gap-1
-                  text-muted-foreground
-                  transition-colors
-                  hover:text-primary
-                "
+                className="flex items-center gap-1 text-muted-foreground transition-colors hover:text-primary"
               >
                 الدورات
                 <ChevronLeft className="h-4 w-4" />
@@ -166,257 +172,262 @@ export default async function CourseMapPage({ params }: PageProps) {
               <span className="truncate font-medium">{course.title}</span>
             </div>
 
-            {/* HEADER */}
+            {/* HERO */}
+            <div className="overflow-hidden rounded-3xl border border-border/60 bg-card">
+              <div className="grid lg:grid-cols-[minmax(0,1fr)_280px]">
+                {/* COURSE INFO */}
+                <div className="p-6 sm:p-8 lg:p-10">
+                  <div className="max-w-3xl">
+                    <h1 className="text-3xl font-bold leading-normal tracking-tight md:text-4xl">
+                      {course.title}
+                    </h1>
 
-            <div className="flex flex-col gap-8 xl:flex-row xl:items-center xl:justify-between">
-              {/* LEFT */}
+                    {course.description && (
+                      <p className="mt-3 max-w-2xl text-base leading-8 text-muted-foreground">
+                        {course.description}
+                      </p>
+                    )}
 
-              <div className="max-w-4xl">
-                <Badge className="mb-5 rounded-full px-5 py-2">
-                  <Sparkles className="ml-2 h-4 w-4" />
-                  رحلة تعليمية تفاعلية
-                </Badge>
+                    {/* XP + Level */}
+                    <div className="mt-6 flex flex-wrap items-center gap-x-6 gap-y-3 text-sm">
+                      <div className="flex items-center gap-2">
+                        <Flame className="h-4 w-4 text-primary" />
 
-                <h1 className="text-4xl font-black tracking-tight md:text-6xl">
-                  {course.title}
-                </h1>
-
-                {course.description && (
-                  <p className="mt-5 max-w-3xl text-base leading-8 text-muted-foreground md:text-lg">
-                    {course.description}
-                  </p>
-                )}
-
-                {/* XP STATUS */}
-
-                <div className="mt-8 flex flex-wrap gap-4">
-                  <div className="rounded-2xl border border-primary/10 bg-primary/5 px-5 py-4">
-                    <div className="flex items-center gap-3">
-                      <Flame className="h-5 w-5 text-primary" />
-
-                      <div>
-                        <p className="text-sm text-muted-foreground">
+                        <span className="text-muted-foreground">
                           نقاط الخبرة
-                        </p>
+                        </span>
 
-                        <p className="text-2xl font-black text-primary">
-                          {course.studentXp} نقاط خبرة
-                        </p>
+                        <span className="font-semibold">
+                          {course.studentXp} XP
+                        </span>
+                      </div>
+
+                      <div className="h-4 w-px bg-border" />
+
+                      <div className="flex items-center gap-2">
+                        <Crown className="h-4 w-4 text-amber-500" />
+
+                        <span className="text-muted-foreground">المستوى</span>
+
+                        <span className="font-semibold">{xpInfo.level}</span>
                       </div>
                     </div>
-                  </div>
 
-                  <div className="rounded-2xl border border-border/60 bg-white px-5 py-4">
-                    <div className="flex items-center gap-3">
-                      <Crown className="h-5 w-5 text-amber-500" />
+                    {/* Progress */}
+                    <div className="mt-8 max-w-3xl">
+                      <div className="mb-3 flex items-end justify-between gap-4">
+                        <div>
+                          <p className="text-sm font-semibold">
+                            تقدمك في الدورة
+                          </p>
 
-                      <div>
-                        <p className="text-sm text-muted-foreground">المستوى</p>
+                          <p className="mt-1 text-xs leading-6 text-muted-foreground">
+                            {completedLessons} من {totalLessons} درس مكتمل
+                          </p>
+                        </div>
 
-                        <p className="text-2xl font-black">{xpInfo.level}</p>
+                        <span className="text-2xl font-bold tracking-tight text-primary">
+                          {overallProgress}%
+                        </span>
                       </div>
+
+                      <Progress
+                        value={overallProgress}
+                        className="
+    h-2.5
+    bg-primary/10
+    [&>div]:bg-primary
+  "
+                      />
+
+                      {nextLesson && (
+                        <Link
+                          href={`/student/courses/${courseId}/learn/${nextLesson.id}`}
+                          className="
+      mt-6 inline-flex items-center gap-2
+      rounded-lg bg-primary px-4 py-2.5
+      text-sm font-semibold text-primary-foreground
+      transition-colors
+      hover:bg-primary/90
+    "
+                        >
+                          متابعة التعلم
+                          <ChevronLeft className="h-4 w-4" />
+                        </Link>
+                      )}
                     </div>
                   </div>
                 </div>
-              </div>
 
-              {/* STATS */}
+                {/* PLACEMENT */}
+                <div className="relative overflow-hidden border-t border-border/60 bg-primary/[0.035] lg:border-r lg:border-t-0">
+                  {/* Decorative background */}
+                  <div className="absolute -left-16 -top-16 h-40 w-40 rounded-full bg-primary/10 blur-3xl" />
 
-              <div className="grid grid-cols-2 gap-4 sm:w-fit">
-                {/* TOTAL */}
+                  <div className="relative flex h-full flex-col items-center justify-center p-8 text-center">
+                    <span className="text-xs font-semibold tracking-wide text-muted-foreground">
+                      مستواك الحالي
+                    </span>
 
-                <div className="rounded-3xl border border-border/60 bg-white p-6 shadow-sm">
-                  <div className="mb-4 flex h-14 w-14 items-center justify-center rounded-3xl bg-primary/10 text-primary">
-                    <BookOpen className="h-7 w-7" />
-                  </div>
+                    <div className="mt-3">
+                      <p className="text-4xl font-black tracking-tight text-primary">
+                        {placement.level === "ADVANCED"
+                          ? "متقدم"
+                          : placement.level === "INTERMEDIATE"
+                            ? "متوسط"
+                            : "مبتدئ"}
+                      </p>
+                    </div>
 
-                  <p className="text-4xl font-black">{totalLessons}</p>
+                    <div className="mt-4 h-1 w-8 rounded-full bg-primary/40" />
 
-                  <p className="mt-2 text-sm text-muted-foreground">
-                    إجمالي الدروس
-                  </p>
-                </div>
-
-                {/* COMPLETED */}
-
-                <div className="rounded-3xl border border-border/60 bg-white p-6 shadow-sm">
-                  <div className="mb-4 flex h-14 w-14 items-center justify-center rounded-3xl bg-emerald-100 text-emerald-600">
-                    <CheckCircle2 className="h-7 w-7" />
-                  </div>
-
-                  <p className="text-4xl font-black text-emerald-600">
-                    {completedLessons}
-                  </p>
-
-                  <p className="mt-2 text-sm text-muted-foreground">مكتمل</p>
-                </div>
-              </div>
-            </div>
-
-            {/* PROGRESS */}
-
-            <div className="mt-10 rounded-[32px] border border-border/60 bg-white p-7 shadow-sm">
-              <div className="mb-5 flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
-                <div className="flex items-center gap-4">
-                  <div className="flex h-14 w-14 items-center justify-center rounded-3xl bg-primary/10 text-primary">
-                    <Trophy className="h-7 w-7" />
-                  </div>
-
-                  <div>
-                    <h2 className="text-xl font-black">تقدمك في الدورة التعليمية</h2>
-
-                    <p className="text-sm text-muted-foreground">
-                      استمر حتى الوصول إلى 100%
+                    <p className="mt-4 max-w-47.5 text-xs leading-6 text-muted-foreground">
+                      تم تحديد مستواك بناءً على اختبار تحديد المستوى.
                     </p>
+
+                    <Link
+                      href={`/student/courses/${courseId}/placement-result`}
+                      className="
+                group mt-6 inline-flex items-center gap-2
+                rounded-lg border border-border/70
+                bg-background px-4 py-2.5
+                text-sm font-semibold
+                transition-all
+                hover:border-primary/40
+                hover:bg-primary/5
+                hover:text-primary
+              "
+                    >
+                      عرض نتيجة الاختبار
+                      <ChevronLeft
+                        className="
+                  h-4 w-4
+                  transition-transform
+                  group-hover:-translate-x-1
+                "
+                      />
+                    </Link>
                   </div>
                 </div>
-
-                <div className="text-left">
-                  <p className="text-4xl font-black text-primary">
-                    {overallProgress}%
-                  </p>
-
-                  <p className="text-sm text-muted-foreground">مكتمل</p>
-                </div>
-              </div>
-
-              <Progress value={overallProgress} className="h-5 rounded-full" />
-
-              <div className="mt-4 flex items-center justify-between text-sm text-muted-foreground">
-                <span>{completedLessons} مكتمل</span>
-
-                <span>{totalLessons} درس</span>
               </div>
             </div>
           </div>
         </section>
-        <Card className="mb-10 border-primary/20 bg-primary/5">
-          <CardContent className="py-6">
-            <h2 className="text-2xl font-black">المسار المخصص لك</h2>
 
-            <p className="mt-2 text-muted-foreground">
-              بناءً على اختبار تحديد المستوى، تم تخصيص رحلة تعلم تناسب مستواك.
-            </p>
-
-            <div className="mt-4">
-              <Badge>
-                {placement.level === "ADVANCED"
-                  ? "متقدم"
-                  : placement.level === "INTERMEDIATE"
-                    ? "متوسط"
-                    : "مبتدئ"}
-              </Badge>
-            </div>
-          </CardContent>
-        </Card>
         {/* =====================================
             MODULES
         ===================================== */}
 
-        <section className="mx-auto max-w-7xl px-4 py-12">
+        <section className="mx-auto max-w-6xl px-4 py-12 sm:py-14">
+          {/* Section Header */}
+          <div className="mb-10">
+            <div className="flex items-end justify-between gap-6">
+              <div>
+                <p className="text-sm font-semibold text-primary">
+                  مسار التعلم
+                </p>
+
+                <h2 className="mt-1 text-2xl font-bold tracking-tight sm:text-3xl">
+                  وحدات الدورة
+                </h2>
+
+                <p className="mt-2 max-w-2xl text-sm leading-7 text-muted-foreground">
+                  تقدم عبر الوحدات خطوة بخطوة وأكمل دروسك للوصول إلى الوحدة
+                  التالية.
+                </p>
+              </div>
+
+              <div className="hidden text-left sm:block">
+                <p className="text-2xl font-bold tracking-tight">
+                  {completedModules}/{visibleModules.length}
+                </p>
+
+                <p className="mt-1 text-xs text-muted-foreground">
+                  وحدات مكتملة
+                </p>
+              </div>
+            </div>
+          </div>
+
+          {/* Learning Path */}
           <div className="relative">
-            {/* TIMELINE */}
-
-            <div className="absolute right-6 top-0 hidden h-full w-px bg-border md:block" />
-
-            <div className="space-y-10">
+            <div className="space-y-8">
               {visibleModules.map((module, index) => {
-              const isUnlocked =
-  index <= startIndex ||
-  course.studentXp >= module.requiredXp;
+                const isUnlocked =
+                  index <= startIndex || course.studentXp >= module.requiredXp;
 
                 const isCurrent = module.id === recommendedModule?.id;
 
+                const isLast = index === visibleModules.length - 1;
+
                 return (
-                  <div key={module.id} className="relative">
-                    {/* TIMELINE DOT */}
-
-                    <div
-                      className={cn(
-                        `
-                          absolute right-2.5 top-14 z-10 hidden
-                          h-7 w-7 rounded-full border-4 border-background
-                          md:flex md:items-center md:justify-center
-                        `,
-
-                        isUnlocked ? "bg-primary" : "bg-muted",
+                  <div
+                    key={module.id}
+                    className="relative grid grid-cols-[40px_minmax(0,1fr)] gap-4 sm:grid-cols-[48px_minmax(0,1fr)] sm:gap-6"
+                  >
+                    {/* Timeline */}
+                    <div className="relative flex justify-center">
+                      {/* Line */}
+                      {!isLast && (
+                        <div
+                          className={cn(
+                            "absolute top-10 -bottom-8 w-px",
+                            isUnlocked ? "bg-primary/30" : "bg-border",
+                          )}
+                        />
                       )}
-                    >
-                      {isUnlocked ? (
-                        <CheckCircle2 className="h-3.5 w-3.5 text-white" />
-                      ) : (
-                        <Lock className="h-3.5 w-3.5 text-muted-foreground" />
-                      )}
+
+                      {/* Node */}
+                      <div
+                        className={cn(
+                          `
+                    relative z-10
+                    flex h-10 w-10 shrink-0
+                    items-center justify-center
+                    rounded-full
+                    border-4 border-background
+                    text-xs font-bold
+                    transition-all duration-300
+                    sm:h-12 sm:w-12
+                  `,
+                          isCurrent
+                            ? "bg-primary text-primary-foreground ring-8 ring-primary/10"
+                            : isUnlocked
+                              ? "bg-primary/10 text-primary"
+                              : "bg-muted text-muted-foreground",
+                        )}
+                      >
+                        {isCurrent ? (
+                          <Sparkles className="h-4 w-4 sm:h-5 sm:w-5" />
+                        ) : isUnlocked ? (
+                          <CheckCircle2 className="h-4 w-4 sm:h-5 sm:w-5" />
+                        ) : (
+                          <Lock className="h-4 w-4 sm:h-5 sm:w-5" />
+                        )}
+                      </div>
                     </div>
 
-                    {/* MODULE */}
+                    {/* Module */}
+                    <div className="min-w-0">
+                      {/* Current indicator */}
+                      {isCurrent && (
+                        <div className="mb-2 flex items-center gap-2">
+                          <span className="h-1.5 w-1.5 rounded-full bg-primary" />
 
-                    <div className="md:mr-16">
-                      <div className="relative">
-                        {/* LOCKED OVERLAY */}
-
-                        {!isUnlocked && (
-                          <div
-                            className="
-                                absolute inset-0 z-30
-                                flex flex-col items-center justify-center
-                                rounded-[32px]
-                                bg-white/80
-                                backdrop-blur-sm
-                              "
-                          >
-                            <div className="flex h-20 w-20 items-center justify-center rounded-full bg-primary/10 text-primary">
-                              <Lock className="h-10 w-10" />
-                            </div>
-
-                            <h3 className="mt-5 text-2xl font-black">
-                              مستوى مقفل
-                            </h3>
-
-                            <p className="mt-2 text-muted-foreground">
-                              تحتاج{" "}
-                              <span className="font-black text-primary">
-                                {module.requiredXp}
-                              </span>{" "}
-                              نقاط خبرة
-                            </p>
-
-                            <div className="mt-5 w-72">
-                              <Progress
-                                value={Math.min(
-                                  100,
-                                  (course.studentXp / module.requiredXp) * 100,
-                                )}
-                                className="h-3"
-                              />
-                            </div>
-                          </div>
-                        )}
-
-                        {/* CURRENT BADGE */}
-
-                        {/* CARD */}
-
-                        <div
-                          className={cn(!isUnlocked && "opacity-60 grayscale")}
-                        >
-                          {module.id === recommendedModule?.id && (
-                            <div className="absolute -top-3 left-6 z-20">
-                              <Badge className="bg-emerald-500">
-                                🚀 مستواك الحالي
-                              </Badge>
-                            </div>
-                          )}
-                          <ModuleCard
-                            module={module}
-                            courseId={courseId}
-                            isUnlocked={isUnlocked}
-                            studentXp={course.studentXp}
-                            allLessonsCompleted={allLessonsCompleted}
-                            moduleIndex={index}
-                          />
+                          <span className="text-xs font-semibold text-primary">
+                            ابدأ من هنا
+                          </span>
                         </div>
-                      </div>
+                      )}
+
+                      <ModuleCard
+                        module={module}
+                        courseId={courseId}
+                        isUnlocked={isUnlocked}
+                        studentXp={course.studentXp}
+                        allLessonsCompleted={allLessonsCompleted}
+                        moduleIndex={index}
+                      />
                     </div>
                   </div>
                 );

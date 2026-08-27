@@ -10,6 +10,22 @@ import { prisma } from "@/lib/prisma";
 // COURSE MAP
 // =========================================
 
+function getModuleLevel(
+  moduleLevel: string | null | undefined,
+) {
+  switch (moduleLevel) {
+    case "INTERMEDIATE":
+      return 2;
+
+    case "ADVANCED":
+      return 3;
+
+    case "BEGINNER":
+    default:
+      return 1;
+  }
+}
+
 export async function getCourseWithModulesAction(courseId: string) {
   const session = await auth();
 
@@ -416,52 +432,88 @@ export async function submitLessonProgressAction(input: SubmitLessonInput) {
   // XP + COINS + LEVEL
   // =========================================
 
-  let xpDifference = 0;
+ 
 
-  let coinsDifference = 0;
+let xpDifference = 0;
+let coinsDifference = 0;
 
-  let didLevelUp = false;
+let didLevelUp = false;
+let newLevel = user.currentLevel;
 
-  let newLevel = user.currentLevel;
+// =========================================
+// XP DIFFERENCE
+// =========================================
 
-  if (shouldUpdateScore) {
-    xpDifference = xpEarned - (existing?.xpEarned ?? 0);
+if (shouldUpdateScore) {
+  xpDifference =
+    xpEarned - (existing?.xpEarned ?? 0);
 
-    coinsDifference = Math.floor(xpDifference / 2);
+  coinsDifference =
+    Math.floor(xpDifference / 2);
+}
 
-    if (xpDifference > 0) {
-      const newXp = user.xp + xpDifference;
+// =========================================
+// CALCULATE LEVEL
+// =========================================
 
-      newLevel = calculateLevel(newXp);
+const newXp =
+  user.xp + xpDifference;
 
-      didLevelUp = newLevel > user.currentLevel;
+// Level based on XP
+const xpLevel =
+  calculateLevel(newXp);
 
-      await prisma.user.update({
-        where: {
-          id: studentId,
+// Level based on Module
+const moduleLevel =
+  getModuleLevel(
+    lesson.module.level,
+  );
+
+// Never decrease the student's level
+newLevel = Math.max(
+  user.currentLevel,
+  xpLevel,
+  moduleLevel,
+);
+
+didLevelUp =
+  newLevel > user.currentLevel;
+
+// =========================================
+// UPDATE USER
+// =========================================
+
+if (
+  shouldUpdateScore ||
+  didLevelUp
+) {
+  await prisma.user.update({
+    where: {
+      id: studentId,
+    },
+
+    data: {
+      ...(shouldUpdateScore && {
+        xp: {
+          increment: xpDifference,
         },
 
-        data: {
-          xp: {
-            increment: xpDifference,
-          },
-
-          coins: {
-            increment: coinsDifference,
-          },
-
-          currentLevel: newLevel,
-
-          ...(completed && {
-            streak: {
-              increment: 1,
-            },
-          }),
+        coins: {
+          increment: coinsDifference,
         },
-      });
-    }
-  }
+      }),
 
+      currentLevel: newLevel,
+
+      ...(completed &&
+        shouldUpdateScore && {
+          streak: {
+            increment: 1,
+          },
+        }),
+    },
+  });
+}
   // =========================================
   // LEADERBOARD
   // =========================================
