@@ -1,9 +1,12 @@
+
 "use client";
 
 import {
   useState,
   useCallback,
   useRef,
+  useEffect,
+  useMemo,
 } from "react";
 
 import {
@@ -13,6 +16,10 @@ import {
   Lightbulb,
   Keyboard,
   Trophy,
+  ArrowLeft,
+  RotateCcw,
+  Target,
+  CircleHelp,
 } from "lucide-react";
 
 import {
@@ -35,12 +42,151 @@ type QuestionState =
   | "correct"
   | "wrong";
 
+const MAX_ATTEMPTS = 2;
+const AUTO_NEXT_DELAY = 2500;
+
+/**
+ * Normalize Arabic text for educational answer matching.
+ *
+ * The normalization is intentionally conservative.
+ *
+ * It handles:
+ * - Arabic diacritics
+ * - Tatweel
+ * - Alef variations
+ * - Alef Maqsura / Ya
+ * - Extra whitespace
+ *
+ * It intentionally does NOT convert:
+ * - ة -> ه
+ * - ؤ -> و
+ * - ئ -> ي
+ *
+ * because those changes can hide real spelling differences.
+ */
+function normalizeArabic(text: string): string {
+  return text
+    .trim()
+    // Remove Arabic diacritics
+    .replace(/[\u064B-\u065F\u0670]/g, "")
+    // Remove tatweel
+    .replace(/ـ/g, "")
+    // Normalize Alef variations
+    .replace(/[إأآٱ]/g, "ا")
+    // Normalize Alef Maqsura to Ya
+    .replace(/ى/g, "ي")
+    // Normalize whitespace
+    .replace(/\s+/g, " ")
+    .toLowerCase();
+}
+
+/**
+ * Convert the answer field into a list
+ * of accepted normalized answers.
+ *
+ * Supported:
+ *
+ * "القصوى"
+ *
+ * "القصوى|القصوي"
+ *
+ * "القصوى، القصوي"
+ *
+ * "القصوى
+ * القصوي"
+ */
+function getAcceptedAnswers(
+  answer: string | null | undefined,
+): string[] {
+  if (!answer?.trim()) {
+    return [];
+  }
+
+  return Array.from(
+    new Set(
+      answer
+        .split(/[|،,\n]+/)
+        .map((item) =>
+          normalizeArabic(item),
+        )
+        .filter(Boolean),
+    ),
+  );
+}
+
+/**
+ * Check if the student's answer matches
+ * any accepted answer.
+ */
+function isAnswerCorrect(
+  userAnswer: string,
+  acceptedAnswers: string[],
+): boolean {
+  const normalizedUserAnswer =
+    normalizeArabic(userAnswer);
+
+  if (!normalizedUserAnswer) {
+    return false;
+  }
+
+  return acceptedAnswers.includes(
+    normalizedUserAnswer,
+  );
+}
+
+/**
+ * Generate a progressive hint.
+ *
+ * Example:
+ *
+ * الإجابة: القصوى
+ *
+ * level 1 -> ا_____
+ * level 2 -> ال____
+ * level 3 -> القص___
+ *
+ * The full answer is never revealed by
+ * the hint itself.
+ */
+function getHintText(
+  answer: string,
+  hintLevel: number,
+): string | null {
+  const normalizedAnswer =
+    normalizeArabic(answer);
+
+  if (!normalizedAnswer) {
+    return null;
+  }
+
+  const visibleCharacters = Math.min(
+    hintLevel,
+    Math.max(
+      1,
+      normalizedAnswer.length - 1,
+    ),
+  );
+
+  return (
+    normalizedAnswer.slice(
+      0,
+      visibleCharacters,
+    ) +
+    "_".repeat(
+      Math.max(
+        1,
+        normalizedAnswer.length -
+          visibleCharacters,
+      ),
+    )
+  );
+}
+
 function IconBox({
   children,
   className,
 }: {
   children: React.ReactNode;
-
   className?: string;
 }) {
   return (
@@ -69,32 +215,285 @@ export function FillBlanksGame({
   const [questionState, setQuestionState] =
     useState<QuestionState>("idle");
 
+  /**
+   * Number of questions answered correctly.
+   */
   const [correctCount, setCorrectCount] =
     useState(0);
 
-  const [hint, setHint] =
+  /**
+   * Attempts for the current question.
+   */
+  const [attempts, setAttempts] =
+    useState(0);
+
+  /**
+   * Total attempts across the entire game.
+   */
+  const [totalAttempts, setTotalAttempts] =
+    useState(0);
+
+  /**
+   * Number of questions that have been completed.
+   */
+  const [completedQuestions, setCompletedQuestions] =
+    useState(0);
+
+  /**
+   * Progressive hint level.
+   */
+  const [hintLevel, setHintLevel] =
+    useState(0);
+
+  /**
+   * Whether the student used a hint.
+   */
+  const [hasUsedHint, setHasUsedHint] =
     useState(false);
 
   const inputRef =
     useRef<HTMLInputElement>(null);
 
+  const timeoutRef =
+    useRef<ReturnType<typeof setTimeout> | null>(
+      null,
+    );
+
+  /**
+   * Current question.
+   */
   const current =
     contents[currentIndex];
 
-  const progress =
-    (currentIndex /
-      contents.length) *
-    100;
+  /**
+   * Accepted answers are calculated only
+   * when the current answer changes.
+   */
+  const acceptedAnswers =
+    useMemo(
+      () =>
+        getAcceptedAnswers(
+          current?.answer,
+        ),
+      [current?.answer],
+    );
 
-  const accuracy =
-    currentIndex === 0
-      ? 100
+  /**
+   * Primary answer is used for:
+   * - hints
+   * - displaying the answer
+   *
+   * Alternative answers are used only
+   * for validation.
+   */
+  const primaryAnswer =
+    acceptedAnswers[0] ?? "";
+
+  const normalizedPrimaryAnswer =
+    useMemo(
+      () =>
+        normalizeArabic(
+          primaryAnswer,
+        ),
+      [primaryAnswer],
+    );
+
+  /**
+   * Question progress.
+   *
+   * The current question is included so:
+   *
+   * Question 1 / 5 -> 20%
+   * Question 5 / 5 -> 100%
+   */
+  const progress =
+    contents.length === 0
+      ? 0
       : Math.round(
-          (correctCount /
-            currentIndex) *
+          ((currentIndex + 1) /
+            contents.length) *
             100,
         );
 
+  /**
+   * Overall accuracy.
+   *
+   * We use total attempts here rather than
+   * current-question attempts.
+   */
+  const accuracy =
+    totalAttempts === 0
+      ? null
+      : Math.round(
+          (correctCount /
+            completedQuestions) *
+            100,
+        );
+
+  /**
+   * Current question parts.
+   */
+  const questionParts =
+    current?.question?.split("___") ?? [
+      "",
+      "",
+    ];
+
+  /**
+   * Show accepted answers after a wrong
+   * question is finalized.
+   */
+  const displayCorrectAnswer =
+    acceptedAnswers.length > 0
+      ? acceptedAnswers.join(" / ")
+      : current?.answer ?? "";
+
+  /**
+   * Maximum useful hint level.
+   *
+   * We always keep at least one character
+   * hidden.
+   */
+  const maxHintLevel =
+    Math.max(
+      0,
+      normalizedPrimaryAnswer.length - 1,
+    );
+
+  /**
+   * Current hint.
+   */
+  const hintText =
+    hintLevel > 0
+      ? getHintText(
+          primaryAnswer,
+          hintLevel,
+        )
+      : null;
+
+  /**
+   * Clear the auto-next timer.
+   */
+  const clearAutoNextTimer =
+    useCallback(() => {
+      if (timeoutRef.current) {
+        clearTimeout(
+          timeoutRef.current,
+        );
+
+        timeoutRef.current = null;
+      }
+    }, []);
+
+  /**
+   * Cleanup on unmount.
+   */
+  useEffect(() => {
+    return () => {
+      clearAutoNextTimer();
+    };
+  }, [clearAutoNextTimer]);
+
+  /**
+   * Focus input whenever a new question
+   * becomes active.
+   */
+  useEffect(() => {
+    if (questionState !== "idle") {
+      return;
+    }
+
+    const timer = setTimeout(() => {
+      inputRef.current?.focus();
+    }, 100);
+
+    return () => {
+      clearTimeout(timer);
+    };
+  }, [
+    currentIndex,
+    questionState,
+  ]);
+
+  /**
+   * Reset question-specific state.
+   */
+  const resetQuestionState =
+    useCallback(() => {
+      setInputValue("");
+      setQuestionState("idle");
+      setAttempts(0);
+      setHintLevel(0);
+      setHasUsedHint(false);
+    }, []);
+
+  /**
+   * Complete the game.
+   */
+  const completeGame =
+    useCallback(
+      (finalCorrectCount: number) => {
+        clearAutoNextTimer();
+
+        const score =
+          contents.length === 0
+            ? 0
+            : Math.round(
+                (finalCorrectCount /
+                  contents.length) *
+                  100,
+              );
+
+        onComplete({
+          score,
+          correctAnswers:
+            finalCorrectCount,
+          totalQuestions:
+            contents.length,
+        });
+      },
+      [
+        clearAutoNextTimer,
+        contents.length,
+        onComplete,
+      ],
+    );
+
+  /**
+   * Move to the next question.
+   */
+  const goToNextQuestion =
+    useCallback(() => {
+      clearAutoNextTimer();
+
+      /**
+       * Last question.
+       */
+      if (
+        currentIndex + 1 >=
+        contents.length
+      ) {
+        completeGame(correctCount);
+        return;
+      }
+
+      setCurrentIndex(
+        (index) => index + 1,
+      );
+
+      resetQuestionState();
+    }, [
+      clearAutoNextTimer,
+      currentIndex,
+      contents.length,
+      correctCount,
+      completeGame,
+      resetQuestionState,
+    ]);
+
+  /**
+   * Check student's answer.
+   */
   const checkAnswer =
     useCallback(() => {
       if (
@@ -104,113 +503,233 @@ export function FillBlanksGame({
         return;
       }
 
-      const userAnswer =
-        inputValue
-          .trim()
-          .toLowerCase();
-
-      const correctAnswer =
-        (
-          current.answer ?? ""
-        )
-          .toLowerCase()
-          .trim();
-
       const isCorrect =
-        userAnswer ===
-        correctAnswer;
+        isAnswerCorrect(
+          inputValue,
+          acceptedAnswers,
+        );
 
-      setQuestionState(
-        isCorrect
-          ? "correct"
-          : "wrong",
+      const nextAttempts =
+        attempts + 1;
+
+      setAttempts(nextAttempts);
+
+      setTotalAttempts(
+        (count) => count + 1,
       );
 
+      /**
+       * Correct answer:
+       *
+       * The question is completed immediately.
+       * We don't allow unnecessary extra attempts.
+       */
       if (isCorrect) {
+        setQuestionState("correct");
+
         setCorrectCount(
-          (c) => c + 1,
+          (count) => count + 1,
         );
-      }
 
-      setTimeout(() => {
-        if (
-          currentIndex + 1 >=
-          contents.length
-        ) {
-          const finalCorrect =
-            isCorrect
-              ? correctCount + 1
-              : correctCount;
+        setCompletedQuestions(
+          (count) => count + 1,
+        );
 
-          const score =
-            Math.round(
-              (finalCorrect /
-                contents.length) *
-                100,
+        /**
+         * Automatically continue after feedback.
+         */
+        timeoutRef.current =
+          setTimeout(() => {
+            /**
+             * Last question.
+             */
+            if (
+              currentIndex + 1 >=
+              contents.length
+            ) {
+              /**
+               * Include this correct answer.
+               */
+              completeGame(
+                correctCount + 1,
+              );
+
+              return;
+            }
+
+            setCurrentIndex(
+              (index) => index + 1,
             );
 
-          onComplete({
-            score,
-            correctAnswers:
-              finalCorrect,
-            totalQuestions:
-              contents.length,
-          });
-        } else {
+            resetQuestionState();
+
+            timeoutRef.current =
+              null;
+          }, AUTO_NEXT_DELAY);
+
+        return;
+      }
+
+      /**
+       * Wrong answer.
+       *
+       * Allow the student to retry until
+       * MAX_ATTEMPTS is reached.
+       */
+      if (
+        nextAttempts <
+        MAX_ATTEMPTS
+      ) {
+        /**
+         * Keep the question active.
+         * We do not reveal the answer.
+         */
+        setQuestionState("idle");
+
+        /**
+         * Clear the input so the student
+         * can enter another answer.
+         */
+        setInputValue("");
+
+        /**
+         * Automatically focus again.
+         */
+        setTimeout(() => {
+          inputRef.current?.focus();
+        }, 50);
+
+        return;
+      }
+
+      /**
+       * Maximum attempts reached.
+       */
+      setQuestionState("wrong");
+
+      setCompletedQuestions(
+        (count) => count + 1,
+      );
+
+      /**
+       * Automatically continue after
+       * showing the correct answer.
+       */
+      timeoutRef.current =
+        setTimeout(() => {
+          if (
+            currentIndex + 1 >=
+            contents.length
+          ) {
+            completeGame(
+              correctCount,
+            );
+
+            return;
+          }
+
           setCurrentIndex(
-            (i) => i + 1,
+            (index) => index + 1,
           );
 
-          setInputValue("");
+          resetQuestionState();
 
-          setQuestionState(
-            "idle",
-          );
-
-          setHint(false);
-
-          setTimeout(() => {
-            inputRef.current?.focus();
-          }, 100);
-        }
-      }, 1400);
+          timeoutRef.current =
+            null;
+        }, AUTO_NEXT_DELAY);
     }, [
       questionState,
       inputValue,
-      current,
+      acceptedAnswers,
+      attempts,
       currentIndex,
       contents.length,
       correctCount,
-      onComplete,
+      completeGame,
+      resetQuestionState,
     ]);
 
+  /**
+   * Keyboard support.
+   */
   const handleKeyDown = (
-    e: React.KeyboardEvent,
+    e: React.KeyboardEvent<HTMLInputElement>,
   ) => {
-    if (e.key === "Enter") {
+    if (
+      e.key === "Enter" &&
+      questionState === "idle"
+    ) {
+      e.preventDefault();
       checkAnswer();
     }
   };
 
-  const questionParts =
-    current?.question.split(
-      "___",
-    ) ?? ["", ""];
+  /**
+   * Show a progressive hint.
+   */
+  const showHint = () => {
+    if (
+      maxHintLevel <= 0 ||
+      hintLevel >= maxHintLevel
+    ) {
+      return;
+    }
 
-  const hintText =
-    current?.answer
-      ? `${current.answer[0]}${"_".repeat(
-          current.answer.length -
-            1,
-        )}`
-      : null;
+    setHintLevel(
+      (level) =>
+        Math.min(
+          level + 1,
+          maxHintLevel,
+        ),
+    );
+
+    setHasUsedHint(true);
+  };
+
+  /**
+   * Manual next button.
+   */
+  const handleNext = () => {
+    goToNextQuestion();
+  };
+
+  /**
+   * Empty state.
+   */
+  if (
+    contents.length === 0 ||
+    !current
+  ) {
+    return (
+      <div className="mx-auto flex w-full max-w-3xl items-center justify-center px-4 py-10">
+        <div className="w-full rounded-3xl border border-border/60 bg-white p-8 text-center shadow-sm">
+          <IconBox className="mx-auto mb-5 h-16 w-16 rounded-3xl">
+            <CircleHelp className="h-8 w-8" />
+          </IconBox>
+
+          <h2 className="text-2xl font-black">
+            لا توجد أسئلة
+          </h2>
+
+          <p className="mt-2 text-muted-foreground">
+            لا توجد أسئلة متاحة لهذه اللعبة حاليًا.
+          </p>
+        </div>
+      </div>
+    );
+  }
 
   return (
-    <div className="mx-auto flex w-full max-w-3xl flex-col gap-6 px-4 py-6">
-      {/* TOP BAR */}
+    <div
+      className="mx-auto flex w-full max-w-3xl flex-col gap-6 px-4 py-6"
+      dir="rtl"
+    >
+      {/* =========================
+          TOP BAR
+      ========================== */}
       <div className="rounded-3xl border border-border/60 bg-white p-5 shadow-sm">
-        <div className="mb-4 flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
-          {/* LEFT */}
+        <div className="mb-5 flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+          {/* TITLE */}
           <div>
             <p className="text-sm text-muted-foreground">
               السؤال{" "}
@@ -218,15 +737,26 @@ export function FillBlanksGame({
               {contents.length}
             </p>
 
-            <h2 className="mt-1 text-xl font-black">
-              أكمل الفراغ ✍️
+            <h2 className="mt-1 flex items-center gap-2 text-xl font-black">
+              <Keyboard className="h-5 w-5 text-primary" />
+              أكمل الفراغ
             </h2>
           </div>
 
           {/* STATS */}
-          <div className="flex flex-wrap items-center gap-3">
+          <div className="flex flex-wrap items-center gap-2">
             {/* CORRECT */}
-            <div className="flex items-center gap-2 rounded-2xl border border-primary/20 bg-primary/5 px-3 py-2 text-primary">
+            <div
+              className="
+                flex items-center gap-2
+                rounded-2xl
+                border border-primary/20
+                bg-primary/5
+                px-3 py-2
+                text-primary
+              "
+              title="عدد الإجابات الصحيحة"
+            >
               <Sparkles className="h-4 w-4" />
 
               <span className="text-sm font-bold">
@@ -234,12 +764,41 @@ export function FillBlanksGame({
               </span>
             </div>
 
+            {/* CURRENT ATTEMPTS */}
+            <div
+              className="
+                flex items-center gap-2
+                rounded-2xl
+                border border-border/60
+                bg-muted/30
+                px-3 py-2
+              "
+              title="محاولات السؤال الحالي"
+            >
+              <RotateCcw className="h-4 w-4 text-muted-foreground" />
+
+              <span className="text-sm font-bold">
+                {attempts}/{MAX_ATTEMPTS}
+              </span>
+            </div>
+
             {/* ACCURACY */}
-            <div className="flex items-center gap-2 rounded-2xl border border-border/60 bg-muted/30 px-3 py-2">
+            <div
+              className="
+                flex items-center gap-2
+                rounded-2xl
+                border border-border/60
+                bg-muted/30
+                px-3 py-2
+              "
+              title="الدقة الحالية"
+            >
               <Trophy className="h-4 w-4 text-primary" />
 
               <span className="text-sm font-bold">
-                {accuracy}%
+                {accuracy === null
+                  ? "—"
+                  : `${accuracy}%`}
               </span>
             </div>
           </div>
@@ -253,14 +812,18 @@ export function FillBlanksGame({
             </span>
 
             <span className="font-bold">
-              {Math.round(
-                progress,
-              )}
-              %
+              {progress}%
             </span>
           </div>
 
-          <div className="h-3 overflow-hidden rounded-full bg-muted">
+          <div
+            className="h-3 overflow-hidden rounded-full bg-muted"
+            role="progressbar"
+            aria-valuemin={0}
+            aria-valuemax={100}
+            aria-valuenow={progress}
+            aria-label="تقدم اللعبة"
+          >
             <div
               className="h-full rounded-full bg-primary transition-all duration-500"
               style={{
@@ -271,23 +834,22 @@ export function FillBlanksGame({
         </div>
       </div>
 
-      {/* QUESTION CARD */}
+      {/* =========================
+          QUESTION CARD
+      ========================== */}
       <div
         className={cn(
           "overflow-hidden rounded-[32px] border bg-white shadow-sm transition-all duration-300",
-
-          questionState ===
-            "correct"
+          questionState === "correct"
             ? "border-emerald-200 bg-emerald-50/40"
-            : questionState ===
-                "wrong"
+            : questionState === "wrong"
               ? "border-red-200 bg-red-50/40"
               : "border-border/60",
         )}
       >
         <div className="p-6 sm:p-10">
-          {/* ICON */}
-          <div className="mb-6 flex justify-center">
+          {/* QUESTION ICON */}
+          <div className="mb-7 flex justify-center">
             <IconBox className="h-16 w-16 rounded-3xl">
               <Keyboard className="h-8 w-8" />
             </IconBox>
@@ -299,35 +861,31 @@ export function FillBlanksGame({
               {questionParts.length >
               1 ? (
                 <>
-                  {
-                    questionParts[0]
-                  }
+                  {questionParts[0]}
 
                   <span
                     className={cn(
-                      "mx-2 inline-flex min-w-28 items-center justify-center rounded-xl border-b-4 px-4 py-1 text-center font-black transition-all",
-
+                      "mx-2 inline-flex min-w-28 items-center justify-center rounded-xl border-b-4 px-4 py-1 text-center font-black transition-all duration-300",
                       questionState ===
                         "correct"
                         ? "border-emerald-400 bg-emerald-100 text-emerald-600"
-
                         : questionState ===
                             "wrong"
                           ? "border-red-400 bg-red-100 text-red-500"
-
                           : "border-primary bg-primary/10 text-primary",
                     )}
                   >
                     {questionState !==
                     "idle"
-                      ? current.answer
-                      : inputValue ||
-                        "____"}
+                      ? questionState ===
+                        "wrong"
+                        ? displayCorrectAnswer
+                        : inputValue
+                    : inputValue ||
+                      "____"}
                   </span>
 
-                  {
-                    questionParts[1]
-                  }
+                  {questionParts[1]}
                 </>
               ) : (
                 current.question
@@ -335,44 +893,73 @@ export function FillBlanksGame({
             </p>
           </div>
 
-          {/* FEEDBACK */}
+          {/* =========================
+              CORRECT FEEDBACK
+          ========================== */}
           {questionState ===
             "correct" && (
-            <div className="mt-8 flex flex-col items-center text-center">
-              <div className="mb-4 flex h-20 w-20 animate-bounce items-center justify-center rounded-full bg-emerald-100 text-emerald-600">
+            <div
+              className="mt-8 flex flex-col items-center text-center"
+              aria-live="polite"
+            >
+              <div className="mb-4 flex h-20 w-20 items-center justify-center rounded-full bg-emerald-100 text-emerald-600">
                 <CheckCircle2 className="h-10 w-10" />
               </div>
 
               <h3 className="text-2xl font-black text-emerald-600">
                 إجابة صحيحة!
               </h3>
+
+              <p className="mt-2 text-sm text-muted-foreground">
+                {attempts === 1
+                  ? "إجابة صحيحة من المحاولة الأولى."
+                  : `إجابة صحيحة بعد ${attempts} محاولات.`}
+              </p>
+
+              {hasUsedHint && (
+                <p className="mt-1 text-xs text-muted-foreground">
+                  تم استخدام تلميح في هذا السؤال.
+                </p>
+              )}
             </div>
           )}
 
+          {/* =========================
+              WRONG FEEDBACK
+          ========================== */}
           {questionState ===
             "wrong" && (
-            <div className="mt-8 flex flex-col items-center text-center">
+            <div
+              className="mt-8 flex flex-col items-center text-center"
+              aria-live="polite"
+            >
               <div className="mb-4 flex h-20 w-20 items-center justify-center rounded-full bg-red-100 text-red-500">
                 <XCircle className="h-10 w-10" />
               </div>
 
               <h3 className="text-2xl font-black text-red-500">
-                إجابة خاطئة
+                لم تكن الإجابة صحيحة
               </h3>
 
               <p className="mt-3 text-muted-foreground">
+                انتهت المحاولات المتاحة.
+              </p>
+
+              <p className="mt-4 text-sm text-muted-foreground">
                 الإجابة الصحيحة:
               </p>
 
-              <p className="mt-2 rounded-xl bg-emerald-100 px-4 py-2 text-lg font-black text-emerald-600">
-                {
-                  current.answer
-                }
+              <p
+                className="mt-2 rounded-xl bg-emerald-100 px-5 py-2 text-lg font-black text-emerald-600"
+              >
+                {displayCorrectAnswer}
               </p>
             </div>
           )}
 
-          {/* INPUT */}
+          {/* =========================
+              INPUT
+          ========================== */}
           {questionState ===
             "idle" && (
             <div className="mt-8 flex flex-col gap-4 sm:flex-row">
@@ -389,6 +976,11 @@ export function FillBlanksGame({
                   handleKeyDown
                 }
                 autoFocus
+                dir="rtl"
+                aria-label="إجابة السؤال"
+                aria-describedby="answer-hint"
+                autoComplete="off"
+                spellCheck={false}
                 placeholder="اكتب إجابتك هنا..."
                 className="
                   flex-1
@@ -396,7 +988,8 @@ export function FillBlanksGame({
                   border border-border/60
                   bg-white
                   px-5 py-4
-                  text-right text-base font-medium text-foreground
+                  text-right text-base font-medium
+                  text-foreground
                   placeholder:text-muted-foreground
                   shadow-sm
                   transition-all duration-300
@@ -408,6 +1001,7 @@ export function FillBlanksGame({
               />
 
               <button
+                type="button"
                 onClick={
                   checkAnswer
                 }
@@ -415,7 +1009,8 @@ export function FillBlanksGame({
                   !inputValue.trim()
                 }
                 className="
-                  flex items-center justify-center gap-2
+                  flex items-center
+                  justify-center gap-2
                   rounded-2xl
                   bg-primary
                   px-8 py-4
@@ -436,38 +1031,112 @@ export function FillBlanksGame({
               </button>
             </div>
           )}
+
+          {/* =========================
+              NEXT / FINISH
+          ========================== */}
+          {questionState !==
+            "idle" && (
+            <div className="mt-8 flex justify-center">
+              <button
+                type="button"
+                onClick={
+                  handleNext
+                }
+                className="
+                  flex items-center
+                  justify-center gap-2
+                  rounded-2xl
+                  bg-primary
+                  px-7 py-3.5
+                  font-bold text-white
+                  shadow-sm
+                  transition-all duration-300
+                  hover:scale-[1.01]
+                  hover:bg-primary/90
+                  active:scale-[0.98]
+                "
+              >
+                {currentIndex + 1 >=
+                contents.length
+                  ? "إنهاء اللعبة"
+                  : "السؤال التالي"}
+
+                <ArrowLeft className="h-5 w-5" />
+              </button>
+            </div>
+          )}
         </div>
       </div>
 
-      {/* HINT */}
+      {/* =========================
+          HINT
+      ========================== */}
       {questionState ===
         "idle" &&
-        current.answer && (
-          <div className="flex justify-center">
+        current.answer &&
+        maxHintLevel > 0 && (
+          <div className="flex flex-col items-center gap-3">
             <button
-              onClick={() =>
-                setHint(true)
+              type="button"
+              onClick={showHint}
+              disabled={
+                hintLevel >=
+                maxHintLevel
               }
+              aria-describedby="answer-hint"
               className="
                 flex items-center gap-2
                 rounded-2xl
                 border border-border/60
                 bg-white
                 px-4 py-3
-                text-sm text-muted-foreground
+                text-sm
+                text-muted-foreground
                 shadow-sm
                 transition-all duration-300
                 hover:border-primary/20
                 hover:bg-primary/5
                 hover:text-primary
+                disabled:cursor-not-allowed
+                disabled:opacity-50
               "
             >
               <Lightbulb className="h-4 w-4" />
 
-              {hint
-                ? `تلميح: "${hintText}"`
-                : "إظهار تلميح"}
+              {hintLevel === 0
+                ? "إظهار تلميح"
+                : hintLevel >=
+                    maxHintLevel
+                  ? "تم الوصول لأقصى تلميح"
+                  : "إظهار حرف إضافي"}
             </button>
+
+            {hintText && (
+              <div
+                id="answer-hint"
+                className="
+                  rounded-2xl
+                  border border-primary/10
+                  bg-primary/5
+                  px-6 py-3
+                  text-center
+                "
+                aria-live="polite"
+              >
+                <div className="flex items-center justify-center gap-2">
+                  <Target className="h-4 w-4 text-primary" />
+
+                  <p className="text-xs font-bold text-muted-foreground">
+                    تلميح
+                  </p>
+                </div>
+
+                <p className="mt-1 text-xl font-black tracking-widest text-primary">
+                  {hintText}
+                </p>
+              </div>
+            )}
           </div>
         )}
     </div>
