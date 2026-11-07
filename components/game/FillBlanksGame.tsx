@@ -163,7 +163,7 @@ function getHintText(
     hintLevel,
     Math.max(
       1,
-      normalizedAnswer.length - 1,
+      Math.floor(normalizedAnswer.length / 2) - 1,
     ),
   );
 
@@ -175,7 +175,7 @@ function getHintText(
     "_".repeat(
       Math.max(
         1,
-        normalizedAnswer.length -
+        Math.floor(normalizedAnswer.length / 2) -
           visibleCharacters,
       ),
     )
@@ -357,7 +357,7 @@ export function FillBlanksGame({
   const maxHintLevel =
     Math.max(
       0,
-      normalizedPrimaryAnswer.length - 1,
+      Math.floor(normalizedPrimaryAnswer.length / 2) - 1,
     );
 
   /**

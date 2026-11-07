@@ -4,10 +4,7 @@ import Link from "next/link";
 
 import {
   ArrowLeft,
-  ArrowUpRight,
   Brain,
-  CheckCircle2,
-  Crown,
   Gamepad2,
   GraduationCap,
   Rocket,
@@ -23,12 +20,6 @@ import { prisma } from "@/lib/prisma";
 
 import Navbar from "@/components/sections/Navbar";
 import Footer from "@/components/sections/Footer";
-
-import {
-  Avatar,
-  AvatarFallback,
-  AvatarImage,
-} from "@/components/ui/avatar";
 
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -52,8 +43,6 @@ export default async function HomePage() {
     studentsCount,
     teachersCount,
     coursesCount,
-    battlesCount,
-    leaderboard,
   ] = await Promise.all([
     prisma.user.count({
       where: {
@@ -69,7 +58,6 @@ export default async function HomePage() {
 
     prisma.course.count(),
 
-    prisma.battleRoom.count(),
 
     prisma.user.findMany({
       where: {
@@ -266,11 +254,7 @@ export default async function HomePage() {
               label="دورة"
             />
 
-            <StatCard
-              icon={<Swords className="h-5 w-5" />}
-              value={battlesCount}
-              label="تحدي"
-            />
+         
           </div>
         </div>
       </section>
@@ -460,26 +444,6 @@ export default async function HomePage() {
             title="تقدم الطلاب"
             description="عرض مختصر للطلاب الأعلى في نقاط الخبرة."
           />
-
-          <div className="mt-10 overflow-hidden rounded-2xl border">
-            {leaderboard.length === 0 ? (
-              <div className="py-12 text-center text-sm text-muted-foreground">
-                لا توجد بيانات متاحة حاليًا.
-              </div>
-            ) : (
-              leaderboard.map((student, index) => (
-                <LeaderboardRow
-                  key={student.id}
-                  student={student}
-                  index={index}
-                  isLast={
-                    index ===
-                    leaderboard.length - 1
-                  }
-                />
-              ))
-            )}
-          </div>
         </div>
       </section>
 
@@ -764,96 +728,6 @@ function TeamScore({
         نقطة
       </p>
 
-    </div>
-  );
-}
-
-// =========================================
-// LEADERBOARD ROW
-// =========================================
-
-function LeaderboardRow({
-  student,
-  index,
-  isLast,
-}: {
-  student: {
-    id: string;
-    name: string | null;
-    image: string | null;
-    xp: number;
-    currentLevel: number;
-  };
-  index: number;
-  isLast: boolean;
-}) {
-  return (
-    <div
-      className={`
-        flex
-        items-center
-        justify-between
-        gap-4
-        px-4
-        py-4
-        sm:px-5
-        ${!isLast ? "border-b" : ""}
-      `}
-    >
-      <div className="flex min-w-0 items-center gap-3">
-
-        <div
-          className="
-            flex
-            h-8
-            w-8
-            shrink-0
-            items-center
-            justify-center
-            rounded-lg
-            bg-muted
-            text-xs
-            font-bold
-          "
-        >
-          {index + 1}
-        </div>
-
-        <Avatar className="h-10 w-10 shrink-0">
-          <AvatarImage
-            src={student.image || ""}
-            alt={student.name || "Student"}
-          />
-
-          <AvatarFallback>
-            {student.name?.charAt(0) || "U"}
-          </AvatarFallback>
-        </Avatar>
-
-        <div className="min-w-0">
-          <p className="truncate text-sm font-semibold">
-            {student.name || "بدون اسم"}
-          </p>
-
-          <p className="mt-0.5 text-xs text-muted-foreground">
-            المستوى {student.currentLevel}
-          </p>
-        </div>
-      </div>
-
-      <div className="flex shrink-0 items-center gap-2">
-        <Crown className="h-4 w-4 text-muted-foreground" />
-
-        <div className="text-left">
-          <p className="text-sm font-bold">
-            {student.xp}
-          </p>
-
-          <p className="text-[11px] text-muted-foreground">
-            XP
-          </p>
-        </div>
-      </div>
     </div>
   );
 }

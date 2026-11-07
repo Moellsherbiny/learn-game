@@ -37,30 +37,22 @@ export const GameType = {
 export type GameType = (typeof GameType)[keyof typeof GameType]
 
 
-export const BattleStatus = {
+export const GroupChallengeStatus = {
   WAITING: 'WAITING',
   LIVE: 'LIVE',
-  FINISHED: 'FINISHED'
+  FINISHED: 'FINISHED',
+  CANCELLED: 'CANCELLED'
 } as const
 
-export type BattleStatus = (typeof BattleStatus)[keyof typeof BattleStatus]
+export type GroupChallengeStatus = (typeof GroupChallengeStatus)[keyof typeof GroupChallengeStatus]
 
 
-export const TeamType = {
+export const ChallengeTeam = {
   TEAM_A: 'TEAM_A',
   TEAM_B: 'TEAM_B'
 } as const
 
-export type TeamType = (typeof TeamType)[keyof typeof TeamType]
-
-
-export const BattleInvitationStatus = {
-  PENDING: 'PENDING',
-  ACCEPTED: 'ACCEPTED',
-  DECLINED: 'DECLINED'
-} as const
-
-export type BattleInvitationStatus = (typeof BattleInvitationStatus)[keyof typeof BattleInvitationStatus]
+export type ChallengeTeam = (typeof ChallengeTeam)[keyof typeof ChallengeTeam]
 
 
 export const ConversationType = {

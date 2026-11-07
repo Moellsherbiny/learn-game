@@ -14,6 +14,8 @@ import {
   Star,
   ChevronLeft,
   PlayCircle,
+  Target,
+  ArrowLeft,
 } from "lucide-react";
 
 import { getStudentDashboard } from "@/actions/student/dashboard";
@@ -35,7 +37,7 @@ function IconBox({
   return (
     <div
       className={cn(
-        "flex h-10 w-10 items-center justify-center rounded-xl",
+        "flex h-10 w-10 shrink-0 items-center justify-center rounded-xl",
         "bg-primary/10 text-primary",
         className,
       )}
@@ -45,23 +47,59 @@ function IconBox({
   );
 }
 
-function SectionTitle({
+function SectionHeader({
   title,
+  description,
   icon: Icon,
+  action,
 }: {
   title: string;
+  description?: string;
   icon: React.ElementType;
+  action?: React.ReactNode;
 }) {
   return (
-    <div className="mb-4 flex items-center gap-2">
-      <Icon className="h-5 w-5 text-primary" />
+    <div className="mb-5 flex items-end justify-between gap-4">
+      <div className="flex min-w-0 items-center gap-3">
+        <IconBox className="h-10 w-10 rounded-xl">
+          <Icon className="h-5 w-5" />
+        </IconBox>
 
-      <h2 className="text-xl font-semibold md:text-2xl">
-        {title}
-      </h2>
+        <div className="min-w-0">
+          <h2 className="text-xl font-bold tracking-tight md:text-2xl">
+            {title}
+          </h2>
+
+          {description && (
+            <p className="mt-1 text-sm text-muted-foreground">{description}</p>
+          )}
+        </div>
+      </div>
+
+      {action}
     </div>
   );
 }
+
+const statusMap = {
+  completed: {
+    label: "مكتملة",
+    className: "border-emerald-200 bg-emerald-50 text-emerald-700",
+    icon: CheckCircle2,
+  },
+
+  in_progress: {
+    label: "جارية",
+    className: "border-orange-200 bg-orange-50 text-orange-700",
+    icon: Rocket,
+  },
+
+  not_started: {
+    label: "لم تبدأ",
+    className: "border-border bg-muted text-muted-foreground",
+    icon: Star,
+  },
+} as const;
 
 export default async function StudentPage() {
   const student = await getStudentDashboard();
@@ -76,19 +114,16 @@ export default async function StudentPage() {
       value: student.level,
       icon: Crown,
     },
-
     {
-      title: "إجمالي نقاط الخبرة",
+      title: "نقاط الخبرة",
       value: student.xp.toLocaleString(),
       icon: Sparkles,
     },
-
     {
       title: "العملات",
       value: student.coins.toLocaleString(),
       icon: Coins,
     },
-
     {
       title: "الاستمرارية",
       value: `${student.streak} يوم`,
@@ -96,27 +131,24 @@ export default async function StudentPage() {
     },
   ];
 
-  const currentCourse = student.courses.find(
-    (course) =>
-      course.progress > 0 &&
-      course.progress < 100,
-  );
+  const currentCourse =
+    student.courses.find(
+      (course) => course.progress > 0 && course.progress < 100,
+    ) ?? student.courses[0];
 
   const missions = [
     {
-      title: "أكمل درساً جديداً",
+      title: "أكمل درسًا جديدًا",
       progress: 70,
       reward: "+50 نقاط خبرة",
       icon: BookOpen,
     },
-
     {
-      title: "اربح تحدياً تعليمياً",
+      title: "اربح تحديًا تعليميًا",
       progress: 40,
       reward: "+100 نقاط خبرة",
       icon: Sword,
     },
-
     {
       title: "سجل دخول يومي",
       progress: 100,
@@ -125,511 +157,447 @@ export default async function StudentPage() {
     },
   ];
 
-  const statusMap = {
-    completed: {
-      label: "مكتمل",
-      className:
-        "bg-emerald-100 text-emerald-700",
-      icon: CheckCircle2,
-    },
+  const completedCourses = student.courses.filter(
+    (course) => course.status === "completed",
+  ).length;
 
-    in_progress: {
-      label: "جاري",
-      className:
-        "bg-orange-100 text-orange-700",
-      icon: Rocket,
-    },
-
-    not_started: {
-      label:
-        "bg-muted text-muted-foreground",
-      icon: Star,
-    },
-  };
+  const inProgressCourses = student.courses.filter(
+    (course) => course.status === "in_progress",
+  ).length;
 
   return (
-    <main className="min-h-screen bg-background">
-
-      {/* HEADER */}
-      <section className="border-b">
-        <div className="container mx-auto px-4 py-6 md:py-8">
-
-          <div className="flex flex-col gap-6">
-
+    <main className="min-h-screen bg-background" dir="rtl">
+      {/* =====================================================
+          HERO
+      ====================================================== */}
+      <section className="border-b bg-linear-to-b from-primary/4 to-background">
+        <div className="container mx-auto px-4 py-8 md:py-10">
+          <div className="grid gap-6 lg:grid-cols-[1fr_380px] lg:items-center">
+            {/* GREETING */}
             <div>
-              <h1 className="text-3xl font-bold md:text-4xl">
-                أهلاً،
-                {" "}
-                {student.name || "أيها البطل"}
+              <Badge
+                variant="secondary"
+                className="mb-4 rounded-full px-3 py-1"
+              >
+                <Sparkles className="ml-1.5 h-3.5 w-3.5" />
+                لوحة التعلم
+              </Badge>
+
+              <h1 className="text-3xl font-black tracking-tight md:text-4xl lg:text-5xl">
+                أهلاً،{" "}
+                <span className="text-primary">
+                  {student.name || "أيها البطل"}
+                </span>
               </h1>
 
-              <p className="mt-2 text-sm text-muted-foreground md:text-base">
-                تابع تقدمك واستكمل رحلتك التعليمية.
+              <p className="mt-3 max-w-xl text-sm leading-7 text-muted-foreground md:text-base">
+                تابع تقدمك، استكمل دوراتك، وواصل تطوير مهاراتك خطوة بخطوة.
               </p>
+
+              {/* ACTIONS */}
+              <div className="mt-6 flex flex-col gap-3 sm:flex-row">
+                <Button asChild size="lg" className="rounded-xl">
+                  <Link href="/student/courses">
+                    استمر في التعلم
+                    <ChevronLeft className="mr-2 h-4 w-4" />
+                  </Link>
+                </Button>
+
+                <Button
+                  variant="outline"
+                  asChild
+                  size="lg"
+                  className="rounded-xl"
+                >
+                  <Link href="/student/group-challenges">
+                    ساحات التحدي
+                    <Sword className="mr-2 h-4 w-4" />
+                  </Link>
+                </Button>
+              </div>
             </div>
 
-            {/* LEVEL CARD */}
-            <Card className="rounded-2xl">
-              <CardContent className="p-5">
-
-                <div className="mb-4 flex items-center justify-between">
-
+            {/* LEVEL */}
+            <Card className="overflow-hidden rounded-3xl border-primary/10 bg-white shadow-sm">
+              <CardContent className="p-5 md:p-6">
+                <div className="flex items-start justify-between gap-4">
                   <div>
-                    <p className="text-xs text-muted-foreground">
+                    <p className="text-xs font-medium text-muted-foreground">
                       المستوى الحالي
                     </p>
 
-                    <h2 className="text-xl font-bold">
+                    <h2 className="mt-1 text-2xl font-black">
                       المستوى {student.level}
                     </h2>
                   </div>
 
-                  <IconBox>
-                    <Crown className="h-5 w-5" />
+                  <IconBox className="h-12 w-12 rounded-2xl">
+                    <Crown className="h-6 w-6" />
                   </IconBox>
                 </div>
 
-                <Progress
-                  value={student.levelProgress}
-                  className="h-2"
-                />
+                <div className="mt-6">
+                  <div className="mb-2 flex items-center justify-between text-xs">
+                    <span className="font-medium text-muted-foreground">
+                      تقدم المستوى
+                    </span>
 
-                <div className="mt-3 flex justify-between text-xs text-muted-foreground">
+                    <span className="font-bold text-primary">
+                      {student.levelProgress}%
+                    </span>
+                  </div>
 
-                  <span>
-                    {student.currentLevelXp} نقاط خبرة
-                  </span>
+                  <Progress value={student.levelProgress} className="h-2.5" />
 
-                  <span>
-                    {student.nextLevelXp} نقاط خبرة
-                  </span>
+                  <div className="mt-3 flex items-center justify-between text-xs text-muted-foreground">
+                    <span>{student.currentLevelXp} XP</span>
+
+                    <span>{student.nextLevelXp} XP</span>
+                  </div>
                 </div>
 
-                <p className="mt-3 text-xs text-muted-foreground">
-                  متبقي
-                  {" "}
-                  <span className="font-semibold text-primary">
-                    {student.nextLevelXp -
-                      student.currentLevelXp} نقاط خبرة
-                  </span>
-                  {" "}
-                  للوصول للمستوى التالي
-                </p>
-
+                <div className="mt-5 rounded-2xl bg-primary/5 px-4 py-3">
+                  <p className="text-xs text-muted-foreground">
+                    متبقي{" "}
+                    <span className="font-bold text-primary">
+                      {Math.max(
+                        0,
+                        student.nextLevelXp - student.currentLevelXp,
+                      )}{" "}
+                      XP
+                    </span>{" "}
+                    للوصول للمستوى التالي
+                  </p>
+                </div>
               </CardContent>
             </Card>
-
-            {/* ACTIONS */}
-            <div className="flex flex-col gap-3 sm:flex-row">
-
-              <Button
-                asChild
-                className="w-full sm:w-auto"
-              >
-                <Link href="/student/courses">
-                  استمر في التعلم
-                  <ChevronLeft className="mr-2 h-4 w-4" />
-                </Link>
-              </Button>
-
-              <Button
-                variant="secondary"
-                asChild
-                className="w-full sm:w-auto"
-              >
-                <Link href="/student/battles">
-                  ساحات التحدي
-                  <Sword className="mr-2 h-4 w-4" />
-                </Link>
-              </Button>
-
-            </div>
-
           </div>
-
         </div>
       </section>
 
-      {/* CONTENT */}
-      <section className="container mx-auto px-4 py-6">
-
-        {/* STATS */}
-        <div className="mb-8 grid grid-cols-2 gap-3 lg:grid-cols-4">
-
-          {stats.map((item, index) => (
+      {/* =====================================================
+          CONTENT
+      ====================================================== */}
+      <section className="container mx-auto px-4 py-8 md:py-10">
+        {/* =================================================
+            QUICK STATS
+        ================================================== */}
+        <div className="mb-10 grid grid-cols-2 gap-3 md:grid-cols-4">
+          {stats.map((item) => (
             <Card
-              key={index}
-              className="rounded-2xl"
+              key={item.title}
+              className="rounded-2xl border-border/60 bg-white shadow-none"
             >
-              <CardContent className="p-4">
+              <CardContent className="flex items-center gap-3 p-4 md:p-5">
+                <IconBox>
+                  <item.icon className="h-5 w-5" />
+                </IconBox>
 
-                <div className="flex items-center gap-3">
+                <div className="min-w-0">
+                  <p className="truncate text-lg font-black md:text-xl">
+                    {item.value}
+                  </p>
 
-                  <IconBox>
-                    <item.icon className="h-5 w-5" />
-                  </IconBox>
-
-                  <div>
-
-                    <p className="text-lg font-bold">
-                      {item.value}
-                    </p>
-
-                    <p className="text-xs text-muted-foreground">
-                      {item.title}
-                    </p>
-
-                  </div>
-
+                  <p className="mt-0.5 truncate text-xs text-muted-foreground">
+                    {item.title}
+                  </p>
                 </div>
-
               </CardContent>
             </Card>
           ))}
-
         </div>
-                {/* CONTINUE LEARNING */}
+
+        {/* =================================================
+            CONTINUE LEARNING
+        ================================================== */}
         {currentCourse && (
-          <Card className="mb-8 rounded-2xl border-primary/20 bg-primary/5">
-            <CardContent className="p-5">
+          <section className="mb-12">
+            <SectionHeader
+              title="استكمل تعلمك"
+              description="تابع من حيث توقفت"
+              icon={PlayCircle}
+            />
 
-              <div className="flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
+            <Card className="overflow-hidden rounded-3xl border-primary/15 bg-primary/[0.035] shadow-sm">
+              <CardContent className="p-5 md:p-6">
+                <div className="flex flex-col gap-6 lg:flex-row lg:items-center lg:justify-between">
+                  <div className="flex min-w-0 items-start gap-4">
+                    <div className="hidden h-16 w-16 shrink-0 items-center justify-center rounded-2xl bg-primary/10 text-primary sm:flex">
+                      <BookOpen className="h-7 w-7" />
+                    </div>
 
-                <div className="flex-1">
+                    <div className="min-w-0">
+                      <Badge
+                        variant="outline"
+                        className="mb-2 rounded-full border-primary/20 bg-primary/5 text-primary"
+                      >
+                        قيد التعلم
+                      </Badge>
 
-                  <p className="mb-1 text-xs text-primary">
-                    استكمل رحلتك التعليمية
-                  </p>
+                      <h3 className="truncate text-xl font-black md:text-2xl">
+                        {currentCourse.title}
+                      </h3>
 
-                  <h2 className="text-lg font-semibold md:text-xl">
-                    {currentCourse.title}
-                  </h2>
+                      <div className="mt-4 flex items-center gap-3">
+  <div className="h-2.5 flex-1 overflow-hidden rounded-full bg-muted">
+    <div
+      className="h-full rounded-full bg-primary transition-all duration-500"
+      style={{
+        width: `${Math.min(
+          100,
+          Math.max(0, currentCourse.progress),
+        )}%`,
+      }}
+    />
+  </div>
 
-                  <div className="mt-4">
-
-                    <Progress
-                      value={currentCourse.progress}
-                      className="h-2"
-                    />
-
-                    <p className="mt-2 text-xs text-muted-foreground">
-                      {currentCourse.progress}% مكتمل
-                    </p>
-
+  <span className="shrink-0 text-sm font-bold text-primary">
+    {currentCourse.progress}%
+  </span>
+</div>
+                    </div>
                   </div>
 
+                  <Button asChild size="lg" className="shrink-0 rounded-xl">
+                    <Link href={`/student/courses/${currentCourse.id}`}>
+                      متابعة التعلم
+                      <ArrowLeft className="mr-2 h-4 w-4" />
+                    </Link>
+                  </Button>
                 </div>
-
-                <Button asChild>
-                  <Link
-                    href={`/student/courses/${currentCourse.id}`}
-                  >
-                    متابعة التعلم
-                    <PlayCircle className="mr-2 h-4 w-4" />
-                  </Link>
-                </Button>
-
-              </div>
-
-            </CardContent>
-          </Card>
+              </CardContent>
+            </Card>
+          </section>
         )}
 
-        {/* DASHBOARD GRID */}
-        <div className="grid gap-8 xl:grid-cols-[2fr_1fr]">
+        {/* =================================================
+            COURSES
+        ================================================== */}
+        <section className="mb-12">
+          <SectionHeader
+            title="الدورات الخاصة بك"
+            description={
+              student.courses.length > 0
+                ? `${student.courses.length} دورة • ${inProgressCourses} قيد التعلم • ${completedCourses} مكتملة`
+                : "ابدأ أول رحلة تعليمية لك"
+            }
+            icon={BookOpen}
+            action={
+              student.courses.length > 0 ? (
+                <Button
+                  variant="ghost"
+                  asChild
+                  className="hidden rounded-xl sm:flex"
+                >
+                  <Link href="/student/courses">
+                    عرض الكل
+                    <ChevronLeft className="mr-1 h-4 w-4" />
+                  </Link>
+                </Button>
+              ) : null
+            }
+          />
 
-          {/* RIGHT COLUMN */}
-          <div className="space-y-8">
+          {student.courses.length === 0 ? (
+            <Card className="rounded-3xl border-dashed shadow-none">
+              <CardContent className="flex flex-col items-center p-10 text-center md:p-14">
+                <div className="mb-5 flex h-16 w-16 items-center justify-center rounded-2xl bg-primary/10 text-primary">
+                  <BookOpen className="h-8 w-8" />
+                </div>
 
-            {/* MISSIONS */}
-            <div>
+                <h3 className="text-xl font-black">ابدأ أول رحلة تعليمية</h3>
 
-              <SectionTitle
-                title="المهام اليومية"
-                icon={Zap}
-              />
+                <p className="mt-2 max-w-md text-sm leading-6 text-muted-foreground">
+                  استكشف الدورات المتاحة وابدأ التعلم خطوة بخطوة.
+                </p>
 
-              <div className="grid gap-4">
+                <Button asChild className="mt-6 rounded-xl">
+                  <Link href="/courses">
+                    استكشف الدورات
+                    <ChevronLeft className="mr-2 h-4 w-4" />
+                  </Link>
+                </Button>
+              </CardContent>
+            </Card>
+          ) : (
+            <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-3">
+              {student.courses.map((course) => {
+                const status =
+                  statusMap[course.status as keyof typeof statusMap] ??
+                  statusMap.not_started;
 
-                {missions.map((mission, index) => (
+                const StatusIcon = status.icon;
+
+                const isCompleted = course.progress >= 100;
+
+                return (
                   <Card
-                    key={index}
-                    className="rounded-2xl"
+                    key={course.id}
+                    className="
+                        group
+                        flex h-full flex-col
+                        overflow-hidden
+                        rounded-3xl
+                        border-border/60
+                        bg-white
+                        shadow-none
+                        transition-all
+                        duration-200
+                        hover:-translate-y-0.5
+                        hover:border-primary/20
+                        hover:shadow-md
+                      "
                   >
-                    <CardContent className="p-4">
-
-                      <div className="flex items-start justify-between">
-
+                    <CardContent className="flex h-full flex-col p-5">
+                      {/* HEADER */}
+                      <div className="flex items-start justify-between gap-4">
                         <div className="flex items-center gap-3">
-
-                          <IconBox>
-                            <mission.icon className="h-5 w-5" />
+                          <IconBox className="h-11 w-11 rounded-2xl">
+                            <BookOpen className="h-5 w-5" />
                           </IconBox>
 
-                          <div>
+                          <Badge
+                            variant="outline"
+                            className={cn("rounded-full", status.className)}
+                          >
+                            <StatusIcon className="ml-1.5 h-3.5 w-3.5" />
+                            {status.label}
+                          </Badge>
+                        </div>
+                      </div>
 
-                            <h3 className="text-sm font-semibold">
+                      {/* TITLE */}
+                      <h3 className="mt-5 line-clamp-2 min-h-14 text-lg font-black leading-7">
+                        {course.title}
+                      </h3>
+
+                      {/* DESCRIPTION */}
+                      <p className="mt-2 line-clamp-2 min-h-12 text-sm leading-6 text-muted-foreground">
+                        {course.description ||
+                          "رحلة تعليمية ممتعة مليئة بالمحتوى والتحديات."}
+                      </p>
+
+                      {/* META */}
+                      <div className="mt-4 flex items-center gap-4 text-xs text-muted-foreground">
+                        <span className="flex items-center gap-1.5">
+                          <BookOpen className="h-3.5 w-3.5" />
+                          {course.totalLessons} درس
+                        </span>
+
+                        <span className="flex items-center gap-1.5">
+                          <Target className="h-3.5 w-3.5" />
+                          {course._count.enrollments} طالب
+                        </span>
+                      </div>
+
+                      {/* PROGRESS */}
+                      <div className="mt-6">
+                        <div className="mb-2 flex items-center justify-between text-xs">
+                          <span className="font-medium text-muted-foreground">
+                            التقدم
+                          </span>
+
+                          <span className="font-bold">{course.progress}%</span>
+                        </div>
+
+                        <div className="relative px-1 pt-1">
+                          <div className="h-2.5 overflow-hidden rounded-full bg-muted">
+                            <div
+                              className="h-full rounded-full bg-primary transition-all duration-500"
+                              style={{
+                                width: `${Math.min(
+                                  100,
+                                  Math.max(0, course.progress),
+                                )}%`,
+                              }}
+                            />
+                          </div>
+                        </div>
+                      </div>
+
+                      {/* ACTION */}
+                      <Button
+                        asChild
+                        variant={isCompleted ? "outline" : "default"}
+                        className="mt-6 w-full rounded-xl"
+                      >
+                        <Link href={`/student/courses/${course.id}`}>
+                          {isCompleted
+                            ? "مراجعة الدورة"
+                            : course.progress > 0
+                              ? "متابعة التعلم"
+                              : "بدء الدورة"}
+
+                          <ChevronLeft className="mr-2 h-4 w-4 transition-transform group-hover:-translate-x-0.5" />
+                        </Link>
+                      </Button>
+                    </CardContent>
+                  </Card>
+                );
+              })}
+            </div>
+          )}
+        </section>
+
+        {/* =================================================
+            BOTTOM GRID
+        ================================================== */}
+        <div className="grid gap-8 lg:grid-cols-2">
+          {/* =================================================
+              MISSIONS
+          ================================================== */}
+          <section>
+            <SectionHeader
+              title="المهام اليومية"
+              description="أنجز مهامك واحصل على المكافآت"
+              icon={Zap}
+            />
+
+            <div className="space-y-3">
+              {missions.map((mission) => (
+                <Card
+                  key={mission.title}
+                  className="rounded-2xl border-border/60 shadow-none"
+                >
+                  <CardContent className="p-4">
+                    <div className="flex items-start gap-3">
+                      <IconBox>
+                        <mission.icon className="h-5 w-5" />
+                      </IconBox>
+
+                      <div className="min-w-0 flex-1">
+                        <div className="flex items-start justify-between gap-3">
+                          <div className="min-w-0">
+                            <h3 className="truncate text-sm font-bold">
                               {mission.title}
                             </h3>
 
                             <p className="mt-1 text-xs text-muted-foreground">
                               {mission.reward}
                             </p>
-
                           </div>
-
-                        </div>
-
-                        <Badge variant="secondary">
-                          {mission.progress}%
-                        </Badge>
-
-                      </div>
-
-                      <Progress
-                        value={mission.progress}
-                        className="mt-4 h-2"
-                      />
-
-                    </CardContent>
-                  </Card>
-                ))}
-
-              </div>
-
-            </div>
-
-            {/* BATTLES */}
-            <div>
-
-              <SectionTitle
-                title="ساحات التحدي"
-                icon={Sword}
-              />
-
-              {student.pendingInvitations.length ===
-              0 ? (
-                <Card className="rounded-2xl border-dashed">
-
-                  <CardContent className="p-8 text-center">
-
-                    <Sword className="mx-auto mb-4 h-10 w-10 text-muted-foreground" />
-
-                    <h3 className="font-semibold">
-                      لا توجد تحديات حالياً
-                    </h3>
-
-                    <p className="mt-2 text-sm text-muted-foreground">
-                      عندما تصلك دعوة لتحدٍ
-                      تعليمي ستظهر هنا.
-                    </p>
-
-                  </CardContent>
-
-                </Card>
-              ) : (
-                <div className="space-y-4">
-
-                  {student.pendingInvitations.map(
-                    (room) => (
-                      <Card
-                        key={room.id}
-                        className="rounded-2xl"
-                      >
-                        <CardContent className="p-4">
-
-                          <div className="flex flex-col gap-4">
-
-                            <div>
-
-                              <h3 className="font-semibold">
-                                {room.title}
-                              </h3>
-
-                              <p className="mt-1 text-xs text-muted-foreground">
-                                كود الغرفة:
-                                {" "}
-                                {room.code}
-                              </p>
-
-                            </div>
-
-                            <Button
-                              asChild
-                              className="w-full"
-                            >
-                              <Link
-                                href={`/student/battle/${room.id}`}
-                              >
-                                دخول التحدي
-                              </Link>
-                            </Button>
-
-                          </div>
-
-                        </CardContent>
-                      </Card>
-                    ),
-                  )}
-
-                </div>
-              )}
-
-            </div>
-
-          </div>
-
-          {/* LEFT COLUMN */}
-          <div>
-                        <SectionTitle
-              title="الدورات الخاصة بك"
-              icon={BookOpen}
-            />
-
-            {student.courses.length === 0 ? (
-              <Card className="rounded-2xl">
-
-                <CardContent className="flex flex-col items-center p-10 text-center">
-
-                  <BookOpen className="mb-4 h-12 w-12 text-primary" />
-
-                  <h3 className="text-xl font-semibold">
-                    ابدأ أول رحلة تعليمية
-                  </h3>
-
-                  <p className="mt-2 max-w-md text-sm text-muted-foreground">
-                    استكشف الدورات المتاحة
-                    وابدأ التعلم خطوة بخطوة.
-                  </p>
-
-                  <Button
-                    asChild
-                    className="mt-6"
-                  >
-                    <Link href="/courses">
-                      استكشف الدورات
-                    </Link>
-                  </Button>
-
-                </CardContent>
-
-              </Card>
-            ) : (
-              <div className="grid gap-4 md:grid-cols-2">
-
-                {student.courses.map((course) => {
-                  const status =
-                    statusMap[course.status];
-
-                  return (
-                    <Card
-                      key={course.id}
-                      className="
-                        rounded-2xl
-                        transition-all
-                        hover:border-primary/20
-                        hover:shadow-md
-                      "
-                    >
-                      <CardContent className="p-4">
-
-                        {/* TOP */}
-                        <div className="flex items-center justify-between">
 
                           <Badge
-                           
+                            variant="secondary"
+                            className="shrink-0 rounded-full"
                           >
-                            <status.icon className="ml-1 h-3 w-3" />
-                            {status.label}
+                            {mission.progress}%
                           </Badge>
-
-                          <IconBox>
-                            <BookOpen className="h-4 w-4" />
-                          </IconBox>
-
                         </div>
 
-                        {/* TITLE */}
-                        <h3 className="mt-4 line-clamp-1 text-lg font-semibold">
-                          {course.title}
-                        </h3>
+                        <Progress
+                          value={mission.progress}
+                          className="mt-4 h-2"
+                        />
+                      </div>
+                    </div>
+                  </CardContent>
+                </Card>
+              ))}
+            </div>
+          </section>
 
-                        {/* DESCRIPTION */}
-                        <p className="mt-2 line-clamp-2 text-sm text-muted-foreground">
-                          {course.description ||
-                            "رحلة تعليمية ممتعة مليئة بالمحتوى والتحديات."}
-                        </p>
-
-                        {/* META */}
-                        <div className="mt-4 flex flex-wrap gap-3 text-xs text-muted-foreground">
-
-                          <span>
-                            {course.totalLessons} درس
-                          </span>
-
-                          <span>
-                            {
-                              course._count
-                                .enrollments
-                            }{" "}
-                            طالب
-                          </span>
-
-                        </div>
-
-                        {/* PROGRESS */}
-                        <div className="mt-5">
-
-                          <div className="mb-2 flex items-center justify-between text-xs">
-
-                            <span>
-                              التقدم
-                            </span>
-
-                            <span>
-                              {course.progress}%
-                            </span>
-
-                          </div>
-
-                          <Progress
-                            value={course.progress}
-                            className="h-2"
-                          />
-
-                        </div>
-
-                        {/* ACTION */}
-                        <Button
-                          asChild
-                          className="mt-5 w-full"
-                          variant={
-                            course.progress > 0
-                              ? "default"
-                              : "outline"
-                          }
-                        >
-                          <Link
-                            href={`/student/courses/${course.id}`}
-                          >
-                            {course.progress >
-                            0
-                              ? "متابعة التعلم"
-                              : "بدء الدورة التعليمية"}
-
-                            <ChevronLeft className="mr-2 h-4 w-4" />
-                          </Link>
-                        </Button>
-
-                      </CardContent>
-                    </Card>
-                  );
-                })}
-
-              </div>
-            )}
-
-          </div>
+       
         </div>
       </section>
     </main>

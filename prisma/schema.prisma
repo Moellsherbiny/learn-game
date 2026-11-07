@@ -39,21 +39,14 @@ model User {
   sessions           Session[]
   Authenticator      Authenticator[]
 
+  createdGroupChallenges GroupChallenge[] @relation("GroupChallengeTeacher")
+  challengeParticipations ChallengeParticipant[] @relation("ChallengeStudent")
 
   studentConversations Conversation[] @relation("StudentConversations")
   teacherConversations Conversation[] @relation("TeacherConversations")
   adminConversations   Conversation[] @relation("AdminConversations")
   sentMessages Message[] @relation("SentMessages")
 
-  // Battle Rooms as Teacher
-  teacherBattleRooms BattleRoom[] @relation("TeacherBattleRooms")
-
-  // Battle Participation as Student
-  battleParticipants BattleParticipant[] @relation("StudentBattleParticipants")
-
-  battleInvitations BattleInvitation[]
-  // Battle Answers
-  battleAnswers   BattleAnswer[] @relation("StudentBattleAnswers")
   xp              Int             @default(0)
   currentLevel    Int             @default(1)
   streak          Int             @default(0)
@@ -133,6 +126,7 @@ model Course {
   thumbnail   String?
   enrollments Enrollment[]
   modules     Module[]
+  groupChallenges GroupChallenge[]
   placementTest PlacementTest?
   placementResults PlacementResult[]
   createdAt DateTime @default(now())
@@ -159,6 +153,18 @@ enum GameType {
   MATCHING
   FILL_BLANKS
   CONVERSATION
+}
+
+enum GroupChallengeStatus {
+  WAITING
+  LIVE
+  FINISHED
+  CANCELLED
+}
+
+enum ChallengeTeam {
+  TEAM_A
+  TEAM_B
 }
 
 model Lesson {
@@ -203,6 +209,8 @@ model LessonContent {
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
+
+  challengeQuestions ChallengeQuestion[]
 }
 
 model Progress {
@@ -286,133 +294,8 @@ model PlacementResult {
 
   @@unique([studentId, courseId])
 }
-enum BattleStatus {
-  WAITING
-  LIVE
-  FINISHED
-}
 
-enum TeamType {
-  TEAM_A
-  TEAM_B
-}
 
-model BattleRoom {
-  id    String @id @default(cuid())
-  title String
-  code  String @unique
-
-  teacherId String
-  teacher   User   @relation("TeacherBattleRooms", fields: [teacherId], references: [id],onDelete: Cascade)
-  invitations BattleInvitation[]
-  status BattleStatus @default(WAITING)
-
-  currentQuestion Int @default(0)
-
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-
-  participants BattleParticipant[]
-  questions    BattleQuestion[]
-}
-
-model BattleParticipant {
-  id String @id @default(cuid())
-
-  roomId String
-  room   BattleRoom @relation(fields: [roomId],references: [id],onDelete: Cascade)
-
-  studentId String
-  student   User @relation("StudentBattleParticipants",fields: [studentId],references: [id],onDelete: Cascade)
-
-  team TeamType
-
-  score Int @default(0)
-
-  isReady Boolean @default(false)
-
-  joinedAt DateTime @default(now())
-
-  @@unique([roomId, studentId])
-}
-
-model BattleQuestion {
-  id String @id @default(cuid())
-
-  roomId String
-  room   BattleRoom @relation(fields: [roomId], references: [id], onDelete: Cascade )
-
-  question String
-
-  type GameType
-
-  answer String?
-
-  optionA String?
-  optionB String?
-  optionC String?
-  optionD String?
-
-  leftText  String?
-  rightText String?
-
-  points Int @default(100)
-
-  timeLimit Int @default(20)
-
-  order Int
-
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-
-  answers BattleAnswer[]
-}
-
-model BattleAnswer {
-  id String @id @default(cuid())
-
-  questionId String
-  question   BattleQuestion @relation(fields: [questionId],references: [id],onDelete: Cascade)
-
-  studentId String
-  student   User @relation("StudentBattleAnswers",  fields: [studentId], references: [id],onDelete: Cascade)
-
-  answer String
-
-  isCorrect Boolean
-
-  responseTime Int
-
-  createdAt DateTime @default(now())
-
-  @@unique([questionId, studentId])
-}
-
-enum BattleInvitationStatus {
-  PENDING
-  ACCEPTED
-  DECLINED
-}
-
-model BattleInvitation {
-  id String @id @default(cuid())
-
-  roomId String
-  room BattleRoom @relation(fields: [roomId],references: [id],onDelete: Cascade)
-
-  studentId String
-  student User @relation(fields: [studentId],references: [id], onDelete: Cascade)
-
-  team TeamType
-
-  status BattleInvitationStatus @default(PENDING)
-
-  createdAt DateTime @default(now())
-  respondedAt DateTime?
-
-  @@unique([roomId, studentId])
-  @@index([studentId, status])
-}
 
 enum ConversationType {
   STUDENT_TEACHER
@@ -456,4 +339,102 @@ model Message {
 
   @@index([conversationId])
   @@index([senderId])
+}
+
+
+model GroupChallenge {
+  id          String @id @default(cuid())
+  title       String
+  code        String @unique
+
+  teacherId   String
+  courseId    String
+
+  teacher User   @relation("GroupChallengeTeacher", fields: [teacherId], references: [id], onDelete: Cascade)
+  course  Course @relation(fields: [courseId], references: [id], onDelete: Cascade)
+
+  status               GroupChallengeStatus @default(WAITING)
+  currentQuestionIndex Int                  @default(0)
+  currentQuestionStartedAt DateTime?
+  questionTimeSeconds Int @default(20)
+  pointsPerQuestion   Int @default(100)
+
+  questions     ChallengeQuestion[]
+  participants  ChallengeParticipant[]
+
+  startedAt  DateTime?
+  finishedAt DateTime?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([teacherId, status])
+  @@index([courseId])
+}
+
+model ChallengeQuestion {
+  id              String   @id @default(cuid())
+  challengeId     String
+  lessonContentId String?
+
+  question        String
+  answer          String?
+
+  optionA         String?
+  optionB         String?
+  optionC         String?
+  optionD         String?
+
+  leftText        String?
+  rightText       String?
+
+  order           Int
+  timeLimit       Int      @default(20)
+
+  challenge    GroupChallenge @relation(fields: [challengeId], references: [id], onDelete: Cascade)
+  lessonContent LessonContent? @relation(fields: [lessonContentId], references: [id], onDelete: SetNull)
+
+  answers      ChallengeAnswer[]
+
+  createdAt    DateTime @default(now())
+
+  @@unique([challengeId, order])
+  @@index([lessonContentId])
+}
+
+model ChallengeParticipant {
+  id          String @id @default(cuid())
+  challengeId String
+  studentId   String
+
+  challenge GroupChallenge @relation(fields: [challengeId], references: [id], onDelete: Cascade)
+  student   User @relation("ChallengeStudent", fields: [studentId], references: [id], onDelete: Cascade)
+
+  team    ChallengeTeam
+  isReady Boolean @default(false)
+
+  answers ChallengeAnswer[]
+  score Int @default(0)
+  joinedAt DateTime @default(now())
+
+  @@unique([challengeId, studentId])
+  @@index([challengeId, team])
+}
+
+model ChallengeAnswer {
+  id                 String   @id @default(cuid())
+  challengeQuestionId String
+  participantId       String
+
+  question     ChallengeQuestion     @relation(fields: [challengeQuestionId], references: [id], onDelete: Cascade)
+  participant  ChallengeParticipant  @relation(fields: [participantId], references: [id], onDelete: Cascade)
+
+  answer       String
+  isCorrect    Boolean
+  responseTime Int
+
+  submittedAt DateTime @default(now())
+
+  @@unique([challengeQuestionId, participantId])
+  @@index([participantId])
 }

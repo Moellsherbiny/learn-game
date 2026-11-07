@@ -83,12 +83,6 @@ export default async function ProfilePage() {
 
           enrollments:
             true,
-
-          teacherBattleRooms:
-            true,
-
-          battleParticipants:
-            true,
         },
       },
     );
@@ -173,10 +167,6 @@ export default async function ProfilePage() {
         .coursesTeaching
         ?.length ?? 0,
 
-    battles:
-      user
-        .teacherBattleRooms
-        ?.length ?? 0,
   };
 
   const studentStats = {
@@ -185,10 +175,6 @@ export default async function ProfilePage() {
         .enrollments
         ?.length ?? 0,
 
-    battles:
-      user
-        .battleParticipants
-        ?.length ?? 0,
   };
 
   // =========================================
@@ -564,10 +550,7 @@ export default async function ProfilePage() {
 
                   <Swords className="h-10 w-10 text-fuchsia-500" />
 
-                  <div className="mt-4 text-5xl font-black">
-
-                    {teacherStats.battles}
-                  </div>
+                
 
                   <p className="mt-2 text-muted-foreground">
 
@@ -595,20 +578,7 @@ export default async function ProfilePage() {
                   </p>
                 </div>
 
-                <div className="rounded-3xl bg-yellow-500/10 p-6">
-
-                  <Swords className="h-10 w-10 text-yellow-500" />
-
-                  <div className="mt-4 text-5xl font-black">
-
-                    {studentStats.battles}
-                  </div>
-
-                  <p className="mt-2 text-muted-foreground">
-
-                    التحديات
-                  </p>
-                </div>
+              
               </div>
             )}
           </CardContent>

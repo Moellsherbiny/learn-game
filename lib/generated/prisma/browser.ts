@@ -88,31 +88,6 @@ export type PlacementTest = Prisma.PlacementTestModel
  */
 export type PlacementResult = Prisma.PlacementResultModel
 /**
- * Model BattleRoom
- * 
- */
-export type BattleRoom = Prisma.BattleRoomModel
-/**
- * Model BattleParticipant
- * 
- */
-export type BattleParticipant = Prisma.BattleParticipantModel
-/**
- * Model BattleQuestion
- * 
- */
-export type BattleQuestion = Prisma.BattleQuestionModel
-/**
- * Model BattleAnswer
- * 
- */
-export type BattleAnswer = Prisma.BattleAnswerModel
-/**
- * Model BattleInvitation
- * 
- */
-export type BattleInvitation = Prisma.BattleInvitationModel
-/**
  * Model Conversation
  * 
  */
@@ -122,3 +97,23 @@ export type Conversation = Prisma.ConversationModel
  * 
  */
 export type Message = Prisma.MessageModel
+/**
+ * Model GroupChallenge
+ * 
+ */
+export type GroupChallenge = Prisma.GroupChallengeModel
+/**
+ * Model ChallengeQuestion
+ * 
+ */
+export type ChallengeQuestion = Prisma.ChallengeQuestionModel
+/**
+ * Model ChallengeParticipant
+ * 
+ */
+export type ChallengeParticipant = Prisma.ChallengeParticipantModel
+/**
+ * Model ChallengeAnswer
+ * 
+ */
+export type ChallengeAnswer = Prisma.ChallengeAnswerModel

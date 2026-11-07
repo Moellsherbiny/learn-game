@@ -57,7 +57,7 @@ export async function getUser(userId: string) {
             coursesTeaching: true,
             enrollments: true,
             progress: true,
-            battleParticipants: true,
+           
           },
         },
       },

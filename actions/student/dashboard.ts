@@ -102,24 +102,6 @@ export async function getStudentDashboard() {
           lessonId: true,
         },
       },
-
-      battleParticipants: {
-        where: {
-          room: {
-            status: "WAITING",
-          },
-        },
-
-        select: {
-          room: {
-            select: {
-              id: true,
-              title: true,
-              code: true,
-            },
-          },
-        },
-      },
     },
   });
 
@@ -196,8 +178,6 @@ export async function getStudentDashboard() {
 
     courses,
 
-    pendingInvitations: student.battleParticipants.map(
-      (participant) => participant.room,
-    ),
+    
   };
 }

@@ -1,20 +1,23 @@
 "use client";
+
+import Image from "next/image";
 import Link from "next/link";
+import { useMemo, useState } from "react";
 import {
-  Filter,
-  Trophy,
-  Users,
   ArrowLeft,
   BookOpen,
+  Filter,
   FolderOpen,
-  Gamepad,
+  Gamepad2,
+  GraduationCap,
+  Trophy,
+  Users,
 } from "lucide-react";
 
 import { GetCoursesResult } from "@/actions/courses/get-courses";
-import { Button } from "@/components/ui/button";
-import { useMemo, useState } from "react";
 
 import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
 import {
   Card,
   CardContent,
@@ -23,63 +26,125 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 
-import Image from "next/image";
 import { CourseSearch } from "@/components/course/course-search";
 
 interface CoursesClientProps {
   courses: GetCoursesResult[];
 }
-export default function CoursesPage({ courses }: CoursesClientProps) {
+
+export default function CoursesPage({
+  courses,
+}: CoursesClientProps) {
   const [search, setSearch] = useState("");
 
   const filteredCourses = useMemo(() => {
-    if (!search.trim()) return courses;
-    return courses.filter((course) =>
-      course.title.toLowerCase().includes(search.toLowerCase()),
-    );
+    const query = search.trim().toLowerCase();
+
+    if (!query) {
+      return courses;
+    }
+
+    return courses.filter((course) => {
+      const title =
+        course.title?.toLowerCase() ?? "";
+
+      const description =
+        course.description?.toLowerCase() ?? "";
+
+      const teacher =
+        course.teacher.name?.toLowerCase() ?? "";
+
+      return (
+        title.includes(query) ||
+        description.includes(query) ||
+        teacher.includes(query)
+      );
+    });
   }, [search, courses]);
 
   return (
     <main className="min-h-screen bg-background">
+      {/* =====================================================
+          HERO
+      ====================================================== */}
       <section className="relative overflow-hidden border-b">
-        <div className="absolute inset-0 -z-10 bg-background" />
-        <div className="absolute left-1/2 top-10 h-105 w-200 -translate-x-1/2 rounded-full bg-linear-to-r from-primary/15 via-accent/15 to-primary/10 blur-3xl" />
+        {/* Subtle background */}
+        <div className="pointer-events-none absolute inset-0">
+          <div className="absolute right-1/2 top-0 h-80 w-80 translate-x-1/2 rounded-full bg-primary/6 blur-3xl" />
+        </div>
 
-        <div className="container mx-auto px-4 py-16 md:py-24">
-          <div className="mx-auto max-w-4xl text-center">
+        <div className="container relative mx-auto px-4 py-12 md:py-16">
+          <div className="mx-auto max-w-3xl text-center">
+            {/* Badge */}
             <Badge
               variant="secondary"
-              className="mb-6 rounded-full px-4 py-1.5"
+              className="
+                mb-5
+                rounded-full
+                border
+                border-primary/10
+                px-4
+                py-1.5
+                text-xs
+                font-bold
+              "
             >
-              <Gamepad className="mr-2 h-4 w-4" />
-              تعلم من خلال الألعاب والمستويات والتحديات
+              <Gamepad2 className="ml-2 h-4 w-4 text-primary" />
+              تعلم من خلال الألعاب والتحديات
             </Badge>
 
-            <h1 className="text-4xl font-black tracking-tight sm:text-5xl md:text-6xl">
-              تعلم بالطريقة التي
-              <span className="block bg-linear-to-r from-primary to-accent bg-clip-text text-transparent">
-                تناسب مستواك
+            {/* Heading */}
+            <h1
+              className="
+                text-4xl
+                font-black
+                tracking-tight
+                text-foreground
+                sm:text-5xl
+                md:text-6xl
+              "
+            >
+              اختر مسارك
+              <span className="mt-2 block text-primary">
+                وابدأ رحلة التعلم
               </span>
             </h1>
 
-            <p className="mx-auto mt-6 max-w-2xl text-lg leading-8 text-muted-foreground md:text-xl">
-              منصة تعليمية تعتمد على الذكاء التكيفي. كل طالب يحصل على رحلة تعلم
-              مختلفة بناءً على أدائه.
+            {/* Description */}
+            <p
+              className="
+                mx-auto
+                mt-5
+                max-w-2xl
+                text-base
+                leading-7
+                text-muted-foreground
+                md:text-lg
+              "
+            >
+              استكشف الدورات التعليمية المتاحة
+              واختر المسار المناسب لمستواك وأهدافك.
             </p>
 
             {/* Search */}
-            <div className="mx-auto mt-10 flex max-w-2xl flex-col gap-3 sm:flex-row">
-              <div className="relative flex-1">
+            <div className="mx-auto mt-8 flex max-w-2xl flex-col gap-3 sm:flex-row">
+              <div className="min-w-0 flex-1">
                 <CourseSearch
                   value={search}
-                  onChange={(value) => setSearch(value)}
+                  onChange={setSearch}
                 />
               </div>
 
               <Button
+                type="button"
                 variant="outline"
                 size="lg"
-                className="h-12 rounded-full px-6"
+                className="
+                  h-12
+                  rounded-xl
+                  px-5
+                  sm:shrink-0
+                "
               >
                 <Filter className="ml-2 h-4 w-4" />
                 تصفية
@@ -89,166 +154,440 @@ export default function CoursesPage({ courses }: CoursesClientProps) {
         </div>
       </section>
 
-      {/* Courses Section */}
-      <section className="container mx-auto px-4 pb-20">
-        <div className="mb-8 flex items-center justify-between">
+      {/* =====================================================
+          COURSES
+      ====================================================== */}
+      <section className="container mx-auto px-4 py-10 pb-20">
+        {/* Section Header */}
+        <div className="mb-7 flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
           <div>
-            <h2 className="text-3xl font-black tracking-tight">
-              المسارات التعليمية
-            </h2>
-            <p className="mt-2 text-muted-foreground">
-              اختر المجال الذي ترغب في تعلمه وابدأ بجمع نقاط الخبرة.
+            <div className="flex items-center gap-2">
+              <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-primary/10 text-primary">
+                <GraduationCap className="h-5 w-5" />
+              </div>
+
+              <h2 className="text-2xl font-black tracking-tight md:text-3xl">
+                المسارات التعليمية
+              </h2>
+            </div>
+
+            <p className="mt-2 text-sm text-muted-foreground md:text-base">
+              اختر الدورة التي تناسب أهدافك وابدأ التعلم.
             </p>
           </div>
 
           <Badge
             variant="outline"
-            className="hidden rounded-full px-4 py-2 md:inline-flex"
+            className="
+              w-fit
+              rounded-full
+              px-3
+              py-1.5
+              text-xs
+            "
           >
-            {courses.length} مسار متاح
+            {filteredCourses.length}{" "}
+            {filteredCourses.length === 1
+              ? "دورة"
+              : "دورات"}
           </Badge>
         </div>
 
-        {/* Empty State */}
+        {/* ===================================================
+            EMPTY STATE
+        ==================================================== */}
         {courses.length === 0 ? (
-          <Card className="mx-auto max-w-2xl rounded-3xl border-border/50 bg-card/80 shadow-sm">
-            <CardContent className="flex flex-col items-center px-6 py-16 text-center">
-              <div className="mb-6 flex h-20 w-20 items-center justify-center rounded-3xl bg-linear-to-br from-primary/10 to-accent/10">
-                <FolderOpen className="h-10 w-10 text-primary" />
-              </div>
-
-              <h3 className="text-2xl font-bold">
-                لا توجد دورات متاحة حاليًا
-              </h3>
-
-              <p className="mt-3 max-w-md leading-8 text-muted-foreground">
-                لم يتم إضافة أي دورة تعليمية بعد. بناء تجربة تعلم ممتعة تعتمد على
-                الألعاب والمستويات.
-              </p>
-            </CardContent>
-          </Card>
+          <EmptyState type="no_courses" />
+        ) : filteredCourses.length === 0 ? (
+          <EmptyState
+            type="no_results"
+            onReset={() => setSearch("")}
+          />
         ) : (
-          /* Courses Grid */
-          <div className="grid gap-6 md:grid-cols-2 xl:grid-cols-3">
+          /* =================================================
+             COURSES GRID
+          ================================================== */
+          <div
+            className="
+              grid
+              gap-5
+              sm:grid-cols-2
+              xl:grid-cols-3
+            "
+          >
             {filteredCourses.map((course) => (
-              <Card
+              <CourseCard
                 key={course.id}
-                className="group overflow-hidden rounded-3xl border-border/50 bg-card/80 shadow-sm backdrop-blur-sm transition-all duration-300 hover:-translate-y-1 hover:shadow-2xl"
-              >
-                {/* Header Gradient */}
-                <div className="relative h-36 bg-linear-to-br from-primary to-accent">
-                  {course.thumbnail ? (
-                    <Image
-                      src={course.thumbnail}
-                      alt={course.title}
-                      width={400}
-                      height={200}
-                      loading="eager"
-                      className="h-full w-full object-cover"
-                    />
-                  ) : (
-                    <div className="h-full bg-linear-to-br from-primary to-accent" />
-                  )}
-
-                  <Badge className="absolute right-4 top-4 rounded-full bg-white/90 text-slate-900 hover:bg-white">
-                    جديد
-                  </Badge>
-
-                  <div className="absolute bottom-4 right-4 flex h-14 w-14 items-center justify-center rounded-2xl bg-white/20 backdrop-blur-md">
-                    <BookOpen className="h-7 w-7 text-white" />
-                  </div>
-                </div>
-
-                <CardHeader>
-                  <div className="flex items-start justify-between gap-3">
-                    <CardTitle className="line-clamp-2 text-2xl font-bold">
-                      {course.title}
-                    </CardTitle>
-
-                    <div className="flex items-center gap-1 text-sm font-semibold">
-                      <Badge variant="secondary">
-                        {course._count.enrollments} طالب
-                      </Badge>
-                    </div>
-                  </div>
-
-                  <CardDescription className="line-clamp-3 leading-7 text-base">
-                    {course.description ||
-                      "ابدأ رحلة تعليمية ممتعة ومليئة بالتحديات."}
-                    <div className="mt-4 flex flex-wrap gap-2">
-                      {course.levels.map((level) => (
-                        <Badge
-                          key={level}
-                          variant="outline"
-                          className="rounded-full"
-                        >
-                          {level}
-                        </Badge>
-                      ))}
-
-                      <Badge className="rounded-full">تعلم تكيفي</Badge>
-
-                      <Badge variant="secondary" className="rounded-full">
-                         نقاط خبرة
-                      </Badge>
-                    </div>
-                  </CardDescription>
-                </CardHeader>
-
-                <CardContent>
-                  {/* Stats */}
-                  <div className="grid grid-cols-2 gap-3">
-                    <div className="rounded-2xl bg-muted/50 p-3">
-                      <div className="mb-1 flex items-center gap-2 text-muted-foreground">
-                        <Users className="h-4 w-4" />
-                        <span className="text-xs">الطلاب</span>
-                      </div>
-
-                      <p className="font-bold">{course._count.enrollments}</p>
-                    </div>
-
-                    <div className="rounded-2xl bg-muted/50 p-3">
-                      <div className="mb-1 flex items-center gap-2 text-muted-foreground">
-                        <BookOpen className="h-4 w-4" />
-                        <span className="text-xs">الوحدات</span>
-                      </div>
-
-                      <p className="font-bold">{course._count.modules}</p>
-                    </div>
-
-                    <div className="rounded-2xl bg-muted/50 p-3">
-                      <div className="mb-1 flex items-center gap-2 text-muted-foreground">
-                        <Trophy className="h-4 w-4" />
-                        <span className="text-xs">الدروس</span>
-                      </div>
-
-                      <p className="font-bold">{course.lessonsCount}</p>
-                    </div>
-
-                    <div className="rounded-2xl bg-muted/50 p-3">
-                      <div className="mb-1 text-xs text-muted-foreground">
-                        المدرس
-                      </div>
-
-                      <p className="truncate font-bold">
-                        {course.teacher.name || "غير معروف"}
-                      </p>
-                    </div>
-                  </div>
-
-                  {/* CTA */}
-                  <Button asChild className="mt-6 h-11 w-full rounded-2xl">
-                    <Link href={`/courses/${course.id}`}>
-                      استكشف الدورة التعليمية
-                      <ArrowLeft className="mr-2 h-4 w-4" />
-                    </Link>
-                  </Button>
-                </CardContent>
-              </Card>
+                course={course}
+              />
             ))}
           </div>
         )}
       </section>
     </main>
+  );
+}
+
+/* ============================================================
+   COURSE CARD
+============================================================ */
+
+function CourseCard({
+  course,
+}: {
+  course: GetCoursesResult;
+}) {
+  return (
+   <Card className=" group flex h-full flex-col overflow-hidden rounded-3xl border-border/60 bg-card p-0 shadow-sm transition-all duration-300 hover:-translate-y-1 hover:border-primary/25 hover:shadow-xl " >
+      {/* ======================================================
+          THUMBNAIL
+      ======================================================= */}
+      <div className="relative aspect-video w-full overflow-hidden bg-muted">
+        {course.thumbnail ? (
+          <Image
+            src={course.thumbnail}
+            alt={course.title}
+            fill
+            sizes="
+              (max-width: 640px) 100vw,
+              (max-width: 1280px) 50vw,
+              33vw
+            "
+            className="
+              object-cover
+              transition-transform
+              duration-500
+              group-hover:scale-105
+            "
+          />
+        ) : (
+          <div className="absolute inset-0 flex items-center justify-center bg-primary/4">
+            <BookOpen className="h-14 w-14 text-primary/20" />
+          </div>
+        )}
+
+        {/* Image overlay */}
+        <div
+          className="
+            absolute
+            inset-x-0
+            bottom-0
+            h-24
+            bg-linear-to-t
+            from-black/35
+            to-transparent
+          "
+        />
+
+        {/* New badge */}
+        <Badge
+          className="
+            absolute
+            right-4
+            top-4
+            rounded-full
+            border-0
+            bg-background/90
+            text-foreground
+            shadow-sm
+            backdrop-blur-sm
+            hover:bg-background
+          "
+        >
+          جديد
+        </Badge>
+
+        {/* Course icon */}
+        <div
+          className="
+            absolute
+            bottom-4
+            right-4
+            flex
+            h-11
+            w-11
+            items-center
+            justify-center
+            rounded-xl
+            bg-background/90
+            text-primary
+            shadow-sm
+            backdrop-blur-sm
+          "
+        >
+          <BookOpen className="h-5 w-5" />
+        </div>
+      </div>
+
+      {/* ======================================================
+          HEADER
+      ======================================================= */}
+      <CardHeader className="pb-4">
+        <div className="flex items-start justify-between gap-3">
+          <CardTitle
+            className="
+              line-clamp-2
+              text-xl
+              font-black
+              leading-snug
+              transition-colors
+              group-hover:text-primary
+            "
+          >
+            {course.title}
+          </CardTitle>
+
+          <div className="flex shrink-0 items-center gap-1 text-xs text-muted-foreground">
+            <Users className="h-3.5 w-3.5" />
+
+            <span>
+              {course._count.enrollments}
+            </span>
+          </div>
+        </div>
+
+        <CardDescription
+          className="
+            mt-2
+            line-clamp-3
+            text-sm
+            leading-6
+          "
+        >
+          {course.description ||
+            "ابدأ رحلة تعليمية ممتعة ومليئة بالتحديات."}
+        </CardDescription>
+
+        {/* ====================================================
+            TAGS
+        ===================================================== */}
+        <div className="mt-4 flex flex-wrap gap-1.5">
+          {course.levels.map((level) => (
+            <Badge
+              key={level}
+              variant="outline"
+              className="
+                rounded-full
+                px-2.5
+                py-1
+                text-[10px]
+                font-semibold
+              "
+            >
+              {level}
+            </Badge>
+          ))}
+
+          <Badge
+            variant="secondary"
+            className="
+              rounded-full
+              px-2.5
+              py-1
+              text-[10px]
+              font-semibold
+            "
+          >
+            تعلم تكيفي
+          </Badge>
+
+          <Badge
+            variant="secondary"
+            className="
+              rounded-full
+              px-2.5
+              py-1
+              text-[10px]
+              font-semibold
+            "
+          >
+            نقاط خبرة
+          </Badge>
+        </div>
+      </CardHeader>
+
+      {/* ======================================================
+          CONTENT
+      ======================================================= */}
+      <CardContent className="mt-auto pt-0">
+        {/* Stats */}
+        <div className="grid grid-cols-3 gap-2">
+          <CourseStat
+            icon={
+              <Users className="h-4 w-4" />
+            }
+            label="الطلاب"
+            value={
+              course._count.enrollments
+            }
+          />
+
+          <CourseStat
+            icon={
+              <BookOpen className="h-4 w-4" />
+            }
+            label="الوحدات"
+            value={course._count.modules}
+          />
+
+          <CourseStat
+            icon={
+              <Trophy className="h-4 w-4" />
+            }
+            label="الدروس"
+            value={course.lessonsCount}
+          />
+        </div>
+
+        {/* Teacher */}
+        <div
+          className="
+            mt-3
+            flex
+            items-center
+            justify-between
+            rounded-2xl
+            border
+            border-border/50
+            bg-muted/30
+            px-3
+            py-2.5
+          "
+        >
+          <span className="text-xs text-muted-foreground">
+            المدرس
+          </span>
+
+          <span className="max-w-[60%] truncate text-xs font-bold text-foreground">
+            {course.teacher.name ||
+              "غير معروف"}
+          </span>
+        </div>
+
+        {/* CTA */}
+        <Button
+          asChild
+          className="
+            mt-4
+            h-11
+            w-full
+            rounded-2xl
+            font-bold
+            transition-transform
+            group-hover:shadow-sm
+          "
+        >
+          <Link
+            href={`/courses/${course.id}`}
+          >
+            استكشف الدورة
+            <ArrowLeft className="mr-2 h-4 w-4 transition-transform group-hover:-translate-x-1" />
+          </Link>
+        </Button>
+      </CardContent>
+    </Card>
+  );
+}
+
+/* ============================================================
+   COURSE STAT
+============================================================ */
+
+function CourseStat({
+  icon,
+  label,
+  value,
+}: {
+  icon: React.ReactNode;
+  label: string;
+  value: number;
+}) {
+  return (
+    <div
+      className="
+        rounded-2xl
+        border
+        border-border/50
+        bg-muted/30
+        p-2.5
+        text-center
+      "
+    >
+      <div className="mb-1 flex justify-center text-primary">
+        {icon}
+      </div>
+
+      <p className="text-sm font-black text-foreground">
+        {value}
+      </p>
+
+      <p className="mt-0.5 text-[10px] text-muted-foreground">
+        {label}
+      </p>
+    </div>
+  );
+}
+
+/* ============================================================
+   EMPTY STATE
+============================================================ */
+
+function EmptyState({
+  type,
+  onReset,
+}: {
+  type: "no_courses" | "no_results";
+  onReset?: () => void;
+}) {
+  const noResults =
+    type === "no_results";
+
+  return (
+    <Card className="mx-auto max-w-2xl rounded-3xl border-border/60 shadow-sm">
+      <CardContent className="flex flex-col items-center px-6 py-16 text-center">
+        <div
+          className="
+            mb-5
+            flex
+            h-16
+            w-16
+            items-center
+            justify-center
+            rounded-2xl
+            bg-primary/10
+            text-primary
+          "
+        >
+          {noResults ? (
+            <BookOpen className="h-8 w-8" />
+          ) : (
+            <FolderOpen className="h-8 w-8" />
+          )}
+        </div>
+
+        <h3 className="text-xl font-black">
+          {noResults
+            ? "لم نجد دورة مطابقة"
+            : "لا توجد دورات متاحة حاليًا"}
+        </h3>
+
+        <p className="mt-2 max-w-md text-sm leading-7 text-muted-foreground">
+          {noResults
+            ? "جرّب البحث باستخدام كلمة مختلفة أو امسح البحث لعرض جميع الدورات."
+            : "لم تتم إضافة أي دورة تعليمية بعد. ستظهر الدورات هنا عند توفرها."}
+        </p>
+
+        {noResults && onReset && (
+          <Button
+            type="button"
+            variant="outline"
+            className="mt-5 rounded-xl"
+            onClick={onReset}
+          >
+            عرض جميع الدورات
+          </Button>
+        )}
+      </CardContent>
+    </Card>
   );
 }

@@ -201,6 +201,7 @@ export type CourseWhereInput = {
   teacher?: Prisma.XOR<Prisma.UserScalarRelationFilter, Prisma.UserWhereInput>
   enrollments?: Prisma.EnrollmentListRelationFilter
   modules?: Prisma.ModuleListRelationFilter
+  groupChallenges?: Prisma.GroupChallengeListRelationFilter
   placementTest?: Prisma.XOR<Prisma.PlacementTestNullableScalarRelationFilter, Prisma.PlacementTestWhereInput> | null
   placementResults?: Prisma.PlacementResultListRelationFilter
 }
@@ -216,6 +217,7 @@ export type CourseOrderByWithRelationInput = {
   teacher?: Prisma.UserOrderByWithRelationInput
   enrollments?: Prisma.EnrollmentOrderByRelationAggregateInput
   modules?: Prisma.ModuleOrderByRelationAggregateInput
+  groupChallenges?: Prisma.GroupChallengeOrderByRelationAggregateInput
   placementTest?: Prisma.PlacementTestOrderByWithRelationInput
   placementResults?: Prisma.PlacementResultOrderByRelationAggregateInput
 }
@@ -234,6 +236,7 @@ export type CourseWhereUniqueInput = Prisma.AtLeast<{
   teacher?: Prisma.XOR<Prisma.UserScalarRelationFilter, Prisma.UserWhereInput>
   enrollments?: Prisma.EnrollmentListRelationFilter
   modules?: Prisma.ModuleListRelationFilter
+  groupChallenges?: Prisma.GroupChallengeListRelationFilter
   placementTest?: Prisma.XOR<Prisma.PlacementTestNullableScalarRelationFilter, Prisma.PlacementTestWhereInput> | null
   placementResults?: Prisma.PlacementResultListRelationFilter
 }, "id">
@@ -274,6 +277,7 @@ export type CourseCreateInput = {
   teacher: Prisma.UserCreateNestedOneWithoutCoursesTeachingInput
   enrollments?: Prisma.EnrollmentCreateNestedManyWithoutCourseInput
   modules?: Prisma.ModuleCreateNestedManyWithoutCourseInput
+  groupChallenges?: Prisma.GroupChallengeCreateNestedManyWithoutCourseInput
   placementTest?: Prisma.PlacementTestCreateNestedOneWithoutCourseInput
   placementResults?: Prisma.PlacementResultCreateNestedManyWithoutCourseInput
 }
@@ -288,6 +292,7 @@ export type CourseUncheckedCreateInput = {
   updatedAt?: Date | string
   enrollments?: Prisma.EnrollmentUncheckedCreateNestedManyWithoutCourseInput
   modules?: Prisma.ModuleUncheckedCreateNestedManyWithoutCourseInput
+  groupChallenges?: Prisma.GroupChallengeUncheckedCreateNestedManyWithoutCourseInput
   placementTest?: Prisma.PlacementTestUncheckedCreateNestedOneWithoutCourseInput
   placementResults?: Prisma.PlacementResultUncheckedCreateNestedManyWithoutCourseInput
 }
@@ -302,6 +307,7 @@ export type CourseUpdateInput = {
   teacher?: Prisma.UserUpdateOneRequiredWithoutCoursesTeachingNestedInput
   enrollments?: Prisma.EnrollmentUpdateManyWithoutCourseNestedInput
   modules?: Prisma.ModuleUpdateManyWithoutCourseNestedInput
+  groupChallenges?: Prisma.GroupChallengeUpdateManyWithoutCourseNestedInput
   placementTest?: Prisma.PlacementTestUpdateOneWithoutCourseNestedInput
   placementResults?: Prisma.PlacementResultUpdateManyWithoutCourseNestedInput
 }
@@ -316,6 +322,7 @@ export type CourseUncheckedUpdateInput = {
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   enrollments?: Prisma.EnrollmentUncheckedUpdateManyWithoutCourseNestedInput
   modules?: Prisma.ModuleUncheckedUpdateManyWithoutCourseNestedInput
+  groupChallenges?: Prisma.GroupChallengeUncheckedUpdateManyWithoutCourseNestedInput
   placementTest?: Prisma.PlacementTestUncheckedUpdateOneWithoutCourseNestedInput
   placementResults?: Prisma.PlacementResultUncheckedUpdateManyWithoutCourseNestedInput
 }
@@ -492,6 +499,20 @@ export type CourseUpdateOneRequiredWithoutPlacementResultsNestedInput = {
   update?: Prisma.XOR<Prisma.XOR<Prisma.CourseUpdateToOneWithWhereWithoutPlacementResultsInput, Prisma.CourseUpdateWithoutPlacementResultsInput>, Prisma.CourseUncheckedUpdateWithoutPlacementResultsInput>
 }
 
+export type CourseCreateNestedOneWithoutGroupChallengesInput = {
+  create?: Prisma.XOR<Prisma.CourseCreateWithoutGroupChallengesInput, Prisma.CourseUncheckedCreateWithoutGroupChallengesInput>
+  connectOrCreate?: Prisma.CourseCreateOrConnectWithoutGroupChallengesInput
+  connect?: Prisma.CourseWhereUniqueInput
+}
+
+export type CourseUpdateOneRequiredWithoutGroupChallengesNestedInput = {
+  create?: Prisma.XOR<Prisma.CourseCreateWithoutGroupChallengesInput, Prisma.CourseUncheckedCreateWithoutGroupChallengesInput>
+  connectOrCreate?: Prisma.CourseCreateOrConnectWithoutGroupChallengesInput
+  upsert?: Prisma.CourseUpsertWithoutGroupChallengesInput
+  connect?: Prisma.CourseWhereUniqueInput
+  update?: Prisma.XOR<Prisma.XOR<Prisma.CourseUpdateToOneWithWhereWithoutGroupChallengesInput, Prisma.CourseUpdateWithoutGroupChallengesInput>, Prisma.CourseUncheckedUpdateWithoutGroupChallengesInput>
+}
+
 export type CourseCreateWithoutTeacherInput = {
   id?: string
   title: string
@@ -501,6 +522,7 @@ export type CourseCreateWithoutTeacherInput = {
   updatedAt?: Date | string
   enrollments?: Prisma.EnrollmentCreateNestedManyWithoutCourseInput
   modules?: Prisma.ModuleCreateNestedManyWithoutCourseInput
+  groupChallenges?: Prisma.GroupChallengeCreateNestedManyWithoutCourseInput
   placementTest?: Prisma.PlacementTestCreateNestedOneWithoutCourseInput
   placementResults?: Prisma.PlacementResultCreateNestedManyWithoutCourseInput
 }
@@ -514,6 +536,7 @@ export type CourseUncheckedCreateWithoutTeacherInput = {
   updatedAt?: Date | string
   enrollments?: Prisma.EnrollmentUncheckedCreateNestedManyWithoutCourseInput
   modules?: Prisma.ModuleUncheckedCreateNestedManyWithoutCourseInput
+  groupChallenges?: Prisma.GroupChallengeUncheckedCreateNestedManyWithoutCourseInput
   placementTest?: Prisma.PlacementTestUncheckedCreateNestedOneWithoutCourseInput
   placementResults?: Prisma.PlacementResultUncheckedCreateNestedManyWithoutCourseInput
 }
@@ -566,6 +589,7 @@ export type CourseCreateWithoutModulesInput = {
   updatedAt?: Date | string
   teacher: Prisma.UserCreateNestedOneWithoutCoursesTeachingInput
   enrollments?: Prisma.EnrollmentCreateNestedManyWithoutCourseInput
+  groupChallenges?: Prisma.GroupChallengeCreateNestedManyWithoutCourseInput
   placementTest?: Prisma.PlacementTestCreateNestedOneWithoutCourseInput
   placementResults?: Prisma.PlacementResultCreateNestedManyWithoutCourseInput
 }
@@ -579,6 +603,7 @@ export type CourseUncheckedCreateWithoutModulesInput = {
   createdAt?: Date | string
   updatedAt?: Date | string
   enrollments?: Prisma.EnrollmentUncheckedCreateNestedManyWithoutCourseInput
+  groupChallenges?: Prisma.GroupChallengeUncheckedCreateNestedManyWithoutCourseInput
   placementTest?: Prisma.PlacementTestUncheckedCreateNestedOneWithoutCourseInput
   placementResults?: Prisma.PlacementResultUncheckedCreateNestedManyWithoutCourseInput
 }
@@ -608,6 +633,7 @@ export type CourseUpdateWithoutModulesInput = {
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   teacher?: Prisma.UserUpdateOneRequiredWithoutCoursesTeachingNestedInput
   enrollments?: Prisma.EnrollmentUpdateManyWithoutCourseNestedInput
+  groupChallenges?: Prisma.GroupChallengeUpdateManyWithoutCourseNestedInput
   placementTest?: Prisma.PlacementTestUpdateOneWithoutCourseNestedInput
   placementResults?: Prisma.PlacementResultUpdateManyWithoutCourseNestedInput
 }
@@ -621,6 +647,7 @@ export type CourseUncheckedUpdateWithoutModulesInput = {
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   enrollments?: Prisma.EnrollmentUncheckedUpdateManyWithoutCourseNestedInput
+  groupChallenges?: Prisma.GroupChallengeUncheckedUpdateManyWithoutCourseNestedInput
   placementTest?: Prisma.PlacementTestUncheckedUpdateOneWithoutCourseNestedInput
   placementResults?: Prisma.PlacementResultUncheckedUpdateManyWithoutCourseNestedInput
 }
@@ -634,6 +661,7 @@ export type CourseCreateWithoutEnrollmentsInput = {
   updatedAt?: Date | string
   teacher: Prisma.UserCreateNestedOneWithoutCoursesTeachingInput
   modules?: Prisma.ModuleCreateNestedManyWithoutCourseInput
+  groupChallenges?: Prisma.GroupChallengeCreateNestedManyWithoutCourseInput
   placementTest?: Prisma.PlacementTestCreateNestedOneWithoutCourseInput
   placementResults?: Prisma.PlacementResultCreateNestedManyWithoutCourseInput
 }
@@ -647,6 +675,7 @@ export type CourseUncheckedCreateWithoutEnrollmentsInput = {
   createdAt?: Date | string
   updatedAt?: Date | string
   modules?: Prisma.ModuleUncheckedCreateNestedManyWithoutCourseInput
+  groupChallenges?: Prisma.GroupChallengeUncheckedCreateNestedManyWithoutCourseInput
   placementTest?: Prisma.PlacementTestUncheckedCreateNestedOneWithoutCourseInput
   placementResults?: Prisma.PlacementResultUncheckedCreateNestedManyWithoutCourseInput
 }
@@ -676,6 +705,7 @@ export type CourseUpdateWithoutEnrollmentsInput = {
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   teacher?: Prisma.UserUpdateOneRequiredWithoutCoursesTeachingNestedInput
   modules?: Prisma.ModuleUpdateManyWithoutCourseNestedInput
+  groupChallenges?: Prisma.GroupChallengeUpdateManyWithoutCourseNestedInput
   placementTest?: Prisma.PlacementTestUpdateOneWithoutCourseNestedInput
   placementResults?: Prisma.PlacementResultUpdateManyWithoutCourseNestedInput
 }
@@ -689,6 +719,7 @@ export type CourseUncheckedUpdateWithoutEnrollmentsInput = {
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   modules?: Prisma.ModuleUncheckedUpdateManyWithoutCourseNestedInput
+  groupChallenges?: Prisma.GroupChallengeUncheckedUpdateManyWithoutCourseNestedInput
   placementTest?: Prisma.PlacementTestUncheckedUpdateOneWithoutCourseNestedInput
   placementResults?: Prisma.PlacementResultUncheckedUpdateManyWithoutCourseNestedInput
 }
@@ -703,6 +734,7 @@ export type CourseCreateWithoutPlacementTestInput = {
   teacher: Prisma.UserCreateNestedOneWithoutCoursesTeachingInput
   enrollments?: Prisma.EnrollmentCreateNestedManyWithoutCourseInput
   modules?: Prisma.ModuleCreateNestedManyWithoutCourseInput
+  groupChallenges?: Prisma.GroupChallengeCreateNestedManyWithoutCourseInput
   placementResults?: Prisma.PlacementResultCreateNestedManyWithoutCourseInput
 }
 
@@ -716,6 +748,7 @@ export type CourseUncheckedCreateWithoutPlacementTestInput = {
   updatedAt?: Date | string
   enrollments?: Prisma.EnrollmentUncheckedCreateNestedManyWithoutCourseInput
   modules?: Prisma.ModuleUncheckedCreateNestedManyWithoutCourseInput
+  groupChallenges?: Prisma.GroupChallengeUncheckedCreateNestedManyWithoutCourseInput
   placementResults?: Prisma.PlacementResultUncheckedCreateNestedManyWithoutCourseInput
 }
 
@@ -745,6 +778,7 @@ export type CourseUpdateWithoutPlacementTestInput = {
   teacher?: Prisma.UserUpdateOneRequiredWithoutCoursesTeachingNestedInput
   enrollments?: Prisma.EnrollmentUpdateManyWithoutCourseNestedInput
   modules?: Prisma.ModuleUpdateManyWithoutCourseNestedInput
+  groupChallenges?: Prisma.GroupChallengeUpdateManyWithoutCourseNestedInput
   placementResults?: Prisma.PlacementResultUpdateManyWithoutCourseNestedInput
 }
 
@@ -758,6 +792,7 @@ export type CourseUncheckedUpdateWithoutPlacementTestInput = {
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   enrollments?: Prisma.EnrollmentUncheckedUpdateManyWithoutCourseNestedInput
   modules?: Prisma.ModuleUncheckedUpdateManyWithoutCourseNestedInput
+  groupChallenges?: Prisma.GroupChallengeUncheckedUpdateManyWithoutCourseNestedInput
   placementResults?: Prisma.PlacementResultUncheckedUpdateManyWithoutCourseNestedInput
 }
 
@@ -771,6 +806,7 @@ export type CourseCreateWithoutPlacementResultsInput = {
   teacher: Prisma.UserCreateNestedOneWithoutCoursesTeachingInput
   enrollments?: Prisma.EnrollmentCreateNestedManyWithoutCourseInput
   modules?: Prisma.ModuleCreateNestedManyWithoutCourseInput
+  groupChallenges?: Prisma.GroupChallengeCreateNestedManyWithoutCourseInput
   placementTest?: Prisma.PlacementTestCreateNestedOneWithoutCourseInput
 }
 
@@ -784,6 +820,7 @@ export type CourseUncheckedCreateWithoutPlacementResultsInput = {
   updatedAt?: Date | string
   enrollments?: Prisma.EnrollmentUncheckedCreateNestedManyWithoutCourseInput
   modules?: Prisma.ModuleUncheckedCreateNestedManyWithoutCourseInput
+  groupChallenges?: Prisma.GroupChallengeUncheckedCreateNestedManyWithoutCourseInput
   placementTest?: Prisma.PlacementTestUncheckedCreateNestedOneWithoutCourseInput
 }
 
@@ -813,6 +850,7 @@ export type CourseUpdateWithoutPlacementResultsInput = {
   teacher?: Prisma.UserUpdateOneRequiredWithoutCoursesTeachingNestedInput
   enrollments?: Prisma.EnrollmentUpdateManyWithoutCourseNestedInput
   modules?: Prisma.ModuleUpdateManyWithoutCourseNestedInput
+  groupChallenges?: Prisma.GroupChallengeUpdateManyWithoutCourseNestedInput
   placementTest?: Prisma.PlacementTestUpdateOneWithoutCourseNestedInput
 }
 
@@ -826,7 +864,80 @@ export type CourseUncheckedUpdateWithoutPlacementResultsInput = {
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   enrollments?: Prisma.EnrollmentUncheckedUpdateManyWithoutCourseNestedInput
   modules?: Prisma.ModuleUncheckedUpdateManyWithoutCourseNestedInput
+  groupChallenges?: Prisma.GroupChallengeUncheckedUpdateManyWithoutCourseNestedInput
   placementTest?: Prisma.PlacementTestUncheckedUpdateOneWithoutCourseNestedInput
+}
+
+export type CourseCreateWithoutGroupChallengesInput = {
+  id?: string
+  title: string
+  description?: string | null
+  thumbnail?: string | null
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  teacher: Prisma.UserCreateNestedOneWithoutCoursesTeachingInput
+  enrollments?: Prisma.EnrollmentCreateNestedManyWithoutCourseInput
+  modules?: Prisma.ModuleCreateNestedManyWithoutCourseInput
+  placementTest?: Prisma.PlacementTestCreateNestedOneWithoutCourseInput
+  placementResults?: Prisma.PlacementResultCreateNestedManyWithoutCourseInput
+}
+
+export type CourseUncheckedCreateWithoutGroupChallengesInput = {
+  id?: string
+  title: string
+  description?: string | null
+  teacherId: string
+  thumbnail?: string | null
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  enrollments?: Prisma.EnrollmentUncheckedCreateNestedManyWithoutCourseInput
+  modules?: Prisma.ModuleUncheckedCreateNestedManyWithoutCourseInput
+  placementTest?: Prisma.PlacementTestUncheckedCreateNestedOneWithoutCourseInput
+  placementResults?: Prisma.PlacementResultUncheckedCreateNestedManyWithoutCourseInput
+}
+
+export type CourseCreateOrConnectWithoutGroupChallengesInput = {
+  where: Prisma.CourseWhereUniqueInput
+  create: Prisma.XOR<Prisma.CourseCreateWithoutGroupChallengesInput, Prisma.CourseUncheckedCreateWithoutGroupChallengesInput>
+}
+
+export type CourseUpsertWithoutGroupChallengesInput = {
+  update: Prisma.XOR<Prisma.CourseUpdateWithoutGroupChallengesInput, Prisma.CourseUncheckedUpdateWithoutGroupChallengesInput>
+  create: Prisma.XOR<Prisma.CourseCreateWithoutGroupChallengesInput, Prisma.CourseUncheckedCreateWithoutGroupChallengesInput>
+  where?: Prisma.CourseWhereInput
+}
+
+export type CourseUpdateToOneWithWhereWithoutGroupChallengesInput = {
+  where?: Prisma.CourseWhereInput
+  data: Prisma.XOR<Prisma.CourseUpdateWithoutGroupChallengesInput, Prisma.CourseUncheckedUpdateWithoutGroupChallengesInput>
+}
+
+export type CourseUpdateWithoutGroupChallengesInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  title?: Prisma.StringFieldUpdateOperationsInput | string
+  description?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  thumbnail?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  teacher?: Prisma.UserUpdateOneRequiredWithoutCoursesTeachingNestedInput
+  enrollments?: Prisma.EnrollmentUpdateManyWithoutCourseNestedInput
+  modules?: Prisma.ModuleUpdateManyWithoutCourseNestedInput
+  placementTest?: Prisma.PlacementTestUpdateOneWithoutCourseNestedInput
+  placementResults?: Prisma.PlacementResultUpdateManyWithoutCourseNestedInput
+}
+
+export type CourseUncheckedUpdateWithoutGroupChallengesInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  title?: Prisma.StringFieldUpdateOperationsInput | string
+  description?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  teacherId?: Prisma.StringFieldUpdateOperationsInput | string
+  thumbnail?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  enrollments?: Prisma.EnrollmentUncheckedUpdateManyWithoutCourseNestedInput
+  modules?: Prisma.ModuleUncheckedUpdateManyWithoutCourseNestedInput
+  placementTest?: Prisma.PlacementTestUncheckedUpdateOneWithoutCourseNestedInput
+  placementResults?: Prisma.PlacementResultUncheckedUpdateManyWithoutCourseNestedInput
 }
 
 export type CourseCreateManyTeacherInput = {
@@ -847,6 +958,7 @@ export type CourseUpdateWithoutTeacherInput = {
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   enrollments?: Prisma.EnrollmentUpdateManyWithoutCourseNestedInput
   modules?: Prisma.ModuleUpdateManyWithoutCourseNestedInput
+  groupChallenges?: Prisma.GroupChallengeUpdateManyWithoutCourseNestedInput
   placementTest?: Prisma.PlacementTestUpdateOneWithoutCourseNestedInput
   placementResults?: Prisma.PlacementResultUpdateManyWithoutCourseNestedInput
 }
@@ -860,6 +972,7 @@ export type CourseUncheckedUpdateWithoutTeacherInput = {
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   enrollments?: Prisma.EnrollmentUncheckedUpdateManyWithoutCourseNestedInput
   modules?: Prisma.ModuleUncheckedUpdateManyWithoutCourseNestedInput
+  groupChallenges?: Prisma.GroupChallengeUncheckedUpdateManyWithoutCourseNestedInput
   placementTest?: Prisma.PlacementTestUncheckedUpdateOneWithoutCourseNestedInput
   placementResults?: Prisma.PlacementResultUncheckedUpdateManyWithoutCourseNestedInput
 }
@@ -881,12 +994,14 @@ export type CourseUncheckedUpdateManyWithoutTeacherInput = {
 export type CourseCountOutputType = {
   enrollments: number
   modules: number
+  groupChallenges: number
   placementResults: number
 }
 
 export type CourseCountOutputTypeSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   enrollments?: boolean | CourseCountOutputTypeCountEnrollmentsArgs
   modules?: boolean | CourseCountOutputTypeCountModulesArgs
+  groupChallenges?: boolean | CourseCountOutputTypeCountGroupChallengesArgs
   placementResults?: boolean | CourseCountOutputTypeCountPlacementResultsArgs
 }
 
@@ -917,6 +1032,13 @@ export type CourseCountOutputTypeCountModulesArgs<ExtArgs extends runtime.Types.
 /**
  * CourseCountOutputType without action
  */
+export type CourseCountOutputTypeCountGroupChallengesArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  where?: Prisma.GroupChallengeWhereInput
+}
+
+/**
+ * CourseCountOutputType without action
+ */
 export type CourseCountOutputTypeCountPlacementResultsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   where?: Prisma.PlacementResultWhereInput
 }
@@ -933,6 +1055,7 @@ export type CourseSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs =
   teacher?: boolean | Prisma.UserDefaultArgs<ExtArgs>
   enrollments?: boolean | Prisma.Course$enrollmentsArgs<ExtArgs>
   modules?: boolean | Prisma.Course$modulesArgs<ExtArgs>
+  groupChallenges?: boolean | Prisma.Course$groupChallengesArgs<ExtArgs>
   placementTest?: boolean | Prisma.Course$placementTestArgs<ExtArgs>
   placementResults?: boolean | Prisma.Course$placementResultsArgs<ExtArgs>
   _count?: boolean | Prisma.CourseCountOutputTypeDefaultArgs<ExtArgs>
@@ -975,6 +1098,7 @@ export type CourseInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs 
   teacher?: boolean | Prisma.UserDefaultArgs<ExtArgs>
   enrollments?: boolean | Prisma.Course$enrollmentsArgs<ExtArgs>
   modules?: boolean | Prisma.Course$modulesArgs<ExtArgs>
+  groupChallenges?: boolean | Prisma.Course$groupChallengesArgs<ExtArgs>
   placementTest?: boolean | Prisma.Course$placementTestArgs<ExtArgs>
   placementResults?: boolean | Prisma.Course$placementResultsArgs<ExtArgs>
   _count?: boolean | Prisma.CourseCountOutputTypeDefaultArgs<ExtArgs>
@@ -992,6 +1116,7 @@ export type $CoursePayload<ExtArgs extends runtime.Types.Extensions.InternalArgs
     teacher: Prisma.$UserPayload<ExtArgs>
     enrollments: Prisma.$EnrollmentPayload<ExtArgs>[]
     modules: Prisma.$ModulePayload<ExtArgs>[]
+    groupChallenges: Prisma.$GroupChallengePayload<ExtArgs>[]
     placementTest: Prisma.$PlacementTestPayload<ExtArgs> | null
     placementResults: Prisma.$PlacementResultPayload<ExtArgs>[]
   }
@@ -1400,6 +1525,7 @@ export interface Prisma__CourseClient<T, Null = never, ExtArgs extends runtime.T
   teacher<T extends Prisma.UserDefaultArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.UserDefaultArgs<ExtArgs>>): Prisma.Prisma__UserClient<runtime.Types.Result.GetResult<Prisma.$UserPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
   enrollments<T extends Prisma.Course$enrollmentsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Course$enrollmentsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$EnrollmentPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   modules<T extends Prisma.Course$modulesArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Course$modulesArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$ModulePayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+  groupChallenges<T extends Prisma.Course$groupChallengesArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Course$groupChallengesArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$GroupChallengePayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   placementTest<T extends Prisma.Course$placementTestArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Course$placementTestArgs<ExtArgs>>): Prisma.Prisma__PlacementTestClient<runtime.Types.Result.GetResult<Prisma.$PlacementTestPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
   placementResults<T extends Prisma.Course$placementResultsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Course$placementResultsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$PlacementResultPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   /**
@@ -1884,6 +2010,30 @@ export type Course$modulesArgs<ExtArgs extends runtime.Types.Extensions.Internal
   take?: number
   skip?: number
   distinct?: Prisma.ModuleScalarFieldEnum | Prisma.ModuleScalarFieldEnum[]
+}
+
+/**
+ * Course.groupChallenges
+ */
+export type Course$groupChallengesArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the GroupChallenge
+   */
+  select?: Prisma.GroupChallengeSelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the GroupChallenge
+   */
+  omit?: Prisma.GroupChallengeOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.GroupChallengeInclude<ExtArgs> | null
+  where?: Prisma.GroupChallengeWhereInput
+  orderBy?: Prisma.GroupChallengeOrderByWithRelationInput | Prisma.GroupChallengeOrderByWithRelationInput[]
+  cursor?: Prisma.GroupChallengeWhereUniqueInput
+  take?: number
+  skip?: number
+  distinct?: Prisma.GroupChallengeScalarFieldEnum | Prisma.GroupChallengeScalarFieldEnum[]
 }
 
 /**

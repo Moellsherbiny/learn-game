@@ -5,8 +5,6 @@ import Link from "next/link";
 import {
   Gamepad2,
   GraduationCap,
-  Heart,
-  Mail,
 } from "lucide-react";
 
 import { auth } from "@/auth";
@@ -230,8 +228,8 @@ export default async function DashboardFooter() {
                 <Link
                   href={
                     isTeacher
-                      ? "/teacher/battles"
-                      : "/student/battles"
+                      ? "/teacher/group-challenges"
+                      : "/student/group-challenges"
                   }
                   className="
                     text-muted-foreground

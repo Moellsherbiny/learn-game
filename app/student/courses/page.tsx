@@ -1,14 +1,13 @@
 import { redirect } from "next/navigation";
 import {
   BookOpen,
-  Crown,
-  Flame,
+  CheckCircle2,
+  Clock3,
+  Layers3,
   Sparkles,
+  Star,
   Trophy,
-  Swords,
-  Coins,
-  Target,
-  Gamepad2,
+  Zap,
 } from "lucide-react";
 
 import { auth } from "@/auth";
@@ -29,248 +28,203 @@ export default async function MyCoursesPage() {
 
   const { courses, stats } = await getMyCoursesAction();
 
-  const level = stats.level || 1;
+  /*
+   * ============================================================
+   * COURSE STATS
+   * ============================================================
+   */
 
-  const currentLevelXp =
-    (stats.totalXp || 0) %
-    (stats.nextLevelXp || 1000);
+  const totalCourses =
+    stats.totalCourses ?? courses.length;
 
-  const nextLevelXp = stats.nextLevelXp || 1000;
+  const completedCourses = courses.filter(
+    (course) =>
+      course.totalLessons > 0 &&
+      course.completedLessons >=
+        course.totalLessons,
+  ).length;
 
-  const progress = stats.levelProgress || 0;
+  const inProgressCourses = courses.filter(
+    (course) =>
+      course.completedLessons > 0 &&
+      course.completedLessons <
+        course.totalLessons,
+  ).length;
+
+  const notStartedCourses = courses.filter(
+    (course) =>
+      course.completedLessons === 0,
+  ).length;
+
+  /*
+   * ============================================================
+   * RENDER
+   * ============================================================
+   */
 
   return (
-    <main className="min-h-screen overflow-hidden bg-white">
-      {/* HERO */}
-      <section className="relative overflow-hidden border-b bg-white">
-        <div className="container relative z-10 mx-auto px-4 py-14 md:py-20">
-          <div className="grid items-center gap-12 lg:grid-cols-2">
-            {/* LEFT */}
+    <main
+      dir="rtl"
+      className="min-h-screen bg-background"
+    >
+      {/* ======================================================
+          PAGE HEADER
+      ======================================================= */}
+      <section className="border-b bg-linear-to-b from-primary/[0.035] to-background">
+        <div className="container mx-auto px-4 py-8 md:py-10">
+          <div className="flex flex-col gap-6">
+            {/* TITLE */}
             <div>
-              <Badge
-                variant="secondary"
-                className="mb-6 rounded-full px-4 py-2 text-sm"
-              >
-                <Gamepad2 className="h-7 w-7 text-primary" />
-                 رحلتك التعليمية
-              </Badge>
+              <div className="mb-3 flex items-center gap-2">
+                <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-primary/10 text-primary">
+                  <BookOpen className="h-5 w-5" />
+                </div>
 
-              <h1 className="text-5xl font-black leading-tight tracking-tight text-foreground md:text-7xl">
-                أهلاً،
-                <span className="mt-3 block text-primary">
-                  {session.user.name ?? "أيها البطل"}
-                </span>
+                <Badge
+                  variant="secondary"
+                  className="rounded-full px-3 py-1"
+                >
+                  رحلتك التعليمية
+                </Badge>
+              </div>
+
+              <h1 className="text-3xl font-black tracking-tight md:text-4xl">
+                دوراتي
               </h1>
 
-              <p className="mt-6 max-w-2xl text-lg leading-8 text-muted-foreground md:text-xl">
-                استمر في تطوير مهاراتك، اجمع نقاط الخبرة، وافتح مراحل جديدة
-                داخل مغامرتك التعليمية.
+              <p className="mt-2 max-w-xl text-sm leading-6 text-muted-foreground md:text-base">
+                تابع تقدمك، واستكمل دروسك، وواصل
+                رحلتك التعليمية من حيث توقفت.
               </p>
-
-              {/* XP CARD */}
-              <div className="mt-10 rounded-3xl border border-border/60 bg-white p-6 shadow-sm">
-                <div className="mb-5 flex items-center justify-between">
-                  <div>
-                    <p className="text-sm text-muted-foreground">
-                      التقدم للمستوى التالي
-                    </p>
-
-                    <h3 className="mt-1 text-3xl font-black">
-                      المستوى {level}
-                    </h3>
-
-                    <p className="mt-2 text-sm text-primary">
-                      {stats.levelLabel}
-                    </p>
-                  </div>
-
-                  <div className="rounded-2xl bg-primary/10 p-4">
-                    <Crown className="h-8 w-8 text-primary" />
-                  </div>
-                </div>
-
-                <Progress
-                  value={progress}
-                  className="h-3 rounded-full"
-                />
-
-                <div className="mt-4 flex items-center justify-between text-sm">
-                  <span className="font-medium text-muted-foreground">
-                    {currentLevelXp} نقاط خبرة
-                  </span>
-
-                  <span className="font-medium text-muted-foreground">
-                    {nextLevelXp} نقاط خبرة
-                  </span>
-                </div>
-
-                <p className="mt-5 text-sm text-muted-foreground">
-                  متبقي{" "}
-                  <span className="font-bold text-primary">
-                    {nextLevelXp - currentLevelXp} نقاط خبرة
-                  </span>{" "}
-                  للوصول للمستوى التالي
-                </p>
-              </div>
             </div>
 
-            {/* RIGHT STATS */}
-            <div className="grid gap-5 sm:grid-cols-2">
-              {[
-                {
-                  title: "الدورات",
-                  value: stats.totalCourses,
-                  icon: BookOpen,
-                },
-                {
-                  title: "نقاط الخبرة",
-                  value:
-                    stats.totalXp?.toLocaleString() || 0,
-                  icon: Trophy,
-                },
-                {
-                  title: "سلسلة النشاط",
-                  value: stats.streak || 0,
-                  icon: Flame,
-                },
-                {
-                  title: "العملات",
-                  value: stats.coins || 0,
-                  icon: Coins,
-                },
-              ].map((item, index) => (
-                <Card
-                  key={index}
-                  className="
-                    rounded-3xl
-                    border-border/60
-                    bg-white
-                    shadow-sm
-                    transition-all
-                    duration-300
-                    hover:-translate-y-1
-                    hover:border-primary/20
-                    hover:shadow-md
-                  "
-                >
-                  <CardContent className="p-6">
-                    <div className="mb-5 flex items-center justify-between">
-                      <div className="rounded-2xl bg-primary/10 p-3">
-                        <item.icon className="h-6 w-6 text-primary" />
-                      </div>
+            {/* ==================================================
+                QUICK STATS
+            =================================================== */}
+            <div className="grid grid-cols-2 gap-3 md:grid-cols-4">
+              {/* TOTAL */}
+              <Card className="rounded-2xl border-border/60 bg-background/80 shadow-none">
+                <CardContent className="flex items-center gap-3 p-4">
+                  <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-primary/10 text-primary">
+                    <Layers3 className="h-4 w-4" />
+                  </div>
 
-                      <div className="h-2 w-2 rounded-full bg-primary/40" />
-                    </div>
-
-                    <h2 className="text-4xl font-black tracking-tight text-foreground">
-                      {item.value}
-                    </h2>
-
-                    <p className="mt-2 text-sm text-muted-foreground">
-                      {item.title}
+                  <div className="min-w-0">
+                    <p className="text-lg font-black leading-none">
+                      {totalCourses}
                     </p>
-                  </CardContent>
-                </Card>
-              ))}
+
+                    <p className="mt-1 text-xs text-muted-foreground">
+                      إجمالي الدورات
+                    </p>
+                  </div>
+                </CardContent>
+              </Card>
+
+              {/* IN PROGRESS */}
+              <Card className="rounded-2xl border-border/60 bg-background/80 shadow-none">
+                <CardContent className="flex items-center gap-3 p-4">
+                  <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-orange-500/10 text-orange-600">
+                    <Clock3 className="h-4 w-4" />
+                  </div>
+
+                  <div className="min-w-0">
+                    <p className="text-lg font-black leading-none">
+                      {inProgressCourses}
+                    </p>
+
+                    <p className="mt-1 text-xs text-muted-foreground">
+                      قيد التعلم
+                    </p>
+                  </div>
+                </CardContent>
+              </Card>
+
+              {/* COMPLETED */}
+              <Card className="rounded-2xl border-border/60 bg-background/80 shadow-none">
+                <CardContent className="flex items-center gap-3 p-4">
+                  <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-emerald-500/10 text-emerald-600">
+                    <CheckCircle2 className="h-4 w-4" />
+                  </div>
+
+                  <div className="min-w-0">
+                    <p className="text-lg font-black leading-none">
+                      {completedCourses}
+                    </p>
+
+                    <p className="mt-1 text-xs text-muted-foreground">
+                      مكتملة
+                    </p>
+                  </div>
+                </CardContent>
+              </Card>
+
+              {/* NOT STARTED */}
+              <Card className="rounded-2xl border-border/60 bg-background/80 shadow-none">
+                <CardContent className="flex items-center gap-3 p-4">
+                  <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-slate-500/10 text-slate-600">
+                    <Sparkles className="h-4 w-4" />
+                  </div>
+
+                  <div className="min-w-0">
+                    <p className="text-lg font-black leading-none">
+                      {notStartedCourses}
+                    </p>
+
+                    <p className="mt-1 text-xs text-muted-foreground">
+                      لم تبدأ
+                    </p>
+                  </div>
+                </CardContent>
+              </Card>
             </div>
           </div>
         </div>
       </section>
 
-      {/* CONTENT */}
-      <section className="bg-white">
-        <div className="container mx-auto px-4 py-12">
-          {/* MISSIONS */}
-          <div className="mb-10 flex items-center gap-3">
-            <Target className="h-7 w-7 text-primary" />
+      {/* ======================================================
+          COURSES CONTENT
+      ======================================================= */}
+      <section className="container mx-auto px-4 py-8 md:py-10">
+        {/* SECTION HEADER */}
+        <div className="mb-6 flex items-end justify-between gap-4">
+          <div>
+            <div className="flex items-center gap-2">
+              <BookOpen className="h-5 w-5 text-primary" />
 
-            <h2 className="text-3xl font-black">
-              المهام اليومية
-            </h2>
+              <h2 className="text-xl font-black md:text-2xl">
+                دوراتك التعليمية
+              </h2>
+            </div>
+
+            <p className="mt-1.5 text-sm text-muted-foreground">
+              اختر دورة واستكمل التعلم من حيث توقفت.
+            </p>
           </div>
 
-          <div className="mb-16 grid gap-5 md:grid-cols-3">
-            {[
-              {
-                title: "أكمل دورة جديدة",
-                progress: 70,
-                reward: "+100 نقاط خبرة",
-                icon: BookOpen,
-              },
-              {
-                title: "حقق سلسلة نشاط",
-                progress: 50,
-                reward: "+50 نقاط خبرة",
-                icon: Flame,
-              },
-              {
-                title: "شارك في تحدي جماعي",
-                progress: 25,
-                reward: "+200 نقاط خبرة",
-                icon: Swords,
-              },
-            ].map((mission, index) => (
-              <Card
-                key={index}
-                className="
-                  rounded-3xl
-                  border-border/60
-                  bg-white
-                  shadow-sm
-                  transition-all
-                  duration-300
-                  hover:-translate-y-1
-                  hover:border-primary/20
-                  hover:shadow-md
-                "
-              >
-                <CardContent className="p-6">
-                  <div className="mb-5 flex items-center justify-between">
-                    <div className="rounded-2xl bg-primary/10 p-3">
-                      <mission.icon className="h-6 w-6 text-primary" />
-                    </div>
-
-                    <Badge
-                      variant="secondary"
-                      className="rounded-full"
-                    >
-                      {mission.reward}
-                    </Badge>
-                  </div>
-
-                  <h3 className="mb-4 text-xl font-black">
-                    {mission.title}
-                  </h3>
-
-                  <Progress
-                    value={mission.progress}
-                    className="h-3 rounded-full"
-                  />
-
-                  <p className="mt-3 text-sm text-muted-foreground">
-                    نسبة الإنجاز: {mission.progress}%
-                  </p>
-                </CardContent>
-              </Card>
-            ))}
-          </div>
-
-          {/* COURSES */}
-          <div className="mb-8 flex items-center gap-3">
-            <Sparkles className="h-7 w-7 text-primary" />
-
-            <h2 className="text-3xl font-black">
-              الدورات النشطة
-            </h2>
-          </div>
-
-          <MyCoursesClient
-            courses={courses}
-            stats={stats}
-            studentName={session.user.name ?? "طالب"}
-            studentImage={session.user.image ?? null}
-          />
+          {courses.length > 0 && (
+            <Badge
+              variant="outline"
+              className="hidden rounded-full px-3 py-1.5 sm:flex"
+            >
+              {courses.length} دورة
+            </Badge>
+          )}
         </div>
+
+        {/* ====================================================
+            COURSE CLIENT
+        ===================================================== */}
+        <MyCoursesClient
+          courses={courses}
+          stats={stats}
+          studentName={
+            session.user.name ?? "طالب"
+          }
+          studentImage={
+            session.user.image ?? null
+          }
+        />
       </section>
     </main>
   );

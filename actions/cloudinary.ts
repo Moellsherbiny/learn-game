@@ -6,6 +6,7 @@ export async function uploadToCloudinary(file: File): Promise<string> {
   const bytes = await file.arrayBuffer();
   const buffer = Buffer.from(bytes);
 
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const result: any = await new Promise((resolve, reject) => {
     cloudinary.uploader
       .upload_stream((error, result) => {

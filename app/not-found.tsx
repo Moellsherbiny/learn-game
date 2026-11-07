@@ -97,7 +97,7 @@ export default function NotFoundPage() {
             size="lg"
             className="h-14 rounded-2xl border-white/10 bg-white/5 px-8 text-lg font-bold text-white backdrop-blur-xl hover:bg-white/10"
           >
-            <Link href="/student/battles">
+            <Link href="/student/group-challenges">
 
               <ArrowLeft className="mr-2 h-5 w-5" />
 

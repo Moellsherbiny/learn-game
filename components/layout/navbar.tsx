@@ -5,7 +5,6 @@ import { auth } from "@/auth";
 import {
   Gamepad2,
   GraduationCap,
-  LayoutDashboard,
   LogOut,
   ShieldCheck,
 } from "lucide-react";
@@ -30,7 +29,6 @@ export default async function DashboardNavbar() {
 
   const isTeacher = role === UserRole.TEACHER;
   const isAdmin = role === UserRole.ADMIN;
-  const isStudent = role === UserRole.STUDENT;
 
   const dashboardHref = isTeacher
     ? "/teacher"

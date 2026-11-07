@@ -65,13 +65,12 @@ export const ModelName = {
   Leaderboard: 'Leaderboard',
   PlacementTest: 'PlacementTest',
   PlacementResult: 'PlacementResult',
-  BattleRoom: 'BattleRoom',
-  BattleParticipant: 'BattleParticipant',
-  BattleQuestion: 'BattleQuestion',
-  BattleAnswer: 'BattleAnswer',
-  BattleInvitation: 'BattleInvitation',
   Conversation: 'Conversation',
-  Message: 'Message'
+  Message: 'Message',
+  GroupChallenge: 'GroupChallenge',
+  ChallengeQuestion: 'ChallengeQuestion',
+  ChallengeParticipant: 'ChallengeParticipant',
+  ChallengeAnswer: 'ChallengeAnswer'
 } as const
 
 export type ModelName = (typeof ModelName)[keyof typeof ModelName]
@@ -301,81 +300,6 @@ export const PlacementResultScalarFieldEnum = {
 export type PlacementResultScalarFieldEnum = (typeof PlacementResultScalarFieldEnum)[keyof typeof PlacementResultScalarFieldEnum]
 
 
-export const BattleRoomScalarFieldEnum = {
-  id: 'id',
-  title: 'title',
-  code: 'code',
-  teacherId: 'teacherId',
-  status: 'status',
-  currentQuestion: 'currentQuestion',
-  createdAt: 'createdAt',
-  updatedAt: 'updatedAt'
-} as const
-
-export type BattleRoomScalarFieldEnum = (typeof BattleRoomScalarFieldEnum)[keyof typeof BattleRoomScalarFieldEnum]
-
-
-export const BattleParticipantScalarFieldEnum = {
-  id: 'id',
-  roomId: 'roomId',
-  studentId: 'studentId',
-  team: 'team',
-  score: 'score',
-  isReady: 'isReady',
-  joinedAt: 'joinedAt'
-} as const
-
-export type BattleParticipantScalarFieldEnum = (typeof BattleParticipantScalarFieldEnum)[keyof typeof BattleParticipantScalarFieldEnum]
-
-
-export const BattleQuestionScalarFieldEnum = {
-  id: 'id',
-  roomId: 'roomId',
-  question: 'question',
-  type: 'type',
-  answer: 'answer',
-  optionA: 'optionA',
-  optionB: 'optionB',
-  optionC: 'optionC',
-  optionD: 'optionD',
-  leftText: 'leftText',
-  rightText: 'rightText',
-  points: 'points',
-  timeLimit: 'timeLimit',
-  order: 'order',
-  createdAt: 'createdAt',
-  updatedAt: 'updatedAt'
-} as const
-
-export type BattleQuestionScalarFieldEnum = (typeof BattleQuestionScalarFieldEnum)[keyof typeof BattleQuestionScalarFieldEnum]
-
-
-export const BattleAnswerScalarFieldEnum = {
-  id: 'id',
-  questionId: 'questionId',
-  studentId: 'studentId',
-  answer: 'answer',
-  isCorrect: 'isCorrect',
-  responseTime: 'responseTime',
-  createdAt: 'createdAt'
-} as const
-
-export type BattleAnswerScalarFieldEnum = (typeof BattleAnswerScalarFieldEnum)[keyof typeof BattleAnswerScalarFieldEnum]
-
-
-export const BattleInvitationScalarFieldEnum = {
-  id: 'id',
-  roomId: 'roomId',
-  studentId: 'studentId',
-  team: 'team',
-  status: 'status',
-  createdAt: 'createdAt',
-  respondedAt: 'respondedAt'
-} as const
-
-export type BattleInvitationScalarFieldEnum = (typeof BattleInvitationScalarFieldEnum)[keyof typeof BattleInvitationScalarFieldEnum]
-
-
 export const ConversationScalarFieldEnum = {
   id: 'id',
   type: 'type',
@@ -399,6 +323,72 @@ export const MessageScalarFieldEnum = {
 } as const
 
 export type MessageScalarFieldEnum = (typeof MessageScalarFieldEnum)[keyof typeof MessageScalarFieldEnum]
+
+
+export const GroupChallengeScalarFieldEnum = {
+  id: 'id',
+  title: 'title',
+  code: 'code',
+  teacherId: 'teacherId',
+  courseId: 'courseId',
+  status: 'status',
+  currentQuestionIndex: 'currentQuestionIndex',
+  currentQuestionStartedAt: 'currentQuestionStartedAt',
+  questionTimeSeconds: 'questionTimeSeconds',
+  pointsPerQuestion: 'pointsPerQuestion',
+  startedAt: 'startedAt',
+  finishedAt: 'finishedAt',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+} as const
+
+export type GroupChallengeScalarFieldEnum = (typeof GroupChallengeScalarFieldEnum)[keyof typeof GroupChallengeScalarFieldEnum]
+
+
+export const ChallengeQuestionScalarFieldEnum = {
+  id: 'id',
+  challengeId: 'challengeId',
+  lessonContentId: 'lessonContentId',
+  question: 'question',
+  answer: 'answer',
+  optionA: 'optionA',
+  optionB: 'optionB',
+  optionC: 'optionC',
+  optionD: 'optionD',
+  leftText: 'leftText',
+  rightText: 'rightText',
+  order: 'order',
+  timeLimit: 'timeLimit',
+  createdAt: 'createdAt'
+} as const
+
+export type ChallengeQuestionScalarFieldEnum = (typeof ChallengeQuestionScalarFieldEnum)[keyof typeof ChallengeQuestionScalarFieldEnum]
+
+
+export const ChallengeParticipantScalarFieldEnum = {
+  id: 'id',
+  challengeId: 'challengeId',
+  studentId: 'studentId',
+  team: 'team',
+  isReady: 'isReady',
+  score: 'score',
+  joinedAt: 'joinedAt'
+} as const
+
+export type ChallengeParticipantScalarFieldEnum = (typeof ChallengeParticipantScalarFieldEnum)[keyof typeof ChallengeParticipantScalarFieldEnum]
+
+
+export const ChallengeAnswerScalarFieldEnum = {
+  id: 'id',
+  challengeQuestionId: 'challengeQuestionId',
+  participantId: 'participantId',
+  answer: 'answer',
+  isCorrect: 'isCorrect',
+  responseTime: 'responseTime',
+  submittedAt: 'submittedAt'
+} as const
+
+export type ChallengeAnswerScalarFieldEnum = (typeof ChallengeAnswerScalarFieldEnum)[keyof typeof ChallengeAnswerScalarFieldEnum]
 
 
 export const SortOrder = {

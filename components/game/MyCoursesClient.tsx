@@ -1,30 +1,36 @@
 "use client";
-import {
-  Zap,
-  CheckCircle2,
-  Star,
-  Trophy,
-  BookOpen,
-  Flame,
-  Rocket,
-  Sparkles,
-  PlayCircle,
-  Clock3,
-  User,
-  ArrowLeft,
-} from "lucide-react";
-import React, { useState, useMemo } from "react";
+
+import React, { useMemo, useState } from "react";
 import Link from "next/link";
 import Image from "next/image";
+import {
+  ArrowLeft,
+  BookOpen,
+  CheckCircle2,
+  ChevronDown,
+  Clock3,
+  Flame,
+  PlayCircle,
+  Sparkles,
+  Star,
+  Trophy,
+  User,
+  Zap,
+} from "lucide-react";
+
 import {
   EnrolledCourseData,
   MyCoursesStats,
 } from "@/actions/student/my-courses";
+
 import { cn } from "@/lib/utils";
-import { ChevronDown } from "lucide-react";
+import { Badge } from "../ui/badge";
 import { Button } from "../ui/button";
 
-// ─── Types ───────────────────────────────────────────────────────────────────
+/* ============================================================
+   TYPES
+============================================================ */
+
 interface MyCoursesClientProps {
   courses: EnrolledCourseData[];
   stats: MyCoursesStats;
@@ -32,306 +38,533 @@ interface MyCoursesClientProps {
   studentImage: string | null;
 }
 
-type FilterTab = "all" | "in_progress" | "completed" | "not_started";
-type SortOption = "recent" | "progress" | "xp" | "name";
+type FilterTab =
+  | "all"
+  | "in_progress"
+  | "completed"
+  | "not_started";
 
-// ─── Helpers ─────────────────────────────────────────────────────────────────
+type SortOption =
+  | "recent"
+  | "progress"
+  | "xp"
+  | "name";
 
-function formatRelativeTime(date: Date | null): string {
-  if (!date) return "لم تبدأ بعد";
-  const diff = Date.now() - new Date(date).getTime();
-  const mins = Math.floor(diff / 60000);
-  if (mins < 60) return `منذ ${mins} دقيقة`;
-  const hrs = Math.floor(mins / 60);
-  if (hrs < 24) return `منذ ${hrs} ساعة`;
-  const days = Math.floor(hrs / 24);
-  if (days < 7) return `منذ ${days} يوم`;
-  return new Date(date).toLocaleDateString("ar-EG", {
+/* ============================================================
+   HELPERS
+============================================================ */
+
+function getCourseStatus(
+  course: EnrolledCourseData,
+): FilterTab {
+  if (course.totalLessons === 0) {
+    return "not_started";
+  }
+
+  if (course.completedLessons === 0) {
+    return "not_started";
+  }
+
+  if (
+    course.completedLessons >=
+    course.totalLessons
+  ) {
+    return "completed";
+  }
+
+  return "in_progress";
+}
+
+function getProgress(
+  course: EnrolledCourseData,
+) {
+  if (course.totalLessons <= 0) {
+    return 0;
+  }
+
+  return Math.min(
+    100,
+    Math.max(
+      0,
+      Math.round(
+        (course.completedLessons /
+          course.totalLessons) *
+          100,
+      ),
+    ),
+  );
+}
+
+function formatRelativeTime(
+  date: Date | null,
+): string {
+  if (!date) {
+    return "لم تبدأ بعد";
+  }
+
+  const diff =
+    Date.now() -
+    new Date(date).getTime();
+
+  const mins = Math.floor(
+    diff / 60000,
+  );
+
+  if (mins < 1) {
+    return "الآن";
+  }
+
+  if (mins < 60) {
+    return `منذ ${mins} دقيقة`;
+  }
+
+  const hrs = Math.floor(
+    mins / 60,
+  );
+
+  if (hrs < 24) {
+    return `منذ ${hrs} ساعة`;
+  }
+
+  const days = Math.floor(
+    hrs / 24,
+  );
+
+  if (days < 7) {
+    return `منذ ${days} يوم`;
+  }
+
+  return new Date(
+    date,
+  ).toLocaleDateString("ar-EG", {
     day: "numeric",
     month: "short",
   });
 }
 
-function IconBox({
-  children,
-  className,
+/* ============================================================
+   STATUS BADGE
+============================================================ */
+
+function StatusBadge({
+  status,
 }: {
-  children: React.ReactNode;
-  className?: string;
+  status: FilterTab;
 }) {
+  const config: Record<
+    FilterTab,
+    {
+      label: string;
+      icon: React.ReactNode;
+    }
+  > = {
+    all: {
+      label: "",
+      icon: null,
+    },
+
+    in_progress: {
+      label: "قيد التعلم",
+      icon: (
+        <Clock3 className="h-3 w-3" />
+      ),
+    },
+
+    completed: {
+      label: "مكتملة",
+      icon: (
+        <CheckCircle2 className="h-3 w-3" />
+      ),
+    },
+
+    not_started: {
+      label: "لم تبدأ",
+      icon: (
+        <Sparkles className="h-3 w-3" />
+      ),
+    },
+  };
+
+  const item = config[status];
+
+  if (!item.label) {
+    return null;
+  }
+
   return (
-    <div
-      className={cn(
-        "flex items-center justify-center rounded-2xl",
-        "bg-primary/10 text-primary",
-        "h-10 w-10",
-        className,
-      )}
+    <Badge
+      variant="secondary"
+      className="
+        gap-1
+        rounded-full
+        border
+        border-background/70
+        bg-background/90
+        px-2.5
+        py-1
+        text-[10px]
+        font-bold
+        text-foreground
+        shadow-sm
+        backdrop-blur-sm
+      "
     >
-      {children}
-    </div>
+      {item.icon}
+      {item.label}
+    </Badge>
   );
 }
-function getCourseStatus(course: EnrolledCourseData): FilterTab {
-  if (course.totalLessons === 0) return "not_started";
-  if (course.completedLessons === 0) return "not_started";
-  if (course.completedLessons >= course.totalLessons) return "completed";
-  return "in_progress";
-}
 
-// ─── Sub-components ───────────────────────────────────────────────────────────
+/* ============================================================
+   COURSE CARD
+============================================================ */
 
-function StatCard({
-  icon,
-  value,
-  label,
-  sub,
-  color,
+function CourseCard({
+  course,
 }: {
-  icon: React.ReactNode;
-  value: string | number;
-  label: string;
-  sub?: string;
-  color: string;
+  course: EnrolledCourseData;
 }) {
-  return (
-    <div
-      className={cn(
-        "relative overflow-hidden rounded-3xl border p-5 flex flex-col gap-1",
-        "bg-white border-border/60 shadow-sm",
-        "transition-all duration-300 hover:-translate-y-1 hover:shadow-md",
-      )}
-    >
-      <div
-        className={cn(
-          "absolute -top-6 -right-6 w-24 h-24 rounded-full blur-3xl opacity-10",
-          color,
-        )}
-      />
+  const status =
+    getCourseStatus(course);
 
-      <IconBox>{icon}</IconBox>
+  const progress =
+    getProgress(course);
 
-      <span className="text-3xl font-black text-foreground leading-none">
-        {value}
-      </span>
-
-      <span className="text-sm text-muted-foreground font-medium">{label}</span>
-
-      {sub && <span className="text-xs text-muted-foreground/70">{sub}</span>}
-    </div>
-  );
-}
-
-function XpLevelBar({ stats }: { stats: MyCoursesStats }) {
-  return (
-    <div className="bg-white border border-border/60 rounded-3xl p-5 shadow-sm">
-      <div className="flex items-center justify-between mb-4">
-        <div className="flex items-center gap-3">
-          <div className="w-12 h-12 rounded-2xl bg-primary flex items-center justify-center text-white font-black text-sm shadow-sm">
-            {stats.level}
-          </div>
-
-          <div>
-            <p className="text-foreground font-bold text-sm">
-              {stats.levelLabel}
-            </p>
-
-            <p className="text-muted-foreground text-xs">
-              المستوى {stats.level}
-            </p>
-          </div>
-        </div>
-
-        <div className="text-left">
-          <p className="text-primary font-black text-xl leading-none">
-            {stats.totalXp.toLocaleString()}
-          </p>
-
-          <p className="text-muted-foreground text-xs text-left">إجمالي نقاط الخبرة  </p>
-        </div>
-      </div>
-
-      <div className="h-3 bg-muted rounded-full overflow-hidden mb-2">
-        <div
-          className="h-full bg-primary rounded-full transition-all duration-700"
-          style={{ width: `${stats.levelProgress}%` }}
-        />
-      </div>
-
-      <div className="flex justify-between text-xs text-muted-foreground">
-        <span>{stats.levelProgress}% للمستوى التالي</span>
-
-        <span>{stats.nextLevelXp.toLocaleString()} نقاط خبرة</span>
-      </div>
-    </div>
-  );
-}
-
-function CourseCard({ course }: { course: EnrolledCourseData }) {
-  const status = getCourseStatus(course);
-  const progressPct =
-    course.totalLessons === 0
-      ? 0
-      : Math.round((course.completedLessons / course.totalLessons) * 100);
-  const xpPct =
-    course.totalXpAvailable === 0
-      ? 0
-      : Math.round((course.xpEarned / course.totalXpAvailable) * 100);
+  const xpProgress =
+    course.totalXpAvailable > 0
+      ? Math.min(
+          100,
+          Math.max(
+            0,
+            Math.round(
+              (course.xpEarned /
+                course.totalXpAvailable) *
+                100,
+            ),
+          ),
+        )
+      : 0;
 
   return (
     <Link
       href={`/student/courses/${course.id}`}
       className="
-group block
-bg-white
-border border-border/60
-rounded-3xl
-overflow-hidden
-shadow-sm
-hover:shadow-md
-hover:-translate-y-1
-hover:border-primary/20
-transition-all duration-300
-"
+        group
+        flex
+        h-full
+        flex-col
+        overflow-hidden
+        rounded-3xl
+        border
+        border-border/60
+        bg-background
+        shadow-sm
+        transition-all
+        duration-300
+        hover:-translate-y-1
+        hover:border-primary/30
+        hover:shadow-md
+        focus-visible:outline-none
+        focus-visible:ring-2
+        focus-visible:ring-primary
+        focus-visible:ring-offset-2
+      "
     >
-      {/* Thumbnail / Header */}
-      <div className="relative h-36 bg-muted/40 overflow-hidden">
+      {/* ======================================================
+          THUMBNAIL
+      ======================================================= */}
+
+      <div className="relative h-44 shrink-0 overflow-hidden bg-muted">
         {course.thumbnail ? (
           <Image
             src={course.thumbnail}
             alt={course.title}
             fill
-            loading="eager"
-            sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
-            className="object-cover opacity-80 group-hover:opacity-100 group-hover:scale-105 transition-all duration-500"
+            sizes="
+              (max-width: 640px) 100vw,
+              (max-width: 1024px) 50vw,
+              33vw
+            "
+            className="
+              object-cover
+              transition-transform
+              duration-500
+              group-hover:scale-105
+            "
           />
         ) : (
-          <div className="absolute inset-0 flex items-center justify-center">
-            <div className="text-5xl opacity-20 group-hover:opacity-30 transition-opacity">
-              <BookOpen className="h-14 w-14 text-primary/20" />
-            </div>
-            {/* Decorative grid */}
-            <div className="absolute inset-0 bg-[linear-gradient(rgba(139,92,246,0.05)_1px,transparent_1px),linear-gradient(90deg,rgba(139,92,246,0.05)_1px,transparent_1px)] bg-size-[20px_20px]" />
+          <div className="absolute inset-0 flex items-center justify-center bg-primary/4">
+            <BookOpen
+              className="
+                h-16
+                w-16
+                text-primary/20
+                transition-transform
+                duration-500
+                group-hover:scale-110
+              "
+            />
           </div>
         )}
 
-        {/* Status badge */}
-        <div className="absolute top-3 right-3">
+        {/* Soft overlay */}
+        <div className="absolute inset-x-0 bottom-0 h-20 bg-linear-to-t from-black/35 to-transparent" />
+
+        {/* Status */}
+        <div className="absolute right-3 top-3">
           <StatusBadge status={status} />
         </div>
 
-        {/* Streak badge */}
+        {/* Streak */}
         {course.streakDays > 1 && (
-          <div className="absolute top-3 left-3 flex items-center gap-1 bg-orange-500/90 backdrop-blur-sm rounded-full px-2.5 py-1 text-xs font-bold text-white">
-            <Flame className="h-3 w-3 fill-white" /> {course.streakDays}
+          <div
+            className="
+              absolute
+              left-3
+              top-3
+              flex
+              items-center
+              gap-1
+              rounded-full
+              border
+              border-background/70
+              bg-background/90
+              px-2.5
+              py-1
+              text-[10px]
+              font-bold
+              text-foreground
+              shadow-sm
+              backdrop-blur-sm
+            "
+          >
+            <Flame className="h-3 w-3 text-primary" />
+            {course.streakDays}
           </div>
         )}
 
-        {/* Progress overlay bar at bottom */}
-        <div className="absolute bottom-0 inset-x-0 h-1 bg-slate-900/60">
+        {/* Progress */}
+        <div className="absolute inset-x-0 bottom-0 h-1 bg-background/50">
           <div
-            className={cn(
-              "h-full transition-all duration-700",
-              status === "completed" ? "bg-emerald-400" : "bg-primary",
-            )}
-            style={{ width: `${progressPct}%` }}
+            className="
+              h-full
+              rounded-full
+              bg-primary
+              transition-all
+              duration-700
+            "
+            style={{
+              width: `${progress}%`,
+            }}
           />
         </div>
       </div>
 
-      {/* Body */}
-      <div className="p-4">
+      {/* ======================================================
+          BODY
+      ======================================================= */}
+
+      <div className="flex flex-1 flex-col p-5">
         {/* Teacher */}
-        <div className="flex items-center gap-1.5 mb-2">
+        <div className="mb-2 flex items-center gap-2">
           {course.teacher.image ? (
             <Image
               src={course.teacher.image}
-              alt={course.teacher.name ?? ""}
-              width={16}
-              height={16}
-              sizes="16x16"
-              loading="eager"
-              className="rounded-full"
+              alt={
+                course.teacher.name ??
+                "المعلم"
+              }
+              width={20}
+              height={20}
+              className="rounded-full object-cover"
             />
           ) : (
-            <div className="w-4 h-4 rounded-full bg-muted flex items-center justify-center">
+            <div
+              className="
+                flex
+                h-5
+                w-5
+                items-center
+                justify-center
+                rounded-full
+                bg-muted
+              "
+            >
               <User className="h-3 w-3 text-muted-foreground" />
             </div>
           )}
-          <span className="text-slate-500 text-xs">
-            {course.teacher.name ?? "معلم"}
+
+          <span className="truncate text-xs text-muted-foreground">
+            {course.teacher.name ??
+              "المعلم"}
           </span>
         </div>
 
         {/* Title */}
-        <h3 className="text-primary font-bold text-base leading-snug line-clamp-2 mb-3 transition-colors">
+        <h3
+          className="
+            line-clamp-2
+            min-h-11
+            text-lg
+            font-black
+            leading-snug
+            text-foreground
+            transition-colors
+            group-hover:text-primary
+          "
+        >
           {course.title}
         </h3>
 
-        {/* Stats row */}
-        <div className="grid grid-cols-3 gap-2 mb-3">
+        {/* Description */}
+        {course.description && (
+          <p
+            className="
+              mt-2
+              line-clamp-2
+              text-xs
+              leading-5
+              text-muted-foreground
+            "
+          >
+            {course.description}
+          </p>
+        )}
+
+        {/* ====================================================
+            COURSE STATS
+        ===================================================== */}
+
+        <div className="mt-5 grid grid-cols-3 gap-2">
           <MiniStat
-            icon={<BookOpen className="h-4 w-4 text-primary" />}
+            icon={
+              <BookOpen className="h-4 w-4" />
+            }
             value={`${course.completedLessons}/${course.totalLessons}`}
             label="درس"
           />
+
           <MiniStat
-            icon={<Zap className="h-4 w-4 text-primary" />}
-            value={`${course.xpEarned}`}
-            label="نقاط خبرة"
-            color="text-amber-400"
+            icon={
+              <Zap className="h-4 w-4" />
+            }
+            value={course.xpEarned.toLocaleString()}
+            label="XP"
           />
+
           <MiniStat
-            icon={<Star className="h-4 w-4 text-amber-400" />}
+            icon={
+              <Star className="h-4 w-4" />
+            }
             value={`${course.totalStars}/${course.maxStars}`}
             label="نجوم"
-            color="text-amber-400"
           />
         </div>
 
-        {/* Progress bar */}
-        <div className="mb-3">
-          <div className="flex justify-between text-[11px] text-slate-500 mb-1">
-            <span>التقدم الكلي</span>
-            <span
-              className={cn(
-                "font-bold",
-                progressPct === 100 ? "text-emerald-400" : "text-slate-300",
-              )}
-            >
-              {progressPct}%
+        {/* ====================================================
+            PROGRESS
+        ===================================================== */}
+
+        <div className="mt-5">
+          <div className="mb-2 flex items-center justify-between">
+            <span className="text-xs text-muted-foreground">
+              التقدم
+            </span>
+
+            <span className="text-xs font-bold text-foreground">
+              {progress}%
             </span>
           </div>
-          <div className="h-1.5 bg-slate-700 rounded-full overflow-hidden">
+
+          <div className="h-2 overflow-hidden rounded-full bg-muted">
             <div
-              className={cn(
-                "h-full rounded-full transition-all duration-700",
-                status === "completed" ? "bg-emerald-400" : "bg-primary",
-              )}
-              style={{ width: `${progressPct}%` }}
+              className="
+                h-full
+                rounded-full
+                bg-primary
+                transition-all
+                duration-700
+              "
+              style={{
+                width: `${progress}%`,
+              }}
             />
           </div>
         </div>
 
-        {/* Footer: last activity + CTA */}
-        <div className="flex items-center justify-between">
-          <span className="text-[11px] text-slate-600">
-            {formatRelativeTime(course.lastActivityAt)}
+        {/* XP Progress */}
+        {course.totalXpAvailable > 0 && (
+          <div className="mt-3 flex items-center justify-between text-[10px] text-muted-foreground">
+            <span>
+              {course.xpEarned.toLocaleString()} XP
+            </span>
+
+            <span>
+              من{" "}
+              {course.totalXpAvailable.toLocaleString()}
+            </span>
+          </div>
+        )}
+
+        {/* ====================================================
+            NEXT LESSON
+        ===================================================== */}
+
+        {status !== "completed" &&
+          course.nextLesson && (
+            <div
+              className="
+                mt-5
+                rounded-2xl
+                border
+                border-border/60
+                bg-muted/40
+                p-3
+              "
+            >
+              <div className="mb-1 flex items-center gap-1.5">
+                <PlayCircle className="h-3.5 w-3.5 text-primary" />
+
+                <span className="text-[10px] font-bold text-muted-foreground">
+                  الدرس التالي
+                </span>
+              </div>
+
+              <p className="line-clamp-1 text-xs font-bold text-foreground">
+                {course.nextLesson.title}
+              </p>
+
+              <p className="mt-0.5 line-clamp-1 text-[10px] text-muted-foreground">
+                {course.nextLesson.moduleTitle}
+              </p>
+            </div>
+          )}
+
+        {/* ====================================================
+            FOOTER
+        ===================================================== */}
+
+        <div className="mt-auto flex items-center justify-between gap-3 pt-5">
+          <span className="text-[10px] text-muted-foreground">
+            {formatRelativeTime(
+              course.lastActivityAt,
+            )}
           </span>
-          {status !== "completed" && course.nextLesson && (
-            <span className="text-xs text-violet-400 font-medium group-hover:text-violet-300 transition-colors flex items-center gap-1">
-              استمر في التعلم <PlayCircle className="h-4 w-4 inline-block" />
+
+          {status === "completed" ? (
+            <span className="flex items-center gap-1 text-xs font-bold text-primary">
+              <CheckCircle2 className="h-4 w-4" />
+              مكتملة
             </span>
-          )}
-          {status === "completed" && (
-            <span className="text-xs text-emerald-400 font-medium">
-              <CheckCircle2 className="h-4 w-4 inline-block" />
-              مكتمل
+          ) : status === "not_started" ? (
+            <span className="flex items-center gap-1 text-xs font-bold text-primary transition-transform group-hover:-translate-x-1">
+              ابدأ الآن
+              <ArrowLeft className="h-4 w-4" />
             </span>
-          )}
-          {status === "not_started" && (
-            <span className="text-xs text-cyan-400 font-medium flex items-center gap-1">
-              ابدأ الآن <ArrowLeft className="h-4 w-4 inline-block" />
+          ) : (
+            <span className="flex items-center gap-1 text-xs font-bold text-primary transition-transform group-hover:-translate-x-1">
+              متابعة التعلم
+              <ArrowLeft className="h-4 w-4" />
             </span>
           )}
         </div>
@@ -340,399 +573,489 @@ transition-all duration-300
   );
 }
 
+/* ============================================================
+   MINI STAT
+============================================================ */
+
 function MiniStat({
   icon,
   value,
   label,
-  color = "text-foreground",
 }: {
   icon: React.ReactNode;
   value: string;
   label: string;
-  color?: string;
 }) {
   return (
-    <div className="bg-muted/40 rounded-2xl p-3 text-center border border-border/40">
-      <IconBox className="h-8 w-8 rounded-xl mx-auto mb-2">{icon}</IconBox>
-
-      <div className={cn("font-bold text-sm leading-tight", color)}>
-        {value}
+    <div
+      className="
+        rounded-2xl
+        border
+        border-border/50
+        bg-muted/30
+        p-2.5
+        text-center
+      "
+    >
+      <div className="mb-1 flex justify-center text-primary">
+        {icon}
       </div>
 
-      <div className="text-[10px] text-muted-foreground">{label}</div>
+      <p className="text-xs font-black text-foreground">
+        {value}
+      </p>
+
+      <p className="mt-0.5 text-[9px] text-muted-foreground">
+        {label}
+      </p>
     </div>
   );
 }
 
-function StatusBadge({ status }: { status: FilterTab }) {
-  const map: Record<FilterTab, { label: string; className: string }> = {
-    all: { label: "", className: "" },
+/* ============================================================
+   EMPTY STATE
+============================================================ */
 
-    completed: {
-      label: "✓ مكتمل",
-      className: "bg-green-100 text-green-700",
-    },
-
-    in_progress: {
-      label: "● جاري",
-      className: "bg-orange-100 text-orange-700",
-    },
-
-    not_started: {
-      label: "جديدة",
-      className: "bg-muted text-muted-foreground",
-    },
-  };
-  const { label, className } = map[status];
-  if (!label) return null;
-  return (
-    <span
-      className={cn(
-        "text-[11px] font-bold px-2.5 py-1 rounded-full backdrop-blur-sm",
-        className,
-      )}
-    >
-      {label}
-    </span>
-  );
-}
-
-function EmptyState({ filter }: { filter: FilterTab }) {
+function EmptyState({
+  filter,
+}: {
+  filter: FilterTab;
+}) {
   const messages: Record<
     FilterTab,
-    { icon: React.ReactNode; title: string; sub: string }
+    {
+      icon: React.ReactNode;
+      title: string;
+      description: string;
+    }
   > = {
     all: {
-      icon: <Rocket className="h-8 w-8 text-primary" />,
-      title: "لم تسجل في أي دورة تعليمية بعد",
-      sub: "استعرض الدورات التعليمية المتاحة وابدأ رحلتك!",
+      icon: (
+        <BookOpen className="h-7 w-7" />
+      ),
+      title:
+        "لم تسجل في أي دورة بعد",
+      description:
+        "استعرض الدورات التعليمية المتاحة وابدأ رحلتك.",
     },
+
     in_progress: {
-      icon: <Rocket className="h-8 w-8 text-primary" />,
-      title: "لا يوجد دورة تعليميةات جارية",
-      sub: "ابدأ دورة تعليميةاً جديدةاً لتظهر هنا",
+      icon: (
+        <Clock3 className="h-7 w-7" />
+      ),
+      title:
+        "لا توجد دورات قيد التعلم",
+      description:
+        "ابدأ دورة جديدة وستظهر هنا.",
     },
+
     completed: {
-      icon: <Trophy className="h-8 w-8 text-primary" />,
-      title: "لم تكمل أي دورة تعليمية بعد",
-      sub: "استمر في التعلم لتملأ هذه الصفحة بالإنجازات!",
+      icon: (
+        <Trophy className="h-7 w-7" />
+      ),
+      title:
+        "لم تكمل أي دورة بعد",
+      description:
+        "استمر في التعلم وستظهر إنجازاتك هنا.",
     },
+
     not_started: {
-      icon: <BookOpen className="h-8 w-8 text-primary" />,
-      title: "كل دورة تعليميةاتك جارية",
-      sub: "أنت منتظم، استمر هكذا!",
+      icon: (
+        <Sparkles className="h-7 w-7" />
+      ),
+      title:
+        "لا توجد دورات لم تبدأها",
+      description:
+        "رائع! لديك نشاط في جميع دوراتك.",
     },
   };
-  const { icon, title, sub } = messages[filter];
+
+  const item = messages[filter];
+
   return (
-    <div className="col-span-full flex flex-col items-center justify-center py-20 text-center">
-      <IconBox>{icon}</IconBox>
-      <p className="text-slate-400 font-medium mb-1">{title}</p>
-      <p className="text-slate-600 text-sm">{sub}</p>
-      <Link
-        href="/courses"
-        className="mt-4 px-5 py-2.5 bg-violet-600/20 border border-violet-500/30 text-violet-400 rounded-xl text-sm font-medium hover:bg-violet-600/30 transition-colors"
+    <div className="col-span-full flex flex-col items-center justify-center rounded-3xl border border-dashed border-border/70 bg-muted/20 px-6 py-16 text-center">
+      <div
+        className="
+          mb-4
+          flex
+          h-14
+          w-14
+          items-center
+          justify-center
+          rounded-2xl
+          bg-primary/10
+          text-primary
+        "
       >
-        استعرض الدورات التعليمية →
-      </Link>
+        {item.icon}
+      </div>
+
+      <h3 className="text-base font-black text-foreground">
+        {item.title}
+      </h3>
+
+      <p className="mt-1 max-w-sm text-sm text-muted-foreground">
+        {item.description}
+      </p>
+
+      <Button
+        asChild
+        variant="outline"
+        className="mt-5 rounded-xl"
+      >
+        <Link href="/courses">
+          استعرض الدورات
+          <ArrowLeft className="mr-2 h-4 w-4" />
+        </Link>
+      </Button>
     </div>
   );
 }
 
-// ─── Main Component ───────────────────────────────────────────────────────────
+/* ============================================================
+   MAIN COMPONENT
+============================================================ */
 
 export function MyCoursesClient({
   courses,
-  stats,
-  studentName,
-  studentImage,
 }: MyCoursesClientProps) {
-  const [activeFilter, setActiveFilter] = useState<FilterTab>("all");
-  const [sortBy, setSortBy] = useState<SortOption>("recent");
+  const [
+    activeFilter,
+    setActiveFilter,
+  ] = useState<FilterTab>("all");
 
-  const tabs: { key: FilterTab; label: string; icon: React.ReactNode }[] = [
-    { key: "all", label: "الكل", icon: <Rocket size={18} /> },
-    { key: "in_progress", label: "جاري", icon: <Flame size={18} /> },
-    { key: "completed", label: "مكتمل", icon: <CheckCircle2 size={18} /> },
-    { key: "not_started", label: "لم يبدأ", icon: <Sparkles size={18} /> },
+  const [
+    sortBy,
+    setSortBy,
+  ] = useState<SortOption>("recent");
+
+  /* ==========================================================
+     TABS
+  ========================================================== */
+
+  const tabs: {
+    key: FilterTab;
+    label: string;
+    icon: React.ReactNode;
+  }[] = [
+    {
+      key: "all",
+      label: "الكل",
+      icon: <BookOpen className="h-4 w-4" />,
+    },
+    {
+      key: "in_progress",
+      label: "قيد التعلم",
+      icon: <Clock3 className="h-4 w-4" />,
+    },
+    {
+      key: "completed",
+      label: "مكتملة",
+      icon: (
+        <CheckCircle2 className="h-4 w-4" />
+      ),
+    },
+    {
+      key: "not_started",
+      label: "لم تبدأ",
+      icon: (
+        <Sparkles className="h-4 w-4" />
+      ),
+    },
   ];
+
+  /* ==========================================================
+     COUNTS
+  ========================================================== */
 
   const tabCounts = useMemo(
     () => ({
       all: courses.length,
-      in_progress: courses.filter((c) => getCourseStatus(c) === "in_progress")
-        .length,
-      completed: courses.filter((c) => getCourseStatus(c) === "completed")
-        .length,
-      not_started: courses.filter((c) => getCourseStatus(c) === "not_started")
-        .length,
+
+      in_progress:
+        courses.filter(
+          (course) =>
+            getCourseStatus(course) ===
+            "in_progress",
+        ).length,
+
+      completed:
+        courses.filter(
+          (course) =>
+            getCourseStatus(course) ===
+            "completed",
+        ).length,
+
+      not_started:
+        courses.filter(
+          (course) =>
+            getCourseStatus(course) ===
+            "not_started",
+        ).length,
     }),
     [courses],
   );
+
+  /* ==========================================================
+     FILTER + SORT
+  ========================================================== */
 
   const filtered = useMemo(() => {
     let list =
       activeFilter === "all"
         ? courses
-        : courses.filter((c) => getCourseStatus(c) === activeFilter);
+        : courses.filter(
+            (course) =>
+              getCourseStatus(course) ===
+              activeFilter,
+          );
 
     switch (sortBy) {
       case "recent":
         return [...list].sort(
           (a, b) =>
-            (b.lastActivityAt ? new Date(b.lastActivityAt).getTime() : 0) -
-            (a.lastActivityAt ? new Date(a.lastActivityAt).getTime() : 0),
+            (b.lastActivityAt
+              ? new Date(
+                  b.lastActivityAt,
+                ).getTime()
+              : 0) -
+            (a.lastActivityAt
+              ? new Date(
+                  a.lastActivityAt,
+                ).getTime()
+              : 0),
         );
+
       case "progress":
         return [...list].sort(
           (a, b) =>
-            b.completedLessons / Math.max(b.totalLessons, 1) -
-            a.completedLessons / Math.max(a.totalLessons, 1),
+            b.completedLessons /
+              Math.max(
+                b.totalLessons,
+                1,
+              ) -
+            a.completedLessons /
+              Math.max(
+                a.totalLessons,
+                1,
+              ),
         );
-      case "xp":
-        return [...list].sort((a, b) => b.xpEarned - a.xpEarned);
-      case "name":
-        return [...list].sort((a, b) => a.title.localeCompare(b.title, "ar"));
-    }
-  }, [courses, activeFilter, sortBy]);
 
-  const greetingHour = new Date().getHours();
-  const greeting =
-    greetingHour < 12
-      ? "صباح الخير"
-      : greetingHour < 18
-        ? "مساء الخير"
-        : "مساء النور";
+      case "xp":
+        return [...list].sort(
+          (a, b) =>
+            b.xpEarned -
+            a.xpEarned,
+        );
+
+      case "name":
+        return [...list].sort(
+          (a, b) =>
+            a.title.localeCompare(
+              b.title,
+              "ar",
+            ),
+        );
+    }
+  }, [
+    courses,
+    activeFilter,
+    sortBy,
+  ]);
+
+  /* ==========================================================
+     RENDER
+  ========================================================== */
 
   return (
-    <div className="min-h-screen bg-background text-foreground" dir="rtl">
-      {/* Starfield background */}
-      <div className="fixed inset-0 overflow-hidden pointer-events-none select-none">
-        {[...Array(25)].map((_, i) => (
-          <div
-            key={i}
-            className="absolute rounded-full bg-white animate-pulse"
-            style={{
-              width: (i % 3 === 0 ? 2 : 1) + "px",
-              height: (i % 3 === 0 ? 2 : 1) + "px",
-              top: ((i * 37 + 11) % 100) + "%",
-              left: ((i * 53 + 7) % 100) + "%",
-              animationDelay: ((i * 0.3) % 3) + "s",
-              animationDuration: 2 + (i % 3) + "s",
-              opacity: 0.1 + (i % 5) * 0.08,
-            }}
-          />
-        ))}
-      </div>
+    <div
+      className="w-full"
+      dir="rtl"
+    >
+      {/* ======================================================
+          CONTROLS
+      ======================================================= */}
 
-      <div className="relative z-10 max-w-5xl mx-auto px-4 py-6 md:py-10">
-        {/* ── Top Nav ── */}
-        <nav className="flex items-center justify-between mb-8">
-          <div className="flex items-center gap-3">
-            {studentImage ? (
-              <Image
-                src={studentImage}
-                alt={studentName}
-                width={40}
-                height={40}
-                sizes="40x40"
-                loading="eager"
-                className="rounded-xl border-2 border-violet-500/30"
-              />
-            ) : (
-              <div className="w-10 h-10 rounded-xl bg-linear-to-br from-violet-600 to-cyan-500 flex items-center justify-center text-white font-bold text-sm">
-                {studentName.charAt(0)}
-              </div>
-            )}
-            <div>
-              <p className="text-slate-400 text-xs">{greeting}،</p>
-              <p className="text-foreground font-bold text-sm leading-tight">
-                {studentName}
-              </p>
-            </div>
-          </div>
-          <Button variant="default" asChild>
-            <Link href="/courses">
-              <span>+</span>
-              <span>دورة تعليمية جديدة</span>
-            </Link>
-          </Button>
-        </nav>
+      <div className="mb-6 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+        {/* FILTERS */}
+        <div
+          className="
+            flex
+            w-full
+            items-center
+            gap-1
+            overflow-x-auto
+            rounded-2xl
+            border
+            border-border/60
+            bg-muted/40
+            p-1
+            sm:w-auto
+          "
+        >
+          {tabs.map((tab) => {
+            const active =
+              activeFilter ===
+              tab.key;
 
-        {/* ── Hero stats ── */}
-        <div className="mb-6">
-          <h1 className="text-2xl md:text-3xl font-black mb-1 bg-linear-to-l from-violet-400 to-cyan-400 bg-clip-text text-transparent">
-            دوراتي التعليمية
-          </h1>
-          <p className="text-slate-500 text-sm mb-5">
-            {courses.length === 0
-              ? "ابدأ رحلتك التعليمية الآن"
-              : `${courses.length} دورة تعليمية مسجل · استمر في التعلم!`}
-          </p>
-
-          {/* XP bar */}
-          <XpLevelBar stats={stats} />
-        </div>
-
-        {/* ── Stats grid ── */}
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-3 mb-8">
-          <StatCard
-            icon={<Zap className="h-8 w-8 text-primary" />}
-            value={stats.totalXp.toLocaleString()}
-            label="نقاط خبرة"
-            sub="مجموع الكل"
-            color="bg-amber-400"
-          />
-          <StatCard
-            icon={<CheckCircle2 className="h-8 w-8 text-emerald-400" />}
-            value={stats.completedLessons}
-            label="درس مكتمل"
-            sub="في كل الدورات التعليمية"
-            color="bg-emerald-400"
-          />
-          <StatCard
-            icon={<Star className="h-8 w-8 text-amber-400" />}
-            value={stats.totalStars}
-            label="نجمة مكتسبة"
-            sub="مجموع النجوم"
-            color="bg-amber-300"
-          />
-          <StatCard
-            icon={<Trophy className="h-8 w-8 text-primary" />}
-            value={stats.rank ? `#${stats.rank}` : "—"}
-            label="الترتيب"
-            sub="في لوحة الصدارة"
-            color="bg-violet-400"
-          />
-        </div>
-
-        {/* ── Filter Tabs + Sort ── */}
-        <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 mb-5">
-          {/* Tabs */}
-          <div
-            className="
-flex items-center gap-1
-bg-muted/50
-border border-border/60
-rounded-2xl
-p-1
-"
-          >
-            {tabs.map((tab) => (
+            return (
               <button
                 key={tab.key}
-                onClick={() => setActiveFilter(tab.key)}
+                type="button"
+                onClick={() =>
+                  setActiveFilter(
+                    tab.key,
+                  )
+                }
                 className={cn(
-                  "flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium transition-all duration-200",
-                  activeFilter === tab.key
-                    ? "bg-primary text-white shadow-sm"
-                    : "text-muted-foreground hover:text-foreground hover:bg-white",
+                  `
+                    flex
+                    shrink-0
+                    items-center
+                    gap-1.5
+                    rounded-xl
+                    px-3
+                    py-2
+                    text-xs
+                    font-bold
+                    transition-all
+                  `,
+                  active
+                    ? "bg-primary text-primary-foreground shadow-sm"
+                    : "text-muted-foreground hover:bg-background hover:text-foreground",
                 )}
               >
-                <span>{tab.icon}</span>
-                <span className="hidden sm:inline">{tab.label}</span>
-                {tabCounts[tab.key] > 0 && (
-                  <span
-                    className={cn(
-                      "text-[10px] font-bold rounded-full w-4 h-4 flex items-center justify-center",
-                      activeFilter === tab.key
-                        ? "bg-primary text-white shadow-sm"
-                        : "text-muted-foreground hover:text-foreground hover:bg-white",
-                    )}
-                  >
-                    {tabCounts[tab.key]}
-                  </span>
-                )}
+                {tab.icon}
+
+                <span>
+                  {tab.label}
+                </span>
+
+                <span
+                  className={cn(
+                    `
+                      flex
+                      h-5
+                      min-w-5
+                      items-center
+                      justify-center
+                      rounded-full
+                      px-1
+                      text-[10px]
+                    `,
+                    active
+                      ? "bg-primary-foreground/15 text-primary-foreground"
+                      : "bg-background text-muted-foreground",
+                  )}
+                >
+                  {
+                    tabCounts[
+                      tab.key
+                    ]
+                  }
+                </span>
               </button>
-            ))}
-          </div>
-
-          {/* Sort */}
-          <div className="relative">
-            <select
-              value={sortBy}
-              onChange={(e) => setSortBy(e.target.value as SortOption)}
-              className="
-w-full appearance-none
-rounded-2xl
-border border-border/60
-bg-white
-px-3 py-2 pr-3 pl-8
-text-xs text-foreground
-cursor-pointer
-focus:outline-none
-focus:border-primary/40
-"
-            >
-              <option value="recent">الأحدث نشاطاً</option>
-              <option value="progress">الأعلى تقدماً</option>
-              <option value="xp">الأعلى نقاط خبرة</option>
-              <option value="name">الاسم</option>
-            </select>
-
-            <ChevronDown className="pointer-events-none absolute left-2 top-1/2 h-4 w-4 -translate-y-1/2 text-slate-400" />
-          </div>
+            );
+          })}
         </div>
 
-        {/* ── Courses Grid ── */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-          {filtered.length === 0 ? (
-            <EmptyState filter={activeFilter} />
-          ) : (
-            filtered.map((course) => (
-              <CourseCard key={course.id} course={course} />
-            ))
-          )}
-        </div>
-
-        {/* ── In-progress next lesson quick-access ── */}
-        {courses.some(
-          (c) => getCourseStatus(c) === "in_progress" && c.nextLesson,
-        ) && (
-          <div
-            className="mt-8
-bg-muted/30
-border border-border/60
-rounded-3xl
-p-5"
+        {/* SORT */}
+        <div className="relative shrink-0">
+          <select
+            value={sortBy}
+            onChange={(event) =>
+              setSortBy(
+                event.target
+                  .value as SortOption,
+              )
+            }
+            className="
+              h-10
+              w-full
+              appearance-none
+              rounded-xl
+              border
+              border-border/60
+              bg-background
+              px-3
+              pl-9
+              text-xs
+              font-medium
+              text-foreground
+              outline-none
+              transition-colors
+              focus:border-primary
+              sm:w-44
+            "
           >
-            <p className="text-slate-400 text-xs mb-3 font-medium">
-              ⚡ تابع من حيث توقفت
-            </p>
-            <div className="flex flex-wrap gap-2">
-              {courses
-                .filter(
-                  (c) => getCourseStatus(c) === "in_progress" && c.nextLesson,
-                )
-                .slice(0, 3)
-                .map((course) => (
-                  <Link
-                    key={course.id}
-                    href={`/student/courses/${course.id}/learn/${course.nextLesson!.id}`}
-                    className="flex items-center gap-2 bg-white border border-border/60 hover:border-primary/20
-rounded-2xl
-px-3 py-2
-text-xs text-foreground
-hover:text-primary
-transition-all
-group
-shadow-sm
-"
-                  >
-                    <span className="text-violet-400 group-hover:scale-110 transition-transform">
-                      <PlayCircle className="h-4 w-4 text-primary" />
-                    </span>
-                    <span className="font-medium line-clamp-1 max-w-35">
-                      {course.nextLesson!.title}
-                    </span>
-                    <span className="text-slate-600">·</span>
-                    <span className="text-slate-500 truncate max-w-20">
-                      {course.title}
-                    </span>
-                  </Link>
-                ))}
-            </div>
-          </div>
+            <option value="recent">
+              الأحدث نشاطًا
+            </option>
+
+            <option value="progress">
+              الأعلى تقدمًا
+            </option>
+
+            <option value="xp">
+              الأعلى XP
+            </option>
+
+            <option value="name">
+              الاسم
+            </option>
+          </select>
+
+          <ChevronDown
+            className="
+              pointer-events-none
+              absolute
+              left-3
+              top-1/2
+              h-4
+              w-4
+              -translate-y-1/2
+              text-muted-foreground
+            "
+          />
+        </div>
+      </div>
+
+      {/* ======================================================
+          RESULT COUNT
+      ======================================================= */}
+
+      {filtered.length > 0 && (
+        <div className="mb-4 flex items-center justify-between">
+          <p className="text-xs text-muted-foreground">
+            عرض{" "}
+            <span className="font-bold text-foreground">
+              {filtered.length}
+            </span>{" "}
+            من{" "}
+            <span className="font-bold text-foreground">
+              {courses.length}
+            </span>{" "}
+            دورة
+          </p>
+        </div>
+      )}
+
+      {/* ======================================================
+          COURSES GRID
+      ======================================================= */}
+
+      <div className="grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-3">
+        {filtered.length === 0 ? (
+          <EmptyState
+            filter={activeFilter}
+          />
+        ) : (
+          filtered.map((course) => (
+            <CourseCard
+              key={course.id}
+              course={course}
+            />
+          ))
         )}
       </div>
     </div>

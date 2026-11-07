@@ -3,12 +3,10 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import {
-  Gamepad2,
   GraduationCap,
   BookOpen,
   Swords,
   Trophy,
-  PlusCircle,
   Home,
   Menu,
   Inbox,
@@ -39,7 +37,7 @@ const studentLinks = [
   { href: "/student", label: "الرئيسية", icon: Home },
   { href: "/courses", label: "الدورات", icon: BookOpen },
   { href: "/leaderboard", label: "لوحة الصدارة", icon: Trophy },
-  { href: "/student/battles", label: "التحديات", icon: Swords },
+  { href: "/student/group-challenges", label: "التحديات", icon: Swords },
   {
     href: "/messages",
     label: "المحادثات",
