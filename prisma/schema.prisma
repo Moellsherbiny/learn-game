@@ -25,42 +25,42 @@ enum StudentLevel {
 }
 
 model User {
-  id                 String          @id @default(cuid())
-  name               String?
-  email              String          @unique
-  phone              String?
-  school             String?
-  emailVerified      DateTime?
-  image              String?
-  password           String?
-  role               UserRole        @default(STUDENT)
-  level              StudentLevel    @default(BEGINNER)
-  accounts           Account[]
-  sessions           Session[]
-  Authenticator      Authenticator[]
-
-  createdGroupChallenges GroupChallenge[] @relation("GroupChallengeTeacher")
+  id                      String                 @id @default(cuid())
+  name                    String?
+  email                   String                 @unique
+  phone                   String?
+  school                  String?
+  emailVerified           DateTime?
+  image                   String?
+  password                String?
+  role                    UserRole               @default(STUDENT)
+  level                   StudentLevel           @default(BEGINNER)
+  accounts                Account[]
+  sessions                Session[]
+  Authenticator           Authenticator[]
+  createdGroupChallenges  GroupChallenge[]       @relation("GroupChallengeTeacher")
   challengeParticipations ChallengeParticipant[] @relation("ChallengeStudent")
+  challengeInvitations    ChallengeInvitation[]
 
   studentConversations Conversation[] @relation("StudentConversations")
   teacherConversations Conversation[] @relation("TeacherConversations")
   adminConversations   Conversation[] @relation("AdminConversations")
-  sentMessages Message[] @relation("SentMessages")
+  sentMessages         Message[]      @relation("SentMessages")
 
-  xp              Int             @default(0)
-  currentLevel    Int             @default(1)
-  streak          Int             @default(0)
-  coins           Int             @default(0)
+  xp               Int               @default(0)
+  currentLevel     Int               @default(1)
+  streak           Int               @default(0)
+  coins            Int               @default(0)
   placementResults PlacementResult[]
-  otp             String?
-  otp_expires_at  DateTime?
-  is_otp_verified Boolean?
-  coursesTeaching Course[]        @relation("CoursesTeaching")
-  enrollments     Enrollment[]
-  progress        Progress[]
-  leaderboard     Leaderboard[]
-  createdAt       DateTime        @default(now())
-  updatedAt       DateTime        @updatedAt
+  otp              String?
+  otp_expires_at   DateTime?
+  is_otp_verified  Boolean?
+  coursesTeaching  Course[]          @relation("CoursesTeaching")
+  enrollments      Enrollment[]
+  progress         Progress[]
+  leaderboard      Leaderboard[]
+  createdAt        DateTime          @default(now())
+  updatedAt        DateTime          @updatedAt
 }
 
 model Account {
@@ -118,19 +118,19 @@ model Authenticator {
 }
 
 model Course {
-  id          String       @id @default(cuid())
-  title       String
-  description String?
-  teacherId   String
-  teacher     User         @relation("CoursesTeaching", fields: [teacherId], references: [id], onDelete: Cascade)
-  thumbnail   String?
-  enrollments Enrollment[]
-  modules     Module[]
-  groupChallenges GroupChallenge[]
-  placementTest PlacementTest?
+  id               String            @id @default(cuid())
+  title            String
+  description      String?
+  teacherId        String
+  teacher          User              @relation("CoursesTeaching", fields: [teacherId], references: [id], onDelete: Cascade)
+  thumbnail        String?
+  enrollments      Enrollment[]
+  modules          Module[]
+  groupChallenges  GroupChallenge[]
+  placementTest    PlacementTest?
   placementResults PlacementResult[]
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  createdAt        DateTime          @default(now())
+  updatedAt        DateTime          @updatedAt
 }
 
 model Module {
@@ -257,45 +257,43 @@ model Leaderboard {
 }
 
 model PlacementTest {
-  id          String   @id @default(cuid())
+  id String @id @default(cuid())
 
-  courseId    String   @unique
-  course      Course   @relation(fields: [courseId], references: [id])
+  courseId String @unique
+  course   Course @relation(fields: [courseId], references: [id])
 
-  title       String
+  title String
 
-  questions   Json
+  questions Json
 
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 }
 
 model PlacementResult {
-  id            String @id @default(cuid())
+  id String @id @default(cuid())
 
-  studentId     String
-  courseId      String
+  studentId String
+  courseId  String
 
-  level         StudentLevel
+  level StudentLevel
 
-  confidence    Int
+  confidence Int
 
-  score         Float
+  score Float
 
-  strengths     Json?
-  weaknesses    Json?
+  strengths  Json?
+  weaknesses Json?
 
-  feedback      String?
-  answers       Json?
-  createdAt     DateTime @default(now())
+  feedback  String?
+  answers   Json?
+  createdAt DateTime @default(now())
 
-  student User @relation(fields: [studentId], references: [id])
+  student User   @relation(fields: [studentId], references: [id])
   course  Course @relation(fields: [courseId], references: [id])
 
   @@unique([studentId, courseId])
 }
-
-
 
 enum ConversationType {
   STUDENT_TEACHER
@@ -304,16 +302,16 @@ enum ConversationType {
 }
 
 model Conversation {
-  id        String   @id @default(cuid())
-  type ConversationType
+  id        String           @id @default(cuid())
+  type      ConversationType
   studentId String?
   teacherId String?
   adminId   String?
-  student User? @relation("StudentConversations",fields: [studentId],references: [id],onDelete: Cascade)
+  student   User?            @relation("StudentConversations", fields: [studentId], references: [id], onDelete: Cascade)
 
-  teacher User? @relation("TeacherConversations",fields: [teacherId],references: [id],onDelete: Cascade)
+  teacher User? @relation("TeacherConversations", fields: [teacherId], references: [id], onDelete: Cascade)
 
-  admin User?  @relation("AdminConversations", fields: [adminId], references: [id], onDelete: Cascade)
+  admin    User?     @relation("AdminConversations", fields: [adminId], references: [id], onDelete: Cascade)
   messages Message[]
 
   createdAt DateTime @default(now())
@@ -323,16 +321,16 @@ model Conversation {
 }
 
 model Message {
-  id             String @id @default(cuid())
+  id String @id @default(cuid())
 
   conversationId String
   senderId       String
 
   content String
 
-  conversation Conversation @relation(fields: [conversationId],references: [id],onDelete: Cascade)
+  conversation Conversation @relation(fields: [conversationId], references: [id], onDelete: Cascade)
 
-  sender User @relation("SentMessages",fields: [senderId],references: [id],onDelete: Cascade)
+  sender User @relation("SentMessages", fields: [senderId], references: [id], onDelete: Cascade)
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
@@ -341,26 +339,31 @@ model Message {
   @@index([senderId])
 }
 
+enum ChallengeInvitationStatus {
+  PENDING
+  ACCEPTED
+  DECLINED
+}
 
 model GroupChallenge {
-  id          String @id @default(cuid())
-  title       String
-  code        String @unique
+  id    String @id @default(cuid())
+  title String
+  code  String @unique
 
-  teacherId   String
-  courseId    String
+  teacherId String
+  courseId  String
 
-  teacher User   @relation("GroupChallengeTeacher", fields: [teacherId], references: [id], onDelete: Cascade)
-  course  Course @relation(fields: [courseId], references: [id], onDelete: Cascade)
-
-  status               GroupChallengeStatus @default(WAITING)
-  currentQuestionIndex Int                  @default(0)
+  teacher                  User                  @relation("GroupChallengeTeacher", fields: [teacherId], references: [id], onDelete: Cascade)
+  course                   Course                @relation(fields: [courseId], references: [id], onDelete: Cascade)
+  invitations              ChallengeInvitation[]
+  status                   GroupChallengeStatus  @default(WAITING)
+  currentQuestionIndex     Int                   @default(0)
   currentQuestionStartedAt DateTime?
-  questionTimeSeconds Int @default(20)
-  pointsPerQuestion   Int @default(100)
+  questionTimeSeconds      Int                   @default(20)
+  pointsPerQuestion        Int                   @default(100)
 
-  questions     ChallengeQuestion[]
-  participants  ChallengeParticipant[]
+  questions    ChallengeQuestion[]
+  participants ChallengeParticipant[]
 
   startedAt  DateTime?
   finishedAt DateTime?
@@ -373,30 +376,30 @@ model GroupChallenge {
 }
 
 model ChallengeQuestion {
-  id              String   @id @default(cuid())
+  id              String  @id @default(cuid())
   challengeId     String
   lessonContentId String?
 
-  question        String
-  answer          String?
+  question String
+  answer   String?
 
-  optionA         String?
-  optionB         String?
-  optionC         String?
-  optionD         String?
+  optionA String?
+  optionB String?
+  optionC String?
+  optionD String?
 
-  leftText        String?
-  rightText       String?
+  leftText  String?
+  rightText String?
 
-  order           Int
-  timeLimit       Int      @default(20)
+  order     Int
+  timeLimit Int @default(20)
 
-  challenge    GroupChallenge @relation(fields: [challengeId], references: [id], onDelete: Cascade)
+  challenge     GroupChallenge @relation(fields: [challengeId], references: [id], onDelete: Cascade)
   lessonContent LessonContent? @relation(fields: [lessonContentId], references: [id], onDelete: SetNull)
 
-  answers      ChallengeAnswer[]
+  answers ChallengeAnswer[]
 
-  createdAt    DateTime @default(now())
+  createdAt DateTime @default(now())
 
   @@unique([challengeId, order])
   @@index([lessonContentId])
@@ -408,26 +411,26 @@ model ChallengeParticipant {
   studentId   String
 
   challenge GroupChallenge @relation(fields: [challengeId], references: [id], onDelete: Cascade)
-  student   User @relation("ChallengeStudent", fields: [studentId], references: [id], onDelete: Cascade)
+  student   User           @relation("ChallengeStudent", fields: [studentId], references: [id], onDelete: Cascade)
 
   team    ChallengeTeam
-  isReady Boolean @default(false)
+  isReady Boolean       @default(false)
 
-  answers ChallengeAnswer[]
-  score Int @default(0)
-  joinedAt DateTime @default(now())
+  answers  ChallengeAnswer[]
+  score    Int               @default(0)
+  joinedAt DateTime          @default(now())
 
   @@unique([challengeId, studentId])
   @@index([challengeId, team])
 }
 
 model ChallengeAnswer {
-  id                 String   @id @default(cuid())
+  id                  String @id @default(cuid())
   challengeQuestionId String
   participantId       String
 
-  question     ChallengeQuestion     @relation(fields: [challengeQuestionId], references: [id], onDelete: Cascade)
-  participant  ChallengeParticipant  @relation(fields: [participantId], references: [id], onDelete: Cascade)
+  question    ChallengeQuestion    @relation(fields: [challengeQuestionId], references: [id], onDelete: Cascade)
+  participant ChallengeParticipant @relation(fields: [participantId], references: [id], onDelete: Cascade)
 
   answer       String
   isCorrect    Boolean
@@ -437,4 +440,24 @@ model ChallengeAnswer {
 
   @@unique([challengeQuestionId, participantId])
   @@index([participantId])
+}
+
+model ChallengeInvitation {
+  id String @id @default(cuid())
+
+  challengeId String
+  studentId   String
+
+  challenge GroupChallenge @relation(fields: [challengeId], references: [id], onDelete: Cascade)
+
+  student User @relation(fields: [studentId], references: [id], onDelete: Cascade)
+
+  status ChallengeInvitationStatus @default(PENDING)
+
+  invitedAt   DateTime  @default(now())
+  respondedAt DateTime?
+
+  @@unique([challengeId, studentId])
+  @@index([studentId, status])
+  @@index([challengeId, status])
 }

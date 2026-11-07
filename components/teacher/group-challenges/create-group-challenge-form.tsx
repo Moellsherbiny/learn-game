@@ -37,6 +37,7 @@ import {
 } from "@/components/ui/card";
 
 import { Badge } from "@/components/ui/badge";
+import { ChallengeInvitationManager } from "./challenge-invitation-manager";
 
 // ============================================
 // Types
@@ -87,7 +88,7 @@ export function CreateGroupChallengeForm({ courses }: Props) {
   // Form State
   const [title, setTitle] = useState("");
   const [courseId, setCourseId] = useState("");
-  const [timeLimit, setTimeLimit] = useState("20");
+  const [timeLimit, setTimeLimit] = useState("60");
 
   // Questions State
   const [courseData, setCourseData] = useState<CourseQuestionsResult | null>(
@@ -326,7 +327,7 @@ export function CreateGroupChallengeForm({ courses }: Props) {
                 نسخ الكود
               </Button>
             </div>
-
+            <ChallengeInvitationManager challengeId={createdChallenge.id} />
             <div className="flex flex-col gap-3 sm:flex-row">
               <Button
                 className="flex-1 gap-2"

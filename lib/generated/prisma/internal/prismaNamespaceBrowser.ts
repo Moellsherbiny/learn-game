@@ -70,7 +70,8 @@ export const ModelName = {
   GroupChallenge: 'GroupChallenge',
   ChallengeQuestion: 'ChallengeQuestion',
   ChallengeParticipant: 'ChallengeParticipant',
-  ChallengeAnswer: 'ChallengeAnswer'
+  ChallengeAnswer: 'ChallengeAnswer',
+  ChallengeInvitation: 'ChallengeInvitation'
 } as const
 
 export type ModelName = (typeof ModelName)[keyof typeof ModelName]
@@ -389,6 +390,18 @@ export const ChallengeAnswerScalarFieldEnum = {
 } as const
 
 export type ChallengeAnswerScalarFieldEnum = (typeof ChallengeAnswerScalarFieldEnum)[keyof typeof ChallengeAnswerScalarFieldEnum]
+
+
+export const ChallengeInvitationScalarFieldEnum = {
+  id: 'id',
+  challengeId: 'challengeId',
+  studentId: 'studentId',
+  status: 'status',
+  invitedAt: 'invitedAt',
+  respondedAt: 'respondedAt'
+} as const
+
+export type ChallengeInvitationScalarFieldEnum = (typeof ChallengeInvitationScalarFieldEnum)[keyof typeof ChallengeInvitationScalarFieldEnum]
 
 
 export const SortOrder = {

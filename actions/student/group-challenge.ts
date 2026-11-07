@@ -9,7 +9,7 @@ import {
   GroupChallengeStatus,
 } from "@/lib/generated/prisma/client";
 import { revalidatePath } from "next/cache";
-
+import { ChallengeInvitationStatus } from "@/lib/generated/prisma/client";
 // ============================================
 // Authentication
 // ============================================
@@ -67,6 +67,31 @@ export async function joinGroupChallengeAction(code: string) {
 
       if (challenge.status !== GroupChallengeStatus.WAITING) {
         throw new Error("هذا التحدي لم يعد متاحاً للانضمام.");
+      }
+
+      // Check challenge invitation
+      const invitation = await tx.challengeInvitation.findUnique({
+        where: {
+          challengeId_studentId: {
+            challengeId: challenge.id,
+            studentId,
+          },
+        },
+        select: {
+          status: true,
+        },
+      });
+
+      if (!invitation) {
+        throw new Error("لم تصلك دعوة لهذا التحدي.");
+      }
+
+      if (
+        invitation.status !== ChallengeInvitationStatus.ACCEPTED
+      ) {
+        throw new Error(
+          "يجب قبول الدعوة أولاً للانضمام إلى التحدي."
+        );
       }
 
       // Check course enrollment
@@ -161,7 +186,6 @@ export async function joinGroupChallengeAction(code: string) {
     participant: result.participant,
   };
 }
-
 // ============================================
 // 2. Set Participant Ready Status
 // ============================================

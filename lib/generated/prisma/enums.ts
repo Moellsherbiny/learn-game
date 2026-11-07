@@ -62,3 +62,12 @@ export const ConversationType = {
 } as const
 
 export type ConversationType = (typeof ConversationType)[keyof typeof ConversationType]
+
+
+export const ChallengeInvitationStatus = {
+  PENDING: 'PENDING',
+  ACCEPTED: 'ACCEPTED',
+  DECLINED: 'DECLINED'
+} as const
+
+export type ChallengeInvitationStatus = (typeof ChallengeInvitationStatus)[keyof typeof ChallengeInvitationStatus]

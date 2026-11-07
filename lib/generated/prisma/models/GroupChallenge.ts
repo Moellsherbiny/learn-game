@@ -298,6 +298,7 @@ export type GroupChallengeWhereInput = {
   updatedAt?: Prisma.DateTimeFilter<"GroupChallenge"> | Date | string
   teacher?: Prisma.XOR<Prisma.UserScalarRelationFilter, Prisma.UserWhereInput>
   course?: Prisma.XOR<Prisma.CourseScalarRelationFilter, Prisma.CourseWhereInput>
+  invitations?: Prisma.ChallengeInvitationListRelationFilter
   questions?: Prisma.ChallengeQuestionListRelationFilter
   participants?: Prisma.ChallengeParticipantListRelationFilter
 }
@@ -319,6 +320,7 @@ export type GroupChallengeOrderByWithRelationInput = {
   updatedAt?: Prisma.SortOrder
   teacher?: Prisma.UserOrderByWithRelationInput
   course?: Prisma.CourseOrderByWithRelationInput
+  invitations?: Prisma.ChallengeInvitationOrderByRelationAggregateInput
   questions?: Prisma.ChallengeQuestionOrderByRelationAggregateInput
   participants?: Prisma.ChallengeParticipantOrderByRelationAggregateInput
 }
@@ -343,6 +345,7 @@ export type GroupChallengeWhereUniqueInput = Prisma.AtLeast<{
   updatedAt?: Prisma.DateTimeFilter<"GroupChallenge"> | Date | string
   teacher?: Prisma.XOR<Prisma.UserScalarRelationFilter, Prisma.UserWhereInput>
   course?: Prisma.XOR<Prisma.CourseScalarRelationFilter, Prisma.CourseWhereInput>
+  invitations?: Prisma.ChallengeInvitationListRelationFilter
   questions?: Prisma.ChallengeQuestionListRelationFilter
   participants?: Prisma.ChallengeParticipantListRelationFilter
 }, "id" | "code">
@@ -404,6 +407,7 @@ export type GroupChallengeCreateInput = {
   updatedAt?: Date | string
   teacher: Prisma.UserCreateNestedOneWithoutCreatedGroupChallengesInput
   course: Prisma.CourseCreateNestedOneWithoutGroupChallengesInput
+  invitations?: Prisma.ChallengeInvitationCreateNestedManyWithoutChallengeInput
   questions?: Prisma.ChallengeQuestionCreateNestedManyWithoutChallengeInput
   participants?: Prisma.ChallengeParticipantCreateNestedManyWithoutChallengeInput
 }
@@ -423,6 +427,7 @@ export type GroupChallengeUncheckedCreateInput = {
   finishedAt?: Date | string | null
   createdAt?: Date | string
   updatedAt?: Date | string
+  invitations?: Prisma.ChallengeInvitationUncheckedCreateNestedManyWithoutChallengeInput
   questions?: Prisma.ChallengeQuestionUncheckedCreateNestedManyWithoutChallengeInput
   participants?: Prisma.ChallengeParticipantUncheckedCreateNestedManyWithoutChallengeInput
 }
@@ -442,6 +447,7 @@ export type GroupChallengeUpdateInput = {
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   teacher?: Prisma.UserUpdateOneRequiredWithoutCreatedGroupChallengesNestedInput
   course?: Prisma.CourseUpdateOneRequiredWithoutGroupChallengesNestedInput
+  invitations?: Prisma.ChallengeInvitationUpdateManyWithoutChallengeNestedInput
   questions?: Prisma.ChallengeQuestionUpdateManyWithoutChallengeNestedInput
   participants?: Prisma.ChallengeParticipantUpdateManyWithoutChallengeNestedInput
 }
@@ -461,6 +467,7 @@ export type GroupChallengeUncheckedUpdateInput = {
   finishedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  invitations?: Prisma.ChallengeInvitationUncheckedUpdateManyWithoutChallengeNestedInput
   questions?: Prisma.ChallengeQuestionUncheckedUpdateManyWithoutChallengeNestedInput
   participants?: Prisma.ChallengeParticipantUncheckedUpdateManyWithoutChallengeNestedInput
 }
@@ -708,6 +715,20 @@ export type GroupChallengeUpdateOneRequiredWithoutParticipantsNestedInput = {
   update?: Prisma.XOR<Prisma.XOR<Prisma.GroupChallengeUpdateToOneWithWhereWithoutParticipantsInput, Prisma.GroupChallengeUpdateWithoutParticipantsInput>, Prisma.GroupChallengeUncheckedUpdateWithoutParticipantsInput>
 }
 
+export type GroupChallengeCreateNestedOneWithoutInvitationsInput = {
+  create?: Prisma.XOR<Prisma.GroupChallengeCreateWithoutInvitationsInput, Prisma.GroupChallengeUncheckedCreateWithoutInvitationsInput>
+  connectOrCreate?: Prisma.GroupChallengeCreateOrConnectWithoutInvitationsInput
+  connect?: Prisma.GroupChallengeWhereUniqueInput
+}
+
+export type GroupChallengeUpdateOneRequiredWithoutInvitationsNestedInput = {
+  create?: Prisma.XOR<Prisma.GroupChallengeCreateWithoutInvitationsInput, Prisma.GroupChallengeUncheckedCreateWithoutInvitationsInput>
+  connectOrCreate?: Prisma.GroupChallengeCreateOrConnectWithoutInvitationsInput
+  upsert?: Prisma.GroupChallengeUpsertWithoutInvitationsInput
+  connect?: Prisma.GroupChallengeWhereUniqueInput
+  update?: Prisma.XOR<Prisma.XOR<Prisma.GroupChallengeUpdateToOneWithWhereWithoutInvitationsInput, Prisma.GroupChallengeUpdateWithoutInvitationsInput>, Prisma.GroupChallengeUncheckedUpdateWithoutInvitationsInput>
+}
+
 export type GroupChallengeCreateWithoutTeacherInput = {
   id?: string
   title: string
@@ -722,6 +743,7 @@ export type GroupChallengeCreateWithoutTeacherInput = {
   createdAt?: Date | string
   updatedAt?: Date | string
   course: Prisma.CourseCreateNestedOneWithoutGroupChallengesInput
+  invitations?: Prisma.ChallengeInvitationCreateNestedManyWithoutChallengeInput
   questions?: Prisma.ChallengeQuestionCreateNestedManyWithoutChallengeInput
   participants?: Prisma.ChallengeParticipantCreateNestedManyWithoutChallengeInput
 }
@@ -740,6 +762,7 @@ export type GroupChallengeUncheckedCreateWithoutTeacherInput = {
   finishedAt?: Date | string | null
   createdAt?: Date | string
   updatedAt?: Date | string
+  invitations?: Prisma.ChallengeInvitationUncheckedCreateNestedManyWithoutChallengeInput
   questions?: Prisma.ChallengeQuestionUncheckedCreateNestedManyWithoutChallengeInput
   participants?: Prisma.ChallengeParticipantUncheckedCreateNestedManyWithoutChallengeInput
 }
@@ -804,6 +827,7 @@ export type GroupChallengeCreateWithoutCourseInput = {
   createdAt?: Date | string
   updatedAt?: Date | string
   teacher: Prisma.UserCreateNestedOneWithoutCreatedGroupChallengesInput
+  invitations?: Prisma.ChallengeInvitationCreateNestedManyWithoutChallengeInput
   questions?: Prisma.ChallengeQuestionCreateNestedManyWithoutChallengeInput
   participants?: Prisma.ChallengeParticipantCreateNestedManyWithoutChallengeInput
 }
@@ -822,6 +846,7 @@ export type GroupChallengeUncheckedCreateWithoutCourseInput = {
   finishedAt?: Date | string | null
   createdAt?: Date | string
   updatedAt?: Date | string
+  invitations?: Prisma.ChallengeInvitationUncheckedCreateNestedManyWithoutChallengeInput
   questions?: Prisma.ChallengeQuestionUncheckedCreateNestedManyWithoutChallengeInput
   participants?: Prisma.ChallengeParticipantUncheckedCreateNestedManyWithoutChallengeInput
 }
@@ -867,6 +892,7 @@ export type GroupChallengeCreateWithoutQuestionsInput = {
   updatedAt?: Date | string
   teacher: Prisma.UserCreateNestedOneWithoutCreatedGroupChallengesInput
   course: Prisma.CourseCreateNestedOneWithoutGroupChallengesInput
+  invitations?: Prisma.ChallengeInvitationCreateNestedManyWithoutChallengeInput
   participants?: Prisma.ChallengeParticipantCreateNestedManyWithoutChallengeInput
 }
 
@@ -885,6 +911,7 @@ export type GroupChallengeUncheckedCreateWithoutQuestionsInput = {
   finishedAt?: Date | string | null
   createdAt?: Date | string
   updatedAt?: Date | string
+  invitations?: Prisma.ChallengeInvitationUncheckedCreateNestedManyWithoutChallengeInput
   participants?: Prisma.ChallengeParticipantUncheckedCreateNestedManyWithoutChallengeInput
 }
 
@@ -919,6 +946,7 @@ export type GroupChallengeUpdateWithoutQuestionsInput = {
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   teacher?: Prisma.UserUpdateOneRequiredWithoutCreatedGroupChallengesNestedInput
   course?: Prisma.CourseUpdateOneRequiredWithoutGroupChallengesNestedInput
+  invitations?: Prisma.ChallengeInvitationUpdateManyWithoutChallengeNestedInput
   participants?: Prisma.ChallengeParticipantUpdateManyWithoutChallengeNestedInput
 }
 
@@ -937,6 +965,7 @@ export type GroupChallengeUncheckedUpdateWithoutQuestionsInput = {
   finishedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  invitations?: Prisma.ChallengeInvitationUncheckedUpdateManyWithoutChallengeNestedInput
   participants?: Prisma.ChallengeParticipantUncheckedUpdateManyWithoutChallengeNestedInput
 }
 
@@ -955,6 +984,7 @@ export type GroupChallengeCreateWithoutParticipantsInput = {
   updatedAt?: Date | string
   teacher: Prisma.UserCreateNestedOneWithoutCreatedGroupChallengesInput
   course: Prisma.CourseCreateNestedOneWithoutGroupChallengesInput
+  invitations?: Prisma.ChallengeInvitationCreateNestedManyWithoutChallengeInput
   questions?: Prisma.ChallengeQuestionCreateNestedManyWithoutChallengeInput
 }
 
@@ -973,6 +1003,7 @@ export type GroupChallengeUncheckedCreateWithoutParticipantsInput = {
   finishedAt?: Date | string | null
   createdAt?: Date | string
   updatedAt?: Date | string
+  invitations?: Prisma.ChallengeInvitationUncheckedCreateNestedManyWithoutChallengeInput
   questions?: Prisma.ChallengeQuestionUncheckedCreateNestedManyWithoutChallengeInput
 }
 
@@ -1007,6 +1038,7 @@ export type GroupChallengeUpdateWithoutParticipantsInput = {
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   teacher?: Prisma.UserUpdateOneRequiredWithoutCreatedGroupChallengesNestedInput
   course?: Prisma.CourseUpdateOneRequiredWithoutGroupChallengesNestedInput
+  invitations?: Prisma.ChallengeInvitationUpdateManyWithoutChallengeNestedInput
   questions?: Prisma.ChallengeQuestionUpdateManyWithoutChallengeNestedInput
 }
 
@@ -1025,7 +1057,100 @@ export type GroupChallengeUncheckedUpdateWithoutParticipantsInput = {
   finishedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  invitations?: Prisma.ChallengeInvitationUncheckedUpdateManyWithoutChallengeNestedInput
   questions?: Prisma.ChallengeQuestionUncheckedUpdateManyWithoutChallengeNestedInput
+}
+
+export type GroupChallengeCreateWithoutInvitationsInput = {
+  id?: string
+  title: string
+  code: string
+  status?: $Enums.GroupChallengeStatus
+  currentQuestionIndex?: number
+  currentQuestionStartedAt?: Date | string | null
+  questionTimeSeconds?: number
+  pointsPerQuestion?: number
+  startedAt?: Date | string | null
+  finishedAt?: Date | string | null
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  teacher: Prisma.UserCreateNestedOneWithoutCreatedGroupChallengesInput
+  course: Prisma.CourseCreateNestedOneWithoutGroupChallengesInput
+  questions?: Prisma.ChallengeQuestionCreateNestedManyWithoutChallengeInput
+  participants?: Prisma.ChallengeParticipantCreateNestedManyWithoutChallengeInput
+}
+
+export type GroupChallengeUncheckedCreateWithoutInvitationsInput = {
+  id?: string
+  title: string
+  code: string
+  teacherId: string
+  courseId: string
+  status?: $Enums.GroupChallengeStatus
+  currentQuestionIndex?: number
+  currentQuestionStartedAt?: Date | string | null
+  questionTimeSeconds?: number
+  pointsPerQuestion?: number
+  startedAt?: Date | string | null
+  finishedAt?: Date | string | null
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  questions?: Prisma.ChallengeQuestionUncheckedCreateNestedManyWithoutChallengeInput
+  participants?: Prisma.ChallengeParticipantUncheckedCreateNestedManyWithoutChallengeInput
+}
+
+export type GroupChallengeCreateOrConnectWithoutInvitationsInput = {
+  where: Prisma.GroupChallengeWhereUniqueInput
+  create: Prisma.XOR<Prisma.GroupChallengeCreateWithoutInvitationsInput, Prisma.GroupChallengeUncheckedCreateWithoutInvitationsInput>
+}
+
+export type GroupChallengeUpsertWithoutInvitationsInput = {
+  update: Prisma.XOR<Prisma.GroupChallengeUpdateWithoutInvitationsInput, Prisma.GroupChallengeUncheckedUpdateWithoutInvitationsInput>
+  create: Prisma.XOR<Prisma.GroupChallengeCreateWithoutInvitationsInput, Prisma.GroupChallengeUncheckedCreateWithoutInvitationsInput>
+  where?: Prisma.GroupChallengeWhereInput
+}
+
+export type GroupChallengeUpdateToOneWithWhereWithoutInvitationsInput = {
+  where?: Prisma.GroupChallengeWhereInput
+  data: Prisma.XOR<Prisma.GroupChallengeUpdateWithoutInvitationsInput, Prisma.GroupChallengeUncheckedUpdateWithoutInvitationsInput>
+}
+
+export type GroupChallengeUpdateWithoutInvitationsInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  title?: Prisma.StringFieldUpdateOperationsInput | string
+  code?: Prisma.StringFieldUpdateOperationsInput | string
+  status?: Prisma.EnumGroupChallengeStatusFieldUpdateOperationsInput | $Enums.GroupChallengeStatus
+  currentQuestionIndex?: Prisma.IntFieldUpdateOperationsInput | number
+  currentQuestionStartedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  questionTimeSeconds?: Prisma.IntFieldUpdateOperationsInput | number
+  pointsPerQuestion?: Prisma.IntFieldUpdateOperationsInput | number
+  startedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  finishedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  teacher?: Prisma.UserUpdateOneRequiredWithoutCreatedGroupChallengesNestedInput
+  course?: Prisma.CourseUpdateOneRequiredWithoutGroupChallengesNestedInput
+  questions?: Prisma.ChallengeQuestionUpdateManyWithoutChallengeNestedInput
+  participants?: Prisma.ChallengeParticipantUpdateManyWithoutChallengeNestedInput
+}
+
+export type GroupChallengeUncheckedUpdateWithoutInvitationsInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  title?: Prisma.StringFieldUpdateOperationsInput | string
+  code?: Prisma.StringFieldUpdateOperationsInput | string
+  teacherId?: Prisma.StringFieldUpdateOperationsInput | string
+  courseId?: Prisma.StringFieldUpdateOperationsInput | string
+  status?: Prisma.EnumGroupChallengeStatusFieldUpdateOperationsInput | $Enums.GroupChallengeStatus
+  currentQuestionIndex?: Prisma.IntFieldUpdateOperationsInput | number
+  currentQuestionStartedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  questionTimeSeconds?: Prisma.IntFieldUpdateOperationsInput | number
+  pointsPerQuestion?: Prisma.IntFieldUpdateOperationsInput | number
+  startedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  finishedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  questions?: Prisma.ChallengeQuestionUncheckedUpdateManyWithoutChallengeNestedInput
+  participants?: Prisma.ChallengeParticipantUncheckedUpdateManyWithoutChallengeNestedInput
 }
 
 export type GroupChallengeCreateManyTeacherInput = {
@@ -1058,6 +1183,7 @@ export type GroupChallengeUpdateWithoutTeacherInput = {
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   course?: Prisma.CourseUpdateOneRequiredWithoutGroupChallengesNestedInput
+  invitations?: Prisma.ChallengeInvitationUpdateManyWithoutChallengeNestedInput
   questions?: Prisma.ChallengeQuestionUpdateManyWithoutChallengeNestedInput
   participants?: Prisma.ChallengeParticipantUpdateManyWithoutChallengeNestedInput
 }
@@ -1076,6 +1202,7 @@ export type GroupChallengeUncheckedUpdateWithoutTeacherInput = {
   finishedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  invitations?: Prisma.ChallengeInvitationUncheckedUpdateManyWithoutChallengeNestedInput
   questions?: Prisma.ChallengeQuestionUncheckedUpdateManyWithoutChallengeNestedInput
   participants?: Prisma.ChallengeParticipantUncheckedUpdateManyWithoutChallengeNestedInput
 }
@@ -1126,6 +1253,7 @@ export type GroupChallengeUpdateWithoutCourseInput = {
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   teacher?: Prisma.UserUpdateOneRequiredWithoutCreatedGroupChallengesNestedInput
+  invitations?: Prisma.ChallengeInvitationUpdateManyWithoutChallengeNestedInput
   questions?: Prisma.ChallengeQuestionUpdateManyWithoutChallengeNestedInput
   participants?: Prisma.ChallengeParticipantUpdateManyWithoutChallengeNestedInput
 }
@@ -1144,6 +1272,7 @@ export type GroupChallengeUncheckedUpdateWithoutCourseInput = {
   finishedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  invitations?: Prisma.ChallengeInvitationUncheckedUpdateManyWithoutChallengeNestedInput
   questions?: Prisma.ChallengeQuestionUncheckedUpdateManyWithoutChallengeNestedInput
   participants?: Prisma.ChallengeParticipantUncheckedUpdateManyWithoutChallengeNestedInput
 }
@@ -1170,11 +1299,13 @@ export type GroupChallengeUncheckedUpdateManyWithoutCourseInput = {
  */
 
 export type GroupChallengeCountOutputType = {
+  invitations: number
   questions: number
   participants: number
 }
 
 export type GroupChallengeCountOutputTypeSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  invitations?: boolean | GroupChallengeCountOutputTypeCountInvitationsArgs
   questions?: boolean | GroupChallengeCountOutputTypeCountQuestionsArgs
   participants?: boolean | GroupChallengeCountOutputTypeCountParticipantsArgs
 }
@@ -1187,6 +1318,13 @@ export type GroupChallengeCountOutputTypeDefaultArgs<ExtArgs extends runtime.Typ
    * Select specific fields to fetch from the GroupChallengeCountOutputType
    */
   select?: Prisma.GroupChallengeCountOutputTypeSelect<ExtArgs> | null
+}
+
+/**
+ * GroupChallengeCountOutputType without action
+ */
+export type GroupChallengeCountOutputTypeCountInvitationsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  where?: Prisma.ChallengeInvitationWhereInput
 }
 
 /**
@@ -1221,6 +1359,7 @@ export type GroupChallengeSelect<ExtArgs extends runtime.Types.Extensions.Intern
   updatedAt?: boolean
   teacher?: boolean | Prisma.UserDefaultArgs<ExtArgs>
   course?: boolean | Prisma.CourseDefaultArgs<ExtArgs>
+  invitations?: boolean | Prisma.GroupChallenge$invitationsArgs<ExtArgs>
   questions?: boolean | Prisma.GroupChallenge$questionsArgs<ExtArgs>
   participants?: boolean | Prisma.GroupChallenge$participantsArgs<ExtArgs>
   _count?: boolean | Prisma.GroupChallengeCountOutputTypeDefaultArgs<ExtArgs>
@@ -1285,6 +1424,7 @@ export type GroupChallengeOmit<ExtArgs extends runtime.Types.Extensions.Internal
 export type GroupChallengeInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   teacher?: boolean | Prisma.UserDefaultArgs<ExtArgs>
   course?: boolean | Prisma.CourseDefaultArgs<ExtArgs>
+  invitations?: boolean | Prisma.GroupChallenge$invitationsArgs<ExtArgs>
   questions?: boolean | Prisma.GroupChallenge$questionsArgs<ExtArgs>
   participants?: boolean | Prisma.GroupChallenge$participantsArgs<ExtArgs>
   _count?: boolean | Prisma.GroupChallengeCountOutputTypeDefaultArgs<ExtArgs>
@@ -1303,6 +1443,7 @@ export type $GroupChallengePayload<ExtArgs extends runtime.Types.Extensions.Inte
   objects: {
     teacher: Prisma.$UserPayload<ExtArgs>
     course: Prisma.$CoursePayload<ExtArgs>
+    invitations: Prisma.$ChallengeInvitationPayload<ExtArgs>[]
     questions: Prisma.$ChallengeQuestionPayload<ExtArgs>[]
     participants: Prisma.$ChallengeParticipantPayload<ExtArgs>[]
   }
@@ -1717,6 +1858,7 @@ export interface Prisma__GroupChallengeClient<T, Null = never, ExtArgs extends r
   readonly [Symbol.toStringTag]: "PrismaPromise"
   teacher<T extends Prisma.UserDefaultArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.UserDefaultArgs<ExtArgs>>): Prisma.Prisma__UserClient<runtime.Types.Result.GetResult<Prisma.$UserPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
   course<T extends Prisma.CourseDefaultArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.CourseDefaultArgs<ExtArgs>>): Prisma.Prisma__CourseClient<runtime.Types.Result.GetResult<Prisma.$CoursePayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
+  invitations<T extends Prisma.GroupChallenge$invitationsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.GroupChallenge$invitationsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$ChallengeInvitationPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   questions<T extends Prisma.GroupChallenge$questionsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.GroupChallenge$questionsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$ChallengeQuestionPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   participants<T extends Prisma.GroupChallenge$participantsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.GroupChallenge$participantsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$ChallengeParticipantPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   /**
@@ -2160,6 +2302,30 @@ export type GroupChallengeDeleteManyArgs<ExtArgs extends runtime.Types.Extension
    * Limit how many GroupChallenges to delete.
    */
   limit?: number
+}
+
+/**
+ * GroupChallenge.invitations
+ */
+export type GroupChallenge$invitationsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the ChallengeInvitation
+   */
+  select?: Prisma.ChallengeInvitationSelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the ChallengeInvitation
+   */
+  omit?: Prisma.ChallengeInvitationOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.ChallengeInvitationInclude<ExtArgs> | null
+  where?: Prisma.ChallengeInvitationWhereInput
+  orderBy?: Prisma.ChallengeInvitationOrderByWithRelationInput | Prisma.ChallengeInvitationOrderByWithRelationInput[]
+  cursor?: Prisma.ChallengeInvitationWhereUniqueInput
+  take?: number
+  skip?: number
+  distinct?: Prisma.ChallengeInvitationScalarFieldEnum | Prisma.ChallengeInvitationScalarFieldEnum[]
 }
 
 /**

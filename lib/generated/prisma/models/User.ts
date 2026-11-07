@@ -345,6 +345,7 @@ export type UserWhereInput = {
   Authenticator?: Prisma.AuthenticatorListRelationFilter
   createdGroupChallenges?: Prisma.GroupChallengeListRelationFilter
   challengeParticipations?: Prisma.ChallengeParticipantListRelationFilter
+  challengeInvitations?: Prisma.ChallengeInvitationListRelationFilter
   studentConversations?: Prisma.ConversationListRelationFilter
   teacherConversations?: Prisma.ConversationListRelationFilter
   adminConversations?: Prisma.ConversationListRelationFilter
@@ -381,6 +382,7 @@ export type UserOrderByWithRelationInput = {
   Authenticator?: Prisma.AuthenticatorOrderByRelationAggregateInput
   createdGroupChallenges?: Prisma.GroupChallengeOrderByRelationAggregateInput
   challengeParticipations?: Prisma.ChallengeParticipantOrderByRelationAggregateInput
+  challengeInvitations?: Prisma.ChallengeInvitationOrderByRelationAggregateInput
   studentConversations?: Prisma.ConversationOrderByRelationAggregateInput
   teacherConversations?: Prisma.ConversationOrderByRelationAggregateInput
   adminConversations?: Prisma.ConversationOrderByRelationAggregateInput
@@ -420,6 +422,7 @@ export type UserWhereUniqueInput = Prisma.AtLeast<{
   Authenticator?: Prisma.AuthenticatorListRelationFilter
   createdGroupChallenges?: Prisma.GroupChallengeListRelationFilter
   challengeParticipations?: Prisma.ChallengeParticipantListRelationFilter
+  challengeInvitations?: Prisma.ChallengeInvitationListRelationFilter
   studentConversations?: Prisma.ConversationListRelationFilter
   teacherConversations?: Prisma.ConversationListRelationFilter
   adminConversations?: Prisma.ConversationListRelationFilter
@@ -508,6 +511,7 @@ export type UserCreateInput = {
   Authenticator?: Prisma.AuthenticatorCreateNestedManyWithoutUserInput
   createdGroupChallenges?: Prisma.GroupChallengeCreateNestedManyWithoutTeacherInput
   challengeParticipations?: Prisma.ChallengeParticipantCreateNestedManyWithoutStudentInput
+  challengeInvitations?: Prisma.ChallengeInvitationCreateNestedManyWithoutStudentInput
   studentConversations?: Prisma.ConversationCreateNestedManyWithoutStudentInput
   teacherConversations?: Prisma.ConversationCreateNestedManyWithoutTeacherInput
   adminConversations?: Prisma.ConversationCreateNestedManyWithoutAdminInput
@@ -544,6 +548,7 @@ export type UserUncheckedCreateInput = {
   Authenticator?: Prisma.AuthenticatorUncheckedCreateNestedManyWithoutUserInput
   createdGroupChallenges?: Prisma.GroupChallengeUncheckedCreateNestedManyWithoutTeacherInput
   challengeParticipations?: Prisma.ChallengeParticipantUncheckedCreateNestedManyWithoutStudentInput
+  challengeInvitations?: Prisma.ChallengeInvitationUncheckedCreateNestedManyWithoutStudentInput
   studentConversations?: Prisma.ConversationUncheckedCreateNestedManyWithoutStudentInput
   teacherConversations?: Prisma.ConversationUncheckedCreateNestedManyWithoutTeacherInput
   adminConversations?: Prisma.ConversationUncheckedCreateNestedManyWithoutAdminInput
@@ -580,6 +585,7 @@ export type UserUpdateInput = {
   Authenticator?: Prisma.AuthenticatorUpdateManyWithoutUserNestedInput
   createdGroupChallenges?: Prisma.GroupChallengeUpdateManyWithoutTeacherNestedInput
   challengeParticipations?: Prisma.ChallengeParticipantUpdateManyWithoutStudentNestedInput
+  challengeInvitations?: Prisma.ChallengeInvitationUpdateManyWithoutStudentNestedInput
   studentConversations?: Prisma.ConversationUpdateManyWithoutStudentNestedInput
   teacherConversations?: Prisma.ConversationUpdateManyWithoutTeacherNestedInput
   adminConversations?: Prisma.ConversationUpdateManyWithoutAdminNestedInput
@@ -616,6 +622,7 @@ export type UserUncheckedUpdateInput = {
   Authenticator?: Prisma.AuthenticatorUncheckedUpdateManyWithoutUserNestedInput
   createdGroupChallenges?: Prisma.GroupChallengeUncheckedUpdateManyWithoutTeacherNestedInput
   challengeParticipations?: Prisma.ChallengeParticipantUncheckedUpdateManyWithoutStudentNestedInput
+  challengeInvitations?: Prisma.ChallengeInvitationUncheckedUpdateManyWithoutStudentNestedInput
   studentConversations?: Prisma.ConversationUncheckedUpdateManyWithoutStudentNestedInput
   teacherConversations?: Prisma.ConversationUncheckedUpdateManyWithoutTeacherNestedInput
   adminConversations?: Prisma.ConversationUncheckedUpdateManyWithoutAdminNestedInput
@@ -1021,6 +1028,20 @@ export type UserUpdateOneRequiredWithoutChallengeParticipationsNestedInput = {
   update?: Prisma.XOR<Prisma.XOR<Prisma.UserUpdateToOneWithWhereWithoutChallengeParticipationsInput, Prisma.UserUpdateWithoutChallengeParticipationsInput>, Prisma.UserUncheckedUpdateWithoutChallengeParticipationsInput>
 }
 
+export type UserCreateNestedOneWithoutChallengeInvitationsInput = {
+  create?: Prisma.XOR<Prisma.UserCreateWithoutChallengeInvitationsInput, Prisma.UserUncheckedCreateWithoutChallengeInvitationsInput>
+  connectOrCreate?: Prisma.UserCreateOrConnectWithoutChallengeInvitationsInput
+  connect?: Prisma.UserWhereUniqueInput
+}
+
+export type UserUpdateOneRequiredWithoutChallengeInvitationsNestedInput = {
+  create?: Prisma.XOR<Prisma.UserCreateWithoutChallengeInvitationsInput, Prisma.UserUncheckedCreateWithoutChallengeInvitationsInput>
+  connectOrCreate?: Prisma.UserCreateOrConnectWithoutChallengeInvitationsInput
+  upsert?: Prisma.UserUpsertWithoutChallengeInvitationsInput
+  connect?: Prisma.UserWhereUniqueInput
+  update?: Prisma.XOR<Prisma.XOR<Prisma.UserUpdateToOneWithWhereWithoutChallengeInvitationsInput, Prisma.UserUpdateWithoutChallengeInvitationsInput>, Prisma.UserUncheckedUpdateWithoutChallengeInvitationsInput>
+}
+
 export type UserCreateWithoutAccountsInput = {
   id?: string
   name?: string | null
@@ -1045,6 +1066,7 @@ export type UserCreateWithoutAccountsInput = {
   Authenticator?: Prisma.AuthenticatorCreateNestedManyWithoutUserInput
   createdGroupChallenges?: Prisma.GroupChallengeCreateNestedManyWithoutTeacherInput
   challengeParticipations?: Prisma.ChallengeParticipantCreateNestedManyWithoutStudentInput
+  challengeInvitations?: Prisma.ChallengeInvitationCreateNestedManyWithoutStudentInput
   studentConversations?: Prisma.ConversationCreateNestedManyWithoutStudentInput
   teacherConversations?: Prisma.ConversationCreateNestedManyWithoutTeacherInput
   adminConversations?: Prisma.ConversationCreateNestedManyWithoutAdminInput
@@ -1080,6 +1102,7 @@ export type UserUncheckedCreateWithoutAccountsInput = {
   Authenticator?: Prisma.AuthenticatorUncheckedCreateNestedManyWithoutUserInput
   createdGroupChallenges?: Prisma.GroupChallengeUncheckedCreateNestedManyWithoutTeacherInput
   challengeParticipations?: Prisma.ChallengeParticipantUncheckedCreateNestedManyWithoutStudentInput
+  challengeInvitations?: Prisma.ChallengeInvitationUncheckedCreateNestedManyWithoutStudentInput
   studentConversations?: Prisma.ConversationUncheckedCreateNestedManyWithoutStudentInput
   teacherConversations?: Prisma.ConversationUncheckedCreateNestedManyWithoutTeacherInput
   adminConversations?: Prisma.ConversationUncheckedCreateNestedManyWithoutAdminInput
@@ -1131,6 +1154,7 @@ export type UserUpdateWithoutAccountsInput = {
   Authenticator?: Prisma.AuthenticatorUpdateManyWithoutUserNestedInput
   createdGroupChallenges?: Prisma.GroupChallengeUpdateManyWithoutTeacherNestedInput
   challengeParticipations?: Prisma.ChallengeParticipantUpdateManyWithoutStudentNestedInput
+  challengeInvitations?: Prisma.ChallengeInvitationUpdateManyWithoutStudentNestedInput
   studentConversations?: Prisma.ConversationUpdateManyWithoutStudentNestedInput
   teacherConversations?: Prisma.ConversationUpdateManyWithoutTeacherNestedInput
   adminConversations?: Prisma.ConversationUpdateManyWithoutAdminNestedInput
@@ -1166,6 +1190,7 @@ export type UserUncheckedUpdateWithoutAccountsInput = {
   Authenticator?: Prisma.AuthenticatorUncheckedUpdateManyWithoutUserNestedInput
   createdGroupChallenges?: Prisma.GroupChallengeUncheckedUpdateManyWithoutTeacherNestedInput
   challengeParticipations?: Prisma.ChallengeParticipantUncheckedUpdateManyWithoutStudentNestedInput
+  challengeInvitations?: Prisma.ChallengeInvitationUncheckedUpdateManyWithoutStudentNestedInput
   studentConversations?: Prisma.ConversationUncheckedUpdateManyWithoutStudentNestedInput
   teacherConversations?: Prisma.ConversationUncheckedUpdateManyWithoutTeacherNestedInput
   adminConversations?: Prisma.ConversationUncheckedUpdateManyWithoutAdminNestedInput
@@ -1201,6 +1226,7 @@ export type UserCreateWithoutSessionsInput = {
   Authenticator?: Prisma.AuthenticatorCreateNestedManyWithoutUserInput
   createdGroupChallenges?: Prisma.GroupChallengeCreateNestedManyWithoutTeacherInput
   challengeParticipations?: Prisma.ChallengeParticipantCreateNestedManyWithoutStudentInput
+  challengeInvitations?: Prisma.ChallengeInvitationCreateNestedManyWithoutStudentInput
   studentConversations?: Prisma.ConversationCreateNestedManyWithoutStudentInput
   teacherConversations?: Prisma.ConversationCreateNestedManyWithoutTeacherInput
   adminConversations?: Prisma.ConversationCreateNestedManyWithoutAdminInput
@@ -1236,6 +1262,7 @@ export type UserUncheckedCreateWithoutSessionsInput = {
   Authenticator?: Prisma.AuthenticatorUncheckedCreateNestedManyWithoutUserInput
   createdGroupChallenges?: Prisma.GroupChallengeUncheckedCreateNestedManyWithoutTeacherInput
   challengeParticipations?: Prisma.ChallengeParticipantUncheckedCreateNestedManyWithoutStudentInput
+  challengeInvitations?: Prisma.ChallengeInvitationUncheckedCreateNestedManyWithoutStudentInput
   studentConversations?: Prisma.ConversationUncheckedCreateNestedManyWithoutStudentInput
   teacherConversations?: Prisma.ConversationUncheckedCreateNestedManyWithoutTeacherInput
   adminConversations?: Prisma.ConversationUncheckedCreateNestedManyWithoutAdminInput
@@ -1287,6 +1314,7 @@ export type UserUpdateWithoutSessionsInput = {
   Authenticator?: Prisma.AuthenticatorUpdateManyWithoutUserNestedInput
   createdGroupChallenges?: Prisma.GroupChallengeUpdateManyWithoutTeacherNestedInput
   challengeParticipations?: Prisma.ChallengeParticipantUpdateManyWithoutStudentNestedInput
+  challengeInvitations?: Prisma.ChallengeInvitationUpdateManyWithoutStudentNestedInput
   studentConversations?: Prisma.ConversationUpdateManyWithoutStudentNestedInput
   teacherConversations?: Prisma.ConversationUpdateManyWithoutTeacherNestedInput
   adminConversations?: Prisma.ConversationUpdateManyWithoutAdminNestedInput
@@ -1322,6 +1350,7 @@ export type UserUncheckedUpdateWithoutSessionsInput = {
   Authenticator?: Prisma.AuthenticatorUncheckedUpdateManyWithoutUserNestedInput
   createdGroupChallenges?: Prisma.GroupChallengeUncheckedUpdateManyWithoutTeacherNestedInput
   challengeParticipations?: Prisma.ChallengeParticipantUncheckedUpdateManyWithoutStudentNestedInput
+  challengeInvitations?: Prisma.ChallengeInvitationUncheckedUpdateManyWithoutStudentNestedInput
   studentConversations?: Prisma.ConversationUncheckedUpdateManyWithoutStudentNestedInput
   teacherConversations?: Prisma.ConversationUncheckedUpdateManyWithoutTeacherNestedInput
   adminConversations?: Prisma.ConversationUncheckedUpdateManyWithoutAdminNestedInput
@@ -1357,6 +1386,7 @@ export type UserCreateWithoutAuthenticatorInput = {
   sessions?: Prisma.SessionCreateNestedManyWithoutUserInput
   createdGroupChallenges?: Prisma.GroupChallengeCreateNestedManyWithoutTeacherInput
   challengeParticipations?: Prisma.ChallengeParticipantCreateNestedManyWithoutStudentInput
+  challengeInvitations?: Prisma.ChallengeInvitationCreateNestedManyWithoutStudentInput
   studentConversations?: Prisma.ConversationCreateNestedManyWithoutStudentInput
   teacherConversations?: Prisma.ConversationCreateNestedManyWithoutTeacherInput
   adminConversations?: Prisma.ConversationCreateNestedManyWithoutAdminInput
@@ -1392,6 +1422,7 @@ export type UserUncheckedCreateWithoutAuthenticatorInput = {
   sessions?: Prisma.SessionUncheckedCreateNestedManyWithoutUserInput
   createdGroupChallenges?: Prisma.GroupChallengeUncheckedCreateNestedManyWithoutTeacherInput
   challengeParticipations?: Prisma.ChallengeParticipantUncheckedCreateNestedManyWithoutStudentInput
+  challengeInvitations?: Prisma.ChallengeInvitationUncheckedCreateNestedManyWithoutStudentInput
   studentConversations?: Prisma.ConversationUncheckedCreateNestedManyWithoutStudentInput
   teacherConversations?: Prisma.ConversationUncheckedCreateNestedManyWithoutTeacherInput
   adminConversations?: Prisma.ConversationUncheckedCreateNestedManyWithoutAdminInput
@@ -1443,6 +1474,7 @@ export type UserUpdateWithoutAuthenticatorInput = {
   sessions?: Prisma.SessionUpdateManyWithoutUserNestedInput
   createdGroupChallenges?: Prisma.GroupChallengeUpdateManyWithoutTeacherNestedInput
   challengeParticipations?: Prisma.ChallengeParticipantUpdateManyWithoutStudentNestedInput
+  challengeInvitations?: Prisma.ChallengeInvitationUpdateManyWithoutStudentNestedInput
   studentConversations?: Prisma.ConversationUpdateManyWithoutStudentNestedInput
   teacherConversations?: Prisma.ConversationUpdateManyWithoutTeacherNestedInput
   adminConversations?: Prisma.ConversationUpdateManyWithoutAdminNestedInput
@@ -1478,6 +1510,7 @@ export type UserUncheckedUpdateWithoutAuthenticatorInput = {
   sessions?: Prisma.SessionUncheckedUpdateManyWithoutUserNestedInput
   createdGroupChallenges?: Prisma.GroupChallengeUncheckedUpdateManyWithoutTeacherNestedInput
   challengeParticipations?: Prisma.ChallengeParticipantUncheckedUpdateManyWithoutStudentNestedInput
+  challengeInvitations?: Prisma.ChallengeInvitationUncheckedUpdateManyWithoutStudentNestedInput
   studentConversations?: Prisma.ConversationUncheckedUpdateManyWithoutStudentNestedInput
   teacherConversations?: Prisma.ConversationUncheckedUpdateManyWithoutTeacherNestedInput
   adminConversations?: Prisma.ConversationUncheckedUpdateManyWithoutAdminNestedInput
@@ -1514,6 +1547,7 @@ export type UserCreateWithoutCoursesTeachingInput = {
   Authenticator?: Prisma.AuthenticatorCreateNestedManyWithoutUserInput
   createdGroupChallenges?: Prisma.GroupChallengeCreateNestedManyWithoutTeacherInput
   challengeParticipations?: Prisma.ChallengeParticipantCreateNestedManyWithoutStudentInput
+  challengeInvitations?: Prisma.ChallengeInvitationCreateNestedManyWithoutStudentInput
   studentConversations?: Prisma.ConversationCreateNestedManyWithoutStudentInput
   teacherConversations?: Prisma.ConversationCreateNestedManyWithoutTeacherInput
   adminConversations?: Prisma.ConversationCreateNestedManyWithoutAdminInput
@@ -1549,6 +1583,7 @@ export type UserUncheckedCreateWithoutCoursesTeachingInput = {
   Authenticator?: Prisma.AuthenticatorUncheckedCreateNestedManyWithoutUserInput
   createdGroupChallenges?: Prisma.GroupChallengeUncheckedCreateNestedManyWithoutTeacherInput
   challengeParticipations?: Prisma.ChallengeParticipantUncheckedCreateNestedManyWithoutStudentInput
+  challengeInvitations?: Prisma.ChallengeInvitationUncheckedCreateNestedManyWithoutStudentInput
   studentConversations?: Prisma.ConversationUncheckedCreateNestedManyWithoutStudentInput
   teacherConversations?: Prisma.ConversationUncheckedCreateNestedManyWithoutTeacherInput
   adminConversations?: Prisma.ConversationUncheckedCreateNestedManyWithoutAdminInput
@@ -1600,6 +1635,7 @@ export type UserUpdateWithoutCoursesTeachingInput = {
   Authenticator?: Prisma.AuthenticatorUpdateManyWithoutUserNestedInput
   createdGroupChallenges?: Prisma.GroupChallengeUpdateManyWithoutTeacherNestedInput
   challengeParticipations?: Prisma.ChallengeParticipantUpdateManyWithoutStudentNestedInput
+  challengeInvitations?: Prisma.ChallengeInvitationUpdateManyWithoutStudentNestedInput
   studentConversations?: Prisma.ConversationUpdateManyWithoutStudentNestedInput
   teacherConversations?: Prisma.ConversationUpdateManyWithoutTeacherNestedInput
   adminConversations?: Prisma.ConversationUpdateManyWithoutAdminNestedInput
@@ -1635,6 +1671,7 @@ export type UserUncheckedUpdateWithoutCoursesTeachingInput = {
   Authenticator?: Prisma.AuthenticatorUncheckedUpdateManyWithoutUserNestedInput
   createdGroupChallenges?: Prisma.GroupChallengeUncheckedUpdateManyWithoutTeacherNestedInput
   challengeParticipations?: Prisma.ChallengeParticipantUncheckedUpdateManyWithoutStudentNestedInput
+  challengeInvitations?: Prisma.ChallengeInvitationUncheckedUpdateManyWithoutStudentNestedInput
   studentConversations?: Prisma.ConversationUncheckedUpdateManyWithoutStudentNestedInput
   teacherConversations?: Prisma.ConversationUncheckedUpdateManyWithoutTeacherNestedInput
   adminConversations?: Prisma.ConversationUncheckedUpdateManyWithoutAdminNestedInput
@@ -1670,6 +1707,7 @@ export type UserCreateWithoutProgressInput = {
   Authenticator?: Prisma.AuthenticatorCreateNestedManyWithoutUserInput
   createdGroupChallenges?: Prisma.GroupChallengeCreateNestedManyWithoutTeacherInput
   challengeParticipations?: Prisma.ChallengeParticipantCreateNestedManyWithoutStudentInput
+  challengeInvitations?: Prisma.ChallengeInvitationCreateNestedManyWithoutStudentInput
   studentConversations?: Prisma.ConversationCreateNestedManyWithoutStudentInput
   teacherConversations?: Prisma.ConversationCreateNestedManyWithoutTeacherInput
   adminConversations?: Prisma.ConversationCreateNestedManyWithoutAdminInput
@@ -1705,6 +1743,7 @@ export type UserUncheckedCreateWithoutProgressInput = {
   Authenticator?: Prisma.AuthenticatorUncheckedCreateNestedManyWithoutUserInput
   createdGroupChallenges?: Prisma.GroupChallengeUncheckedCreateNestedManyWithoutTeacherInput
   challengeParticipations?: Prisma.ChallengeParticipantUncheckedCreateNestedManyWithoutStudentInput
+  challengeInvitations?: Prisma.ChallengeInvitationUncheckedCreateNestedManyWithoutStudentInput
   studentConversations?: Prisma.ConversationUncheckedCreateNestedManyWithoutStudentInput
   teacherConversations?: Prisma.ConversationUncheckedCreateNestedManyWithoutTeacherInput
   adminConversations?: Prisma.ConversationUncheckedCreateNestedManyWithoutAdminInput
@@ -1756,6 +1795,7 @@ export type UserUpdateWithoutProgressInput = {
   Authenticator?: Prisma.AuthenticatorUpdateManyWithoutUserNestedInput
   createdGroupChallenges?: Prisma.GroupChallengeUpdateManyWithoutTeacherNestedInput
   challengeParticipations?: Prisma.ChallengeParticipantUpdateManyWithoutStudentNestedInput
+  challengeInvitations?: Prisma.ChallengeInvitationUpdateManyWithoutStudentNestedInput
   studentConversations?: Prisma.ConversationUpdateManyWithoutStudentNestedInput
   teacherConversations?: Prisma.ConversationUpdateManyWithoutTeacherNestedInput
   adminConversations?: Prisma.ConversationUpdateManyWithoutAdminNestedInput
@@ -1791,6 +1831,7 @@ export type UserUncheckedUpdateWithoutProgressInput = {
   Authenticator?: Prisma.AuthenticatorUncheckedUpdateManyWithoutUserNestedInput
   createdGroupChallenges?: Prisma.GroupChallengeUncheckedUpdateManyWithoutTeacherNestedInput
   challengeParticipations?: Prisma.ChallengeParticipantUncheckedUpdateManyWithoutStudentNestedInput
+  challengeInvitations?: Prisma.ChallengeInvitationUncheckedUpdateManyWithoutStudentNestedInput
   studentConversations?: Prisma.ConversationUncheckedUpdateManyWithoutStudentNestedInput
   teacherConversations?: Prisma.ConversationUncheckedUpdateManyWithoutTeacherNestedInput
   adminConversations?: Prisma.ConversationUncheckedUpdateManyWithoutAdminNestedInput
@@ -1826,6 +1867,7 @@ export type UserCreateWithoutEnrollmentsInput = {
   Authenticator?: Prisma.AuthenticatorCreateNestedManyWithoutUserInput
   createdGroupChallenges?: Prisma.GroupChallengeCreateNestedManyWithoutTeacherInput
   challengeParticipations?: Prisma.ChallengeParticipantCreateNestedManyWithoutStudentInput
+  challengeInvitations?: Prisma.ChallengeInvitationCreateNestedManyWithoutStudentInput
   studentConversations?: Prisma.ConversationCreateNestedManyWithoutStudentInput
   teacherConversations?: Prisma.ConversationCreateNestedManyWithoutTeacherInput
   adminConversations?: Prisma.ConversationCreateNestedManyWithoutAdminInput
@@ -1861,6 +1903,7 @@ export type UserUncheckedCreateWithoutEnrollmentsInput = {
   Authenticator?: Prisma.AuthenticatorUncheckedCreateNestedManyWithoutUserInput
   createdGroupChallenges?: Prisma.GroupChallengeUncheckedCreateNestedManyWithoutTeacherInput
   challengeParticipations?: Prisma.ChallengeParticipantUncheckedCreateNestedManyWithoutStudentInput
+  challengeInvitations?: Prisma.ChallengeInvitationUncheckedCreateNestedManyWithoutStudentInput
   studentConversations?: Prisma.ConversationUncheckedCreateNestedManyWithoutStudentInput
   teacherConversations?: Prisma.ConversationUncheckedCreateNestedManyWithoutTeacherInput
   adminConversations?: Prisma.ConversationUncheckedCreateNestedManyWithoutAdminInput
@@ -1912,6 +1955,7 @@ export type UserUpdateWithoutEnrollmentsInput = {
   Authenticator?: Prisma.AuthenticatorUpdateManyWithoutUserNestedInput
   createdGroupChallenges?: Prisma.GroupChallengeUpdateManyWithoutTeacherNestedInput
   challengeParticipations?: Prisma.ChallengeParticipantUpdateManyWithoutStudentNestedInput
+  challengeInvitations?: Prisma.ChallengeInvitationUpdateManyWithoutStudentNestedInput
   studentConversations?: Prisma.ConversationUpdateManyWithoutStudentNestedInput
   teacherConversations?: Prisma.ConversationUpdateManyWithoutTeacherNestedInput
   adminConversations?: Prisma.ConversationUpdateManyWithoutAdminNestedInput
@@ -1947,6 +1991,7 @@ export type UserUncheckedUpdateWithoutEnrollmentsInput = {
   Authenticator?: Prisma.AuthenticatorUncheckedUpdateManyWithoutUserNestedInput
   createdGroupChallenges?: Prisma.GroupChallengeUncheckedUpdateManyWithoutTeacherNestedInput
   challengeParticipations?: Prisma.ChallengeParticipantUncheckedUpdateManyWithoutStudentNestedInput
+  challengeInvitations?: Prisma.ChallengeInvitationUncheckedUpdateManyWithoutStudentNestedInput
   studentConversations?: Prisma.ConversationUncheckedUpdateManyWithoutStudentNestedInput
   teacherConversations?: Prisma.ConversationUncheckedUpdateManyWithoutTeacherNestedInput
   adminConversations?: Prisma.ConversationUncheckedUpdateManyWithoutAdminNestedInput
@@ -1982,6 +2027,7 @@ export type UserCreateWithoutLeaderboardInput = {
   Authenticator?: Prisma.AuthenticatorCreateNestedManyWithoutUserInput
   createdGroupChallenges?: Prisma.GroupChallengeCreateNestedManyWithoutTeacherInput
   challengeParticipations?: Prisma.ChallengeParticipantCreateNestedManyWithoutStudentInput
+  challengeInvitations?: Prisma.ChallengeInvitationCreateNestedManyWithoutStudentInput
   studentConversations?: Prisma.ConversationCreateNestedManyWithoutStudentInput
   teacherConversations?: Prisma.ConversationCreateNestedManyWithoutTeacherInput
   adminConversations?: Prisma.ConversationCreateNestedManyWithoutAdminInput
@@ -2017,6 +2063,7 @@ export type UserUncheckedCreateWithoutLeaderboardInput = {
   Authenticator?: Prisma.AuthenticatorUncheckedCreateNestedManyWithoutUserInput
   createdGroupChallenges?: Prisma.GroupChallengeUncheckedCreateNestedManyWithoutTeacherInput
   challengeParticipations?: Prisma.ChallengeParticipantUncheckedCreateNestedManyWithoutStudentInput
+  challengeInvitations?: Prisma.ChallengeInvitationUncheckedCreateNestedManyWithoutStudentInput
   studentConversations?: Prisma.ConversationUncheckedCreateNestedManyWithoutStudentInput
   teacherConversations?: Prisma.ConversationUncheckedCreateNestedManyWithoutTeacherInput
   adminConversations?: Prisma.ConversationUncheckedCreateNestedManyWithoutAdminInput
@@ -2068,6 +2115,7 @@ export type UserUpdateWithoutLeaderboardInput = {
   Authenticator?: Prisma.AuthenticatorUpdateManyWithoutUserNestedInput
   createdGroupChallenges?: Prisma.GroupChallengeUpdateManyWithoutTeacherNestedInput
   challengeParticipations?: Prisma.ChallengeParticipantUpdateManyWithoutStudentNestedInput
+  challengeInvitations?: Prisma.ChallengeInvitationUpdateManyWithoutStudentNestedInput
   studentConversations?: Prisma.ConversationUpdateManyWithoutStudentNestedInput
   teacherConversations?: Prisma.ConversationUpdateManyWithoutTeacherNestedInput
   adminConversations?: Prisma.ConversationUpdateManyWithoutAdminNestedInput
@@ -2103,6 +2151,7 @@ export type UserUncheckedUpdateWithoutLeaderboardInput = {
   Authenticator?: Prisma.AuthenticatorUncheckedUpdateManyWithoutUserNestedInput
   createdGroupChallenges?: Prisma.GroupChallengeUncheckedUpdateManyWithoutTeacherNestedInput
   challengeParticipations?: Prisma.ChallengeParticipantUncheckedUpdateManyWithoutStudentNestedInput
+  challengeInvitations?: Prisma.ChallengeInvitationUncheckedUpdateManyWithoutStudentNestedInput
   studentConversations?: Prisma.ConversationUncheckedUpdateManyWithoutStudentNestedInput
   teacherConversations?: Prisma.ConversationUncheckedUpdateManyWithoutTeacherNestedInput
   adminConversations?: Prisma.ConversationUncheckedUpdateManyWithoutAdminNestedInput
@@ -2138,6 +2187,7 @@ export type UserCreateWithoutPlacementResultsInput = {
   Authenticator?: Prisma.AuthenticatorCreateNestedManyWithoutUserInput
   createdGroupChallenges?: Prisma.GroupChallengeCreateNestedManyWithoutTeacherInput
   challengeParticipations?: Prisma.ChallengeParticipantCreateNestedManyWithoutStudentInput
+  challengeInvitations?: Prisma.ChallengeInvitationCreateNestedManyWithoutStudentInput
   studentConversations?: Prisma.ConversationCreateNestedManyWithoutStudentInput
   teacherConversations?: Prisma.ConversationCreateNestedManyWithoutTeacherInput
   adminConversations?: Prisma.ConversationCreateNestedManyWithoutAdminInput
@@ -2173,6 +2223,7 @@ export type UserUncheckedCreateWithoutPlacementResultsInput = {
   Authenticator?: Prisma.AuthenticatorUncheckedCreateNestedManyWithoutUserInput
   createdGroupChallenges?: Prisma.GroupChallengeUncheckedCreateNestedManyWithoutTeacherInput
   challengeParticipations?: Prisma.ChallengeParticipantUncheckedCreateNestedManyWithoutStudentInput
+  challengeInvitations?: Prisma.ChallengeInvitationUncheckedCreateNestedManyWithoutStudentInput
   studentConversations?: Prisma.ConversationUncheckedCreateNestedManyWithoutStudentInput
   teacherConversations?: Prisma.ConversationUncheckedCreateNestedManyWithoutTeacherInput
   adminConversations?: Prisma.ConversationUncheckedCreateNestedManyWithoutAdminInput
@@ -2224,6 +2275,7 @@ export type UserUpdateWithoutPlacementResultsInput = {
   Authenticator?: Prisma.AuthenticatorUpdateManyWithoutUserNestedInput
   createdGroupChallenges?: Prisma.GroupChallengeUpdateManyWithoutTeacherNestedInput
   challengeParticipations?: Prisma.ChallengeParticipantUpdateManyWithoutStudentNestedInput
+  challengeInvitations?: Prisma.ChallengeInvitationUpdateManyWithoutStudentNestedInput
   studentConversations?: Prisma.ConversationUpdateManyWithoutStudentNestedInput
   teacherConversations?: Prisma.ConversationUpdateManyWithoutTeacherNestedInput
   adminConversations?: Prisma.ConversationUpdateManyWithoutAdminNestedInput
@@ -2259,6 +2311,7 @@ export type UserUncheckedUpdateWithoutPlacementResultsInput = {
   Authenticator?: Prisma.AuthenticatorUncheckedUpdateManyWithoutUserNestedInput
   createdGroupChallenges?: Prisma.GroupChallengeUncheckedUpdateManyWithoutTeacherNestedInput
   challengeParticipations?: Prisma.ChallengeParticipantUncheckedUpdateManyWithoutStudentNestedInput
+  challengeInvitations?: Prisma.ChallengeInvitationUncheckedUpdateManyWithoutStudentNestedInput
   studentConversations?: Prisma.ConversationUncheckedUpdateManyWithoutStudentNestedInput
   teacherConversations?: Prisma.ConversationUncheckedUpdateManyWithoutTeacherNestedInput
   adminConversations?: Prisma.ConversationUncheckedUpdateManyWithoutAdminNestedInput
@@ -2294,6 +2347,7 @@ export type UserCreateWithoutStudentConversationsInput = {
   Authenticator?: Prisma.AuthenticatorCreateNestedManyWithoutUserInput
   createdGroupChallenges?: Prisma.GroupChallengeCreateNestedManyWithoutTeacherInput
   challengeParticipations?: Prisma.ChallengeParticipantCreateNestedManyWithoutStudentInput
+  challengeInvitations?: Prisma.ChallengeInvitationCreateNestedManyWithoutStudentInput
   teacherConversations?: Prisma.ConversationCreateNestedManyWithoutTeacherInput
   adminConversations?: Prisma.ConversationCreateNestedManyWithoutAdminInput
   sentMessages?: Prisma.MessageCreateNestedManyWithoutSenderInput
@@ -2329,6 +2383,7 @@ export type UserUncheckedCreateWithoutStudentConversationsInput = {
   Authenticator?: Prisma.AuthenticatorUncheckedCreateNestedManyWithoutUserInput
   createdGroupChallenges?: Prisma.GroupChallengeUncheckedCreateNestedManyWithoutTeacherInput
   challengeParticipations?: Prisma.ChallengeParticipantUncheckedCreateNestedManyWithoutStudentInput
+  challengeInvitations?: Prisma.ChallengeInvitationUncheckedCreateNestedManyWithoutStudentInput
   teacherConversations?: Prisma.ConversationUncheckedCreateNestedManyWithoutTeacherInput
   adminConversations?: Prisma.ConversationUncheckedCreateNestedManyWithoutAdminInput
   sentMessages?: Prisma.MessageUncheckedCreateNestedManyWithoutSenderInput
@@ -2369,6 +2424,7 @@ export type UserCreateWithoutTeacherConversationsInput = {
   Authenticator?: Prisma.AuthenticatorCreateNestedManyWithoutUserInput
   createdGroupChallenges?: Prisma.GroupChallengeCreateNestedManyWithoutTeacherInput
   challengeParticipations?: Prisma.ChallengeParticipantCreateNestedManyWithoutStudentInput
+  challengeInvitations?: Prisma.ChallengeInvitationCreateNestedManyWithoutStudentInput
   studentConversations?: Prisma.ConversationCreateNestedManyWithoutStudentInput
   adminConversations?: Prisma.ConversationCreateNestedManyWithoutAdminInput
   sentMessages?: Prisma.MessageCreateNestedManyWithoutSenderInput
@@ -2404,6 +2460,7 @@ export type UserUncheckedCreateWithoutTeacherConversationsInput = {
   Authenticator?: Prisma.AuthenticatorUncheckedCreateNestedManyWithoutUserInput
   createdGroupChallenges?: Prisma.GroupChallengeUncheckedCreateNestedManyWithoutTeacherInput
   challengeParticipations?: Prisma.ChallengeParticipantUncheckedCreateNestedManyWithoutStudentInput
+  challengeInvitations?: Prisma.ChallengeInvitationUncheckedCreateNestedManyWithoutStudentInput
   studentConversations?: Prisma.ConversationUncheckedCreateNestedManyWithoutStudentInput
   adminConversations?: Prisma.ConversationUncheckedCreateNestedManyWithoutAdminInput
   sentMessages?: Prisma.MessageUncheckedCreateNestedManyWithoutSenderInput
@@ -2444,6 +2501,7 @@ export type UserCreateWithoutAdminConversationsInput = {
   Authenticator?: Prisma.AuthenticatorCreateNestedManyWithoutUserInput
   createdGroupChallenges?: Prisma.GroupChallengeCreateNestedManyWithoutTeacherInput
   challengeParticipations?: Prisma.ChallengeParticipantCreateNestedManyWithoutStudentInput
+  challengeInvitations?: Prisma.ChallengeInvitationCreateNestedManyWithoutStudentInput
   studentConversations?: Prisma.ConversationCreateNestedManyWithoutStudentInput
   teacherConversations?: Prisma.ConversationCreateNestedManyWithoutTeacherInput
   sentMessages?: Prisma.MessageCreateNestedManyWithoutSenderInput
@@ -2479,6 +2537,7 @@ export type UserUncheckedCreateWithoutAdminConversationsInput = {
   Authenticator?: Prisma.AuthenticatorUncheckedCreateNestedManyWithoutUserInput
   createdGroupChallenges?: Prisma.GroupChallengeUncheckedCreateNestedManyWithoutTeacherInput
   challengeParticipations?: Prisma.ChallengeParticipantUncheckedCreateNestedManyWithoutStudentInput
+  challengeInvitations?: Prisma.ChallengeInvitationUncheckedCreateNestedManyWithoutStudentInput
   studentConversations?: Prisma.ConversationUncheckedCreateNestedManyWithoutStudentInput
   teacherConversations?: Prisma.ConversationUncheckedCreateNestedManyWithoutTeacherInput
   sentMessages?: Prisma.MessageUncheckedCreateNestedManyWithoutSenderInput
@@ -2530,6 +2589,7 @@ export type UserUpdateWithoutStudentConversationsInput = {
   Authenticator?: Prisma.AuthenticatorUpdateManyWithoutUserNestedInput
   createdGroupChallenges?: Prisma.GroupChallengeUpdateManyWithoutTeacherNestedInput
   challengeParticipations?: Prisma.ChallengeParticipantUpdateManyWithoutStudentNestedInput
+  challengeInvitations?: Prisma.ChallengeInvitationUpdateManyWithoutStudentNestedInput
   teacherConversations?: Prisma.ConversationUpdateManyWithoutTeacherNestedInput
   adminConversations?: Prisma.ConversationUpdateManyWithoutAdminNestedInput
   sentMessages?: Prisma.MessageUpdateManyWithoutSenderNestedInput
@@ -2565,6 +2625,7 @@ export type UserUncheckedUpdateWithoutStudentConversationsInput = {
   Authenticator?: Prisma.AuthenticatorUncheckedUpdateManyWithoutUserNestedInput
   createdGroupChallenges?: Prisma.GroupChallengeUncheckedUpdateManyWithoutTeacherNestedInput
   challengeParticipations?: Prisma.ChallengeParticipantUncheckedUpdateManyWithoutStudentNestedInput
+  challengeInvitations?: Prisma.ChallengeInvitationUncheckedUpdateManyWithoutStudentNestedInput
   teacherConversations?: Prisma.ConversationUncheckedUpdateManyWithoutTeacherNestedInput
   adminConversations?: Prisma.ConversationUncheckedUpdateManyWithoutAdminNestedInput
   sentMessages?: Prisma.MessageUncheckedUpdateManyWithoutSenderNestedInput
@@ -2611,6 +2672,7 @@ export type UserUpdateWithoutTeacherConversationsInput = {
   Authenticator?: Prisma.AuthenticatorUpdateManyWithoutUserNestedInput
   createdGroupChallenges?: Prisma.GroupChallengeUpdateManyWithoutTeacherNestedInput
   challengeParticipations?: Prisma.ChallengeParticipantUpdateManyWithoutStudentNestedInput
+  challengeInvitations?: Prisma.ChallengeInvitationUpdateManyWithoutStudentNestedInput
   studentConversations?: Prisma.ConversationUpdateManyWithoutStudentNestedInput
   adminConversations?: Prisma.ConversationUpdateManyWithoutAdminNestedInput
   sentMessages?: Prisma.MessageUpdateManyWithoutSenderNestedInput
@@ -2646,6 +2708,7 @@ export type UserUncheckedUpdateWithoutTeacherConversationsInput = {
   Authenticator?: Prisma.AuthenticatorUncheckedUpdateManyWithoutUserNestedInput
   createdGroupChallenges?: Prisma.GroupChallengeUncheckedUpdateManyWithoutTeacherNestedInput
   challengeParticipations?: Prisma.ChallengeParticipantUncheckedUpdateManyWithoutStudentNestedInput
+  challengeInvitations?: Prisma.ChallengeInvitationUncheckedUpdateManyWithoutStudentNestedInput
   studentConversations?: Prisma.ConversationUncheckedUpdateManyWithoutStudentNestedInput
   adminConversations?: Prisma.ConversationUncheckedUpdateManyWithoutAdminNestedInput
   sentMessages?: Prisma.MessageUncheckedUpdateManyWithoutSenderNestedInput
@@ -2692,6 +2755,7 @@ export type UserUpdateWithoutAdminConversationsInput = {
   Authenticator?: Prisma.AuthenticatorUpdateManyWithoutUserNestedInput
   createdGroupChallenges?: Prisma.GroupChallengeUpdateManyWithoutTeacherNestedInput
   challengeParticipations?: Prisma.ChallengeParticipantUpdateManyWithoutStudentNestedInput
+  challengeInvitations?: Prisma.ChallengeInvitationUpdateManyWithoutStudentNestedInput
   studentConversations?: Prisma.ConversationUpdateManyWithoutStudentNestedInput
   teacherConversations?: Prisma.ConversationUpdateManyWithoutTeacherNestedInput
   sentMessages?: Prisma.MessageUpdateManyWithoutSenderNestedInput
@@ -2727,6 +2791,7 @@ export type UserUncheckedUpdateWithoutAdminConversationsInput = {
   Authenticator?: Prisma.AuthenticatorUncheckedUpdateManyWithoutUserNestedInput
   createdGroupChallenges?: Prisma.GroupChallengeUncheckedUpdateManyWithoutTeacherNestedInput
   challengeParticipations?: Prisma.ChallengeParticipantUncheckedUpdateManyWithoutStudentNestedInput
+  challengeInvitations?: Prisma.ChallengeInvitationUncheckedUpdateManyWithoutStudentNestedInput
   studentConversations?: Prisma.ConversationUncheckedUpdateManyWithoutStudentNestedInput
   teacherConversations?: Prisma.ConversationUncheckedUpdateManyWithoutTeacherNestedInput
   sentMessages?: Prisma.MessageUncheckedUpdateManyWithoutSenderNestedInput
@@ -2762,6 +2827,7 @@ export type UserCreateWithoutSentMessagesInput = {
   Authenticator?: Prisma.AuthenticatorCreateNestedManyWithoutUserInput
   createdGroupChallenges?: Prisma.GroupChallengeCreateNestedManyWithoutTeacherInput
   challengeParticipations?: Prisma.ChallengeParticipantCreateNestedManyWithoutStudentInput
+  challengeInvitations?: Prisma.ChallengeInvitationCreateNestedManyWithoutStudentInput
   studentConversations?: Prisma.ConversationCreateNestedManyWithoutStudentInput
   teacherConversations?: Prisma.ConversationCreateNestedManyWithoutTeacherInput
   adminConversations?: Prisma.ConversationCreateNestedManyWithoutAdminInput
@@ -2797,6 +2863,7 @@ export type UserUncheckedCreateWithoutSentMessagesInput = {
   Authenticator?: Prisma.AuthenticatorUncheckedCreateNestedManyWithoutUserInput
   createdGroupChallenges?: Prisma.GroupChallengeUncheckedCreateNestedManyWithoutTeacherInput
   challengeParticipations?: Prisma.ChallengeParticipantUncheckedCreateNestedManyWithoutStudentInput
+  challengeInvitations?: Prisma.ChallengeInvitationUncheckedCreateNestedManyWithoutStudentInput
   studentConversations?: Prisma.ConversationUncheckedCreateNestedManyWithoutStudentInput
   teacherConversations?: Prisma.ConversationUncheckedCreateNestedManyWithoutTeacherInput
   adminConversations?: Prisma.ConversationUncheckedCreateNestedManyWithoutAdminInput
@@ -2848,6 +2915,7 @@ export type UserUpdateWithoutSentMessagesInput = {
   Authenticator?: Prisma.AuthenticatorUpdateManyWithoutUserNestedInput
   createdGroupChallenges?: Prisma.GroupChallengeUpdateManyWithoutTeacherNestedInput
   challengeParticipations?: Prisma.ChallengeParticipantUpdateManyWithoutStudentNestedInput
+  challengeInvitations?: Prisma.ChallengeInvitationUpdateManyWithoutStudentNestedInput
   studentConversations?: Prisma.ConversationUpdateManyWithoutStudentNestedInput
   teacherConversations?: Prisma.ConversationUpdateManyWithoutTeacherNestedInput
   adminConversations?: Prisma.ConversationUpdateManyWithoutAdminNestedInput
@@ -2883,6 +2951,7 @@ export type UserUncheckedUpdateWithoutSentMessagesInput = {
   Authenticator?: Prisma.AuthenticatorUncheckedUpdateManyWithoutUserNestedInput
   createdGroupChallenges?: Prisma.GroupChallengeUncheckedUpdateManyWithoutTeacherNestedInput
   challengeParticipations?: Prisma.ChallengeParticipantUncheckedUpdateManyWithoutStudentNestedInput
+  challengeInvitations?: Prisma.ChallengeInvitationUncheckedUpdateManyWithoutStudentNestedInput
   studentConversations?: Prisma.ConversationUncheckedUpdateManyWithoutStudentNestedInput
   teacherConversations?: Prisma.ConversationUncheckedUpdateManyWithoutTeacherNestedInput
   adminConversations?: Prisma.ConversationUncheckedUpdateManyWithoutAdminNestedInput
@@ -2917,6 +2986,7 @@ export type UserCreateWithoutCreatedGroupChallengesInput = {
   sessions?: Prisma.SessionCreateNestedManyWithoutUserInput
   Authenticator?: Prisma.AuthenticatorCreateNestedManyWithoutUserInput
   challengeParticipations?: Prisma.ChallengeParticipantCreateNestedManyWithoutStudentInput
+  challengeInvitations?: Prisma.ChallengeInvitationCreateNestedManyWithoutStudentInput
   studentConversations?: Prisma.ConversationCreateNestedManyWithoutStudentInput
   teacherConversations?: Prisma.ConversationCreateNestedManyWithoutTeacherInput
   adminConversations?: Prisma.ConversationCreateNestedManyWithoutAdminInput
@@ -2952,6 +3022,7 @@ export type UserUncheckedCreateWithoutCreatedGroupChallengesInput = {
   sessions?: Prisma.SessionUncheckedCreateNestedManyWithoutUserInput
   Authenticator?: Prisma.AuthenticatorUncheckedCreateNestedManyWithoutUserInput
   challengeParticipations?: Prisma.ChallengeParticipantUncheckedCreateNestedManyWithoutStudentInput
+  challengeInvitations?: Prisma.ChallengeInvitationUncheckedCreateNestedManyWithoutStudentInput
   studentConversations?: Prisma.ConversationUncheckedCreateNestedManyWithoutStudentInput
   teacherConversations?: Prisma.ConversationUncheckedCreateNestedManyWithoutTeacherInput
   adminConversations?: Prisma.ConversationUncheckedCreateNestedManyWithoutAdminInput
@@ -3003,6 +3074,7 @@ export type UserUpdateWithoutCreatedGroupChallengesInput = {
   sessions?: Prisma.SessionUpdateManyWithoutUserNestedInput
   Authenticator?: Prisma.AuthenticatorUpdateManyWithoutUserNestedInput
   challengeParticipations?: Prisma.ChallengeParticipantUpdateManyWithoutStudentNestedInput
+  challengeInvitations?: Prisma.ChallengeInvitationUpdateManyWithoutStudentNestedInput
   studentConversations?: Prisma.ConversationUpdateManyWithoutStudentNestedInput
   teacherConversations?: Prisma.ConversationUpdateManyWithoutTeacherNestedInput
   adminConversations?: Prisma.ConversationUpdateManyWithoutAdminNestedInput
@@ -3038,6 +3110,7 @@ export type UserUncheckedUpdateWithoutCreatedGroupChallengesInput = {
   sessions?: Prisma.SessionUncheckedUpdateManyWithoutUserNestedInput
   Authenticator?: Prisma.AuthenticatorUncheckedUpdateManyWithoutUserNestedInput
   challengeParticipations?: Prisma.ChallengeParticipantUncheckedUpdateManyWithoutStudentNestedInput
+  challengeInvitations?: Prisma.ChallengeInvitationUncheckedUpdateManyWithoutStudentNestedInput
   studentConversations?: Prisma.ConversationUncheckedUpdateManyWithoutStudentNestedInput
   teacherConversations?: Prisma.ConversationUncheckedUpdateManyWithoutTeacherNestedInput
   adminConversations?: Prisma.ConversationUncheckedUpdateManyWithoutAdminNestedInput
@@ -3073,6 +3146,7 @@ export type UserCreateWithoutChallengeParticipationsInput = {
   sessions?: Prisma.SessionCreateNestedManyWithoutUserInput
   Authenticator?: Prisma.AuthenticatorCreateNestedManyWithoutUserInput
   createdGroupChallenges?: Prisma.GroupChallengeCreateNestedManyWithoutTeacherInput
+  challengeInvitations?: Prisma.ChallengeInvitationCreateNestedManyWithoutStudentInput
   studentConversations?: Prisma.ConversationCreateNestedManyWithoutStudentInput
   teacherConversations?: Prisma.ConversationCreateNestedManyWithoutTeacherInput
   adminConversations?: Prisma.ConversationCreateNestedManyWithoutAdminInput
@@ -3108,6 +3182,7 @@ export type UserUncheckedCreateWithoutChallengeParticipationsInput = {
   sessions?: Prisma.SessionUncheckedCreateNestedManyWithoutUserInput
   Authenticator?: Prisma.AuthenticatorUncheckedCreateNestedManyWithoutUserInput
   createdGroupChallenges?: Prisma.GroupChallengeUncheckedCreateNestedManyWithoutTeacherInput
+  challengeInvitations?: Prisma.ChallengeInvitationUncheckedCreateNestedManyWithoutStudentInput
   studentConversations?: Prisma.ConversationUncheckedCreateNestedManyWithoutStudentInput
   teacherConversations?: Prisma.ConversationUncheckedCreateNestedManyWithoutTeacherInput
   adminConversations?: Prisma.ConversationUncheckedCreateNestedManyWithoutAdminInput
@@ -3159,6 +3234,7 @@ export type UserUpdateWithoutChallengeParticipationsInput = {
   sessions?: Prisma.SessionUpdateManyWithoutUserNestedInput
   Authenticator?: Prisma.AuthenticatorUpdateManyWithoutUserNestedInput
   createdGroupChallenges?: Prisma.GroupChallengeUpdateManyWithoutTeacherNestedInput
+  challengeInvitations?: Prisma.ChallengeInvitationUpdateManyWithoutStudentNestedInput
   studentConversations?: Prisma.ConversationUpdateManyWithoutStudentNestedInput
   teacherConversations?: Prisma.ConversationUpdateManyWithoutTeacherNestedInput
   adminConversations?: Prisma.ConversationUpdateManyWithoutAdminNestedInput
@@ -3194,6 +3270,167 @@ export type UserUncheckedUpdateWithoutChallengeParticipationsInput = {
   sessions?: Prisma.SessionUncheckedUpdateManyWithoutUserNestedInput
   Authenticator?: Prisma.AuthenticatorUncheckedUpdateManyWithoutUserNestedInput
   createdGroupChallenges?: Prisma.GroupChallengeUncheckedUpdateManyWithoutTeacherNestedInput
+  challengeInvitations?: Prisma.ChallengeInvitationUncheckedUpdateManyWithoutStudentNestedInput
+  studentConversations?: Prisma.ConversationUncheckedUpdateManyWithoutStudentNestedInput
+  teacherConversations?: Prisma.ConversationUncheckedUpdateManyWithoutTeacherNestedInput
+  adminConversations?: Prisma.ConversationUncheckedUpdateManyWithoutAdminNestedInput
+  sentMessages?: Prisma.MessageUncheckedUpdateManyWithoutSenderNestedInput
+  placementResults?: Prisma.PlacementResultUncheckedUpdateManyWithoutStudentNestedInput
+  coursesTeaching?: Prisma.CourseUncheckedUpdateManyWithoutTeacherNestedInput
+  enrollments?: Prisma.EnrollmentUncheckedUpdateManyWithoutStudentNestedInput
+  progress?: Prisma.ProgressUncheckedUpdateManyWithoutStudentNestedInput
+  leaderboard?: Prisma.LeaderboardUncheckedUpdateManyWithoutStudentNestedInput
+}
+
+export type UserCreateWithoutChallengeInvitationsInput = {
+  id?: string
+  name?: string | null
+  email: string
+  phone?: string | null
+  school?: string | null
+  emailVerified?: Date | string | null
+  image?: string | null
+  password?: string | null
+  role?: $Enums.UserRole
+  level?: $Enums.StudentLevel
+  xp?: number
+  currentLevel?: number
+  streak?: number
+  coins?: number
+  otp?: string | null
+  otp_expires_at?: Date | string | null
+  is_otp_verified?: boolean | null
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  accounts?: Prisma.AccountCreateNestedManyWithoutUserInput
+  sessions?: Prisma.SessionCreateNestedManyWithoutUserInput
+  Authenticator?: Prisma.AuthenticatorCreateNestedManyWithoutUserInput
+  createdGroupChallenges?: Prisma.GroupChallengeCreateNestedManyWithoutTeacherInput
+  challengeParticipations?: Prisma.ChallengeParticipantCreateNestedManyWithoutStudentInput
+  studentConversations?: Prisma.ConversationCreateNestedManyWithoutStudentInput
+  teacherConversations?: Prisma.ConversationCreateNestedManyWithoutTeacherInput
+  adminConversations?: Prisma.ConversationCreateNestedManyWithoutAdminInput
+  sentMessages?: Prisma.MessageCreateNestedManyWithoutSenderInput
+  placementResults?: Prisma.PlacementResultCreateNestedManyWithoutStudentInput
+  coursesTeaching?: Prisma.CourseCreateNestedManyWithoutTeacherInput
+  enrollments?: Prisma.EnrollmentCreateNestedManyWithoutStudentInput
+  progress?: Prisma.ProgressCreateNestedManyWithoutStudentInput
+  leaderboard?: Prisma.LeaderboardCreateNestedManyWithoutStudentInput
+}
+
+export type UserUncheckedCreateWithoutChallengeInvitationsInput = {
+  id?: string
+  name?: string | null
+  email: string
+  phone?: string | null
+  school?: string | null
+  emailVerified?: Date | string | null
+  image?: string | null
+  password?: string | null
+  role?: $Enums.UserRole
+  level?: $Enums.StudentLevel
+  xp?: number
+  currentLevel?: number
+  streak?: number
+  coins?: number
+  otp?: string | null
+  otp_expires_at?: Date | string | null
+  is_otp_verified?: boolean | null
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  accounts?: Prisma.AccountUncheckedCreateNestedManyWithoutUserInput
+  sessions?: Prisma.SessionUncheckedCreateNestedManyWithoutUserInput
+  Authenticator?: Prisma.AuthenticatorUncheckedCreateNestedManyWithoutUserInput
+  createdGroupChallenges?: Prisma.GroupChallengeUncheckedCreateNestedManyWithoutTeacherInput
+  challengeParticipations?: Prisma.ChallengeParticipantUncheckedCreateNestedManyWithoutStudentInput
+  studentConversations?: Prisma.ConversationUncheckedCreateNestedManyWithoutStudentInput
+  teacherConversations?: Prisma.ConversationUncheckedCreateNestedManyWithoutTeacherInput
+  adminConversations?: Prisma.ConversationUncheckedCreateNestedManyWithoutAdminInput
+  sentMessages?: Prisma.MessageUncheckedCreateNestedManyWithoutSenderInput
+  placementResults?: Prisma.PlacementResultUncheckedCreateNestedManyWithoutStudentInput
+  coursesTeaching?: Prisma.CourseUncheckedCreateNestedManyWithoutTeacherInput
+  enrollments?: Prisma.EnrollmentUncheckedCreateNestedManyWithoutStudentInput
+  progress?: Prisma.ProgressUncheckedCreateNestedManyWithoutStudentInput
+  leaderboard?: Prisma.LeaderboardUncheckedCreateNestedManyWithoutStudentInput
+}
+
+export type UserCreateOrConnectWithoutChallengeInvitationsInput = {
+  where: Prisma.UserWhereUniqueInput
+  create: Prisma.XOR<Prisma.UserCreateWithoutChallengeInvitationsInput, Prisma.UserUncheckedCreateWithoutChallengeInvitationsInput>
+}
+
+export type UserUpsertWithoutChallengeInvitationsInput = {
+  update: Prisma.XOR<Prisma.UserUpdateWithoutChallengeInvitationsInput, Prisma.UserUncheckedUpdateWithoutChallengeInvitationsInput>
+  create: Prisma.XOR<Prisma.UserCreateWithoutChallengeInvitationsInput, Prisma.UserUncheckedCreateWithoutChallengeInvitationsInput>
+  where?: Prisma.UserWhereInput
+}
+
+export type UserUpdateToOneWithWhereWithoutChallengeInvitationsInput = {
+  where?: Prisma.UserWhereInput
+  data: Prisma.XOR<Prisma.UserUpdateWithoutChallengeInvitationsInput, Prisma.UserUncheckedUpdateWithoutChallengeInvitationsInput>
+}
+
+export type UserUpdateWithoutChallengeInvitationsInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  name?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  email?: Prisma.StringFieldUpdateOperationsInput | string
+  phone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  school?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  emailVerified?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  image?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  password?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  role?: Prisma.EnumUserRoleFieldUpdateOperationsInput | $Enums.UserRole
+  level?: Prisma.EnumStudentLevelFieldUpdateOperationsInput | $Enums.StudentLevel
+  xp?: Prisma.IntFieldUpdateOperationsInput | number
+  currentLevel?: Prisma.IntFieldUpdateOperationsInput | number
+  streak?: Prisma.IntFieldUpdateOperationsInput | number
+  coins?: Prisma.IntFieldUpdateOperationsInput | number
+  otp?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  otp_expires_at?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  is_otp_verified?: Prisma.NullableBoolFieldUpdateOperationsInput | boolean | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  accounts?: Prisma.AccountUpdateManyWithoutUserNestedInput
+  sessions?: Prisma.SessionUpdateManyWithoutUserNestedInput
+  Authenticator?: Prisma.AuthenticatorUpdateManyWithoutUserNestedInput
+  createdGroupChallenges?: Prisma.GroupChallengeUpdateManyWithoutTeacherNestedInput
+  challengeParticipations?: Prisma.ChallengeParticipantUpdateManyWithoutStudentNestedInput
+  studentConversations?: Prisma.ConversationUpdateManyWithoutStudentNestedInput
+  teacherConversations?: Prisma.ConversationUpdateManyWithoutTeacherNestedInput
+  adminConversations?: Prisma.ConversationUpdateManyWithoutAdminNestedInput
+  sentMessages?: Prisma.MessageUpdateManyWithoutSenderNestedInput
+  placementResults?: Prisma.PlacementResultUpdateManyWithoutStudentNestedInput
+  coursesTeaching?: Prisma.CourseUpdateManyWithoutTeacherNestedInput
+  enrollments?: Prisma.EnrollmentUpdateManyWithoutStudentNestedInput
+  progress?: Prisma.ProgressUpdateManyWithoutStudentNestedInput
+  leaderboard?: Prisma.LeaderboardUpdateManyWithoutStudentNestedInput
+}
+
+export type UserUncheckedUpdateWithoutChallengeInvitationsInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  name?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  email?: Prisma.StringFieldUpdateOperationsInput | string
+  phone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  school?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  emailVerified?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  image?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  password?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  role?: Prisma.EnumUserRoleFieldUpdateOperationsInput | $Enums.UserRole
+  level?: Prisma.EnumStudentLevelFieldUpdateOperationsInput | $Enums.StudentLevel
+  xp?: Prisma.IntFieldUpdateOperationsInput | number
+  currentLevel?: Prisma.IntFieldUpdateOperationsInput | number
+  streak?: Prisma.IntFieldUpdateOperationsInput | number
+  coins?: Prisma.IntFieldUpdateOperationsInput | number
+  otp?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  otp_expires_at?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  is_otp_verified?: Prisma.NullableBoolFieldUpdateOperationsInput | boolean | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  accounts?: Prisma.AccountUncheckedUpdateManyWithoutUserNestedInput
+  sessions?: Prisma.SessionUncheckedUpdateManyWithoutUserNestedInput
+  Authenticator?: Prisma.AuthenticatorUncheckedUpdateManyWithoutUserNestedInput
+  createdGroupChallenges?: Prisma.GroupChallengeUncheckedUpdateManyWithoutTeacherNestedInput
+  challengeParticipations?: Prisma.ChallengeParticipantUncheckedUpdateManyWithoutStudentNestedInput
   studentConversations?: Prisma.ConversationUncheckedUpdateManyWithoutStudentNestedInput
   teacherConversations?: Prisma.ConversationUncheckedUpdateManyWithoutTeacherNestedInput
   adminConversations?: Prisma.ConversationUncheckedUpdateManyWithoutAdminNestedInput
@@ -3216,6 +3453,7 @@ export type UserCountOutputType = {
   Authenticator: number
   createdGroupChallenges: number
   challengeParticipations: number
+  challengeInvitations: number
   studentConversations: number
   teacherConversations: number
   adminConversations: number
@@ -3233,6 +3471,7 @@ export type UserCountOutputTypeSelect<ExtArgs extends runtime.Types.Extensions.I
   Authenticator?: boolean | UserCountOutputTypeCountAuthenticatorArgs
   createdGroupChallenges?: boolean | UserCountOutputTypeCountCreatedGroupChallengesArgs
   challengeParticipations?: boolean | UserCountOutputTypeCountChallengeParticipationsArgs
+  challengeInvitations?: boolean | UserCountOutputTypeCountChallengeInvitationsArgs
   studentConversations?: boolean | UserCountOutputTypeCountStudentConversationsArgs
   teacherConversations?: boolean | UserCountOutputTypeCountTeacherConversationsArgs
   adminConversations?: boolean | UserCountOutputTypeCountAdminConversationsArgs
@@ -3287,6 +3526,13 @@ export type UserCountOutputTypeCountCreatedGroupChallengesArgs<ExtArgs extends r
  */
 export type UserCountOutputTypeCountChallengeParticipationsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   where?: Prisma.ChallengeParticipantWhereInput
+}
+
+/**
+ * UserCountOutputType without action
+ */
+export type UserCountOutputTypeCountChallengeInvitationsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  where?: Prisma.ChallengeInvitationWhereInput
 }
 
 /**
@@ -3378,6 +3624,7 @@ export type UserSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = r
   Authenticator?: boolean | Prisma.User$AuthenticatorArgs<ExtArgs>
   createdGroupChallenges?: boolean | Prisma.User$createdGroupChallengesArgs<ExtArgs>
   challengeParticipations?: boolean | Prisma.User$challengeParticipationsArgs<ExtArgs>
+  challengeInvitations?: boolean | Prisma.User$challengeInvitationsArgs<ExtArgs>
   studentConversations?: boolean | Prisma.User$studentConversationsArgs<ExtArgs>
   teacherConversations?: boolean | Prisma.User$teacherConversationsArgs<ExtArgs>
   adminConversations?: boolean | Prisma.User$adminConversationsArgs<ExtArgs>
@@ -3463,6 +3710,7 @@ export type UserInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = 
   Authenticator?: boolean | Prisma.User$AuthenticatorArgs<ExtArgs>
   createdGroupChallenges?: boolean | Prisma.User$createdGroupChallengesArgs<ExtArgs>
   challengeParticipations?: boolean | Prisma.User$challengeParticipationsArgs<ExtArgs>
+  challengeInvitations?: boolean | Prisma.User$challengeInvitationsArgs<ExtArgs>
   studentConversations?: boolean | Prisma.User$studentConversationsArgs<ExtArgs>
   teacherConversations?: boolean | Prisma.User$teacherConversationsArgs<ExtArgs>
   adminConversations?: boolean | Prisma.User$adminConversationsArgs<ExtArgs>
@@ -3485,6 +3733,7 @@ export type $UserPayload<ExtArgs extends runtime.Types.Extensions.InternalArgs =
     Authenticator: Prisma.$AuthenticatorPayload<ExtArgs>[]
     createdGroupChallenges: Prisma.$GroupChallengePayload<ExtArgs>[]
     challengeParticipations: Prisma.$ChallengeParticipantPayload<ExtArgs>[]
+    challengeInvitations: Prisma.$ChallengeInvitationPayload<ExtArgs>[]
     studentConversations: Prisma.$ConversationPayload<ExtArgs>[]
     teacherConversations: Prisma.$ConversationPayload<ExtArgs>[]
     adminConversations: Prisma.$ConversationPayload<ExtArgs>[]
@@ -3914,6 +4163,7 @@ export interface Prisma__UserClient<T, Null = never, ExtArgs extends runtime.Typ
   Authenticator<T extends Prisma.User$AuthenticatorArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.User$AuthenticatorArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$AuthenticatorPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   createdGroupChallenges<T extends Prisma.User$createdGroupChallengesArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.User$createdGroupChallengesArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$GroupChallengePayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   challengeParticipations<T extends Prisma.User$challengeParticipationsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.User$challengeParticipationsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$ChallengeParticipantPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+  challengeInvitations<T extends Prisma.User$challengeInvitationsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.User$challengeInvitationsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$ChallengeInvitationPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   studentConversations<T extends Prisma.User$studentConversationsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.User$studentConversationsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$ConversationPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   teacherConversations<T extends Prisma.User$teacherConversationsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.User$teacherConversationsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$ConversationPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   adminConversations<T extends Prisma.User$adminConversationsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.User$adminConversationsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$ConversationPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
@@ -4481,6 +4731,30 @@ export type User$challengeParticipationsArgs<ExtArgs extends runtime.Types.Exten
   take?: number
   skip?: number
   distinct?: Prisma.ChallengeParticipantScalarFieldEnum | Prisma.ChallengeParticipantScalarFieldEnum[]
+}
+
+/**
+ * User.challengeInvitations
+ */
+export type User$challengeInvitationsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the ChallengeInvitation
+   */
+  select?: Prisma.ChallengeInvitationSelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the ChallengeInvitation
+   */
+  omit?: Prisma.ChallengeInvitationOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.ChallengeInvitationInclude<ExtArgs> | null
+  where?: Prisma.ChallengeInvitationWhereInput
+  orderBy?: Prisma.ChallengeInvitationOrderByWithRelationInput | Prisma.ChallengeInvitationOrderByWithRelationInput[]
+  cursor?: Prisma.ChallengeInvitationWhereUniqueInput
+  take?: number
+  skip?: number
+  distinct?: Prisma.ChallengeInvitationScalarFieldEnum | Prisma.ChallengeInvitationScalarFieldEnum[]
 }
 
 /**

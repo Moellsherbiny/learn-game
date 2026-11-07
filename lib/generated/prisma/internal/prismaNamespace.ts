@@ -403,7 +403,8 @@ export const ModelName = {
   GroupChallenge: 'GroupChallenge',
   ChallengeQuestion: 'ChallengeQuestion',
   ChallengeParticipant: 'ChallengeParticipant',
-  ChallengeAnswer: 'ChallengeAnswer'
+  ChallengeAnswer: 'ChallengeAnswer',
+  ChallengeInvitation: 'ChallengeInvitation'
 } as const
 
 export type ModelName = (typeof ModelName)[keyof typeof ModelName]
@@ -419,7 +420,7 @@ export type TypeMap<ExtArgs extends runtime.Types.Extensions.InternalArgs = runt
     omit: GlobalOmitOptions
   }
   meta: {
-    modelProps: "user" | "account" | "session" | "verificationToken" | "authenticator" | "course" | "module" | "lesson" | "lessonContent" | "progress" | "enrollment" | "leaderboard" | "placementTest" | "placementResult" | "conversation" | "message" | "groupChallenge" | "challengeQuestion" | "challengeParticipant" | "challengeAnswer"
+    modelProps: "user" | "account" | "session" | "verificationToken" | "authenticator" | "course" | "module" | "lesson" | "lessonContent" | "progress" | "enrollment" | "leaderboard" | "placementTest" | "placementResult" | "conversation" | "message" | "groupChallenge" | "challengeQuestion" | "challengeParticipant" | "challengeAnswer" | "challengeInvitation"
     txIsolationLevel: TransactionIsolationLevel
   }
   model: {
@@ -1903,6 +1904,80 @@ export type TypeMap<ExtArgs extends runtime.Types.Extensions.InternalArgs = runt
         }
       }
     }
+    ChallengeInvitation: {
+      payload: Prisma.$ChallengeInvitationPayload<ExtArgs>
+      fields: Prisma.ChallengeInvitationFieldRefs
+      operations: {
+        findUnique: {
+          args: Prisma.ChallengeInvitationFindUniqueArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ChallengeInvitationPayload> | null
+        }
+        findUniqueOrThrow: {
+          args: Prisma.ChallengeInvitationFindUniqueOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ChallengeInvitationPayload>
+        }
+        findFirst: {
+          args: Prisma.ChallengeInvitationFindFirstArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ChallengeInvitationPayload> | null
+        }
+        findFirstOrThrow: {
+          args: Prisma.ChallengeInvitationFindFirstOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ChallengeInvitationPayload>
+        }
+        findMany: {
+          args: Prisma.ChallengeInvitationFindManyArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ChallengeInvitationPayload>[]
+        }
+        create: {
+          args: Prisma.ChallengeInvitationCreateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ChallengeInvitationPayload>
+        }
+        createMany: {
+          args: Prisma.ChallengeInvitationCreateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        createManyAndReturn: {
+          args: Prisma.ChallengeInvitationCreateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ChallengeInvitationPayload>[]
+        }
+        delete: {
+          args: Prisma.ChallengeInvitationDeleteArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ChallengeInvitationPayload>
+        }
+        update: {
+          args: Prisma.ChallengeInvitationUpdateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ChallengeInvitationPayload>
+        }
+        deleteMany: {
+          args: Prisma.ChallengeInvitationDeleteManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateMany: {
+          args: Prisma.ChallengeInvitationUpdateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateManyAndReturn: {
+          args: Prisma.ChallengeInvitationUpdateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ChallengeInvitationPayload>[]
+        }
+        upsert: {
+          args: Prisma.ChallengeInvitationUpsertArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ChallengeInvitationPayload>
+        }
+        aggregate: {
+          args: Prisma.ChallengeInvitationAggregateArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.AggregateChallengeInvitation>
+        }
+        groupBy: {
+          args: Prisma.ChallengeInvitationGroupByArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.ChallengeInvitationGroupByOutputType>[]
+        }
+        count: {
+          args: Prisma.ChallengeInvitationCountArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.ChallengeInvitationCountAggregateOutputType> | number
+        }
+      }
+    }
   }
 } & {
   other: {
@@ -2244,6 +2319,18 @@ export const ChallengeAnswerScalarFieldEnum = {
 export type ChallengeAnswerScalarFieldEnum = (typeof ChallengeAnswerScalarFieldEnum)[keyof typeof ChallengeAnswerScalarFieldEnum]
 
 
+export const ChallengeInvitationScalarFieldEnum = {
+  id: 'id',
+  challengeId: 'challengeId',
+  studentId: 'studentId',
+  status: 'status',
+  invitedAt: 'invitedAt',
+  respondedAt: 'respondedAt'
+} as const
+
+export type ChallengeInvitationScalarFieldEnum = (typeof ChallengeInvitationScalarFieldEnum)[keyof typeof ChallengeInvitationScalarFieldEnum]
+
+
 export const SortOrder = {
   asc: 'asc',
   desc: 'desc'
@@ -2458,6 +2545,20 @@ export type EnumChallengeTeamFieldRefInput<$PrismaModel> = FieldRefInputType<$Pr
 export type ListEnumChallengeTeamFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'ChallengeTeam[]'>
     
 
+
+/**
+ * Reference to a field of type 'ChallengeInvitationStatus'
+ */
+export type EnumChallengeInvitationStatusFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'ChallengeInvitationStatus'>
+    
+
+
+/**
+ * Reference to a field of type 'ChallengeInvitationStatus[]'
+ */
+export type ListEnumChallengeInvitationStatusFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'ChallengeInvitationStatus[]'>
+    
+
 /**
  * Batch Payload for updateMany & deleteMany & createMany
  */
@@ -2588,6 +2689,7 @@ export type GlobalOmitConfig = {
   challengeQuestion?: Prisma.ChallengeQuestionOmit
   challengeParticipant?: Prisma.ChallengeParticipantOmit
   challengeAnswer?: Prisma.ChallengeAnswerOmit
+  challengeInvitation?: Prisma.ChallengeInvitationOmit
 }
 
 /* Types for Logging */
