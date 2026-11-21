@@ -40,6 +40,7 @@ export type ChallengeQuestionMinAggregateOutputType = {
   id: string | null
   challengeId: string | null
   lessonContentId: string | null
+  gameType: $Enums.GameType | null
   question: string | null
   answer: string | null
   optionA: string | null
@@ -57,6 +58,7 @@ export type ChallengeQuestionMaxAggregateOutputType = {
   id: string | null
   challengeId: string | null
   lessonContentId: string | null
+  gameType: $Enums.GameType | null
   question: string | null
   answer: string | null
   optionA: string | null
@@ -74,6 +76,7 @@ export type ChallengeQuestionCountAggregateOutputType = {
   id: number
   challengeId: number
   lessonContentId: number
+  gameType: number
   question: number
   answer: number
   optionA: number
@@ -103,6 +106,7 @@ export type ChallengeQuestionMinAggregateInputType = {
   id?: true
   challengeId?: true
   lessonContentId?: true
+  gameType?: true
   question?: true
   answer?: true
   optionA?: true
@@ -120,6 +124,7 @@ export type ChallengeQuestionMaxAggregateInputType = {
   id?: true
   challengeId?: true
   lessonContentId?: true
+  gameType?: true
   question?: true
   answer?: true
   optionA?: true
@@ -137,6 +142,7 @@ export type ChallengeQuestionCountAggregateInputType = {
   id?: true
   challengeId?: true
   lessonContentId?: true
+  gameType?: true
   question?: true
   answer?: true
   optionA?: true
@@ -241,6 +247,7 @@ export type ChallengeQuestionGroupByOutputType = {
   id: string
   challengeId: string
   lessonContentId: string | null
+  gameType: $Enums.GameType
   question: string
   answer: string | null
   optionA: string | null
@@ -281,6 +288,7 @@ export type ChallengeQuestionWhereInput = {
   id?: Prisma.StringFilter<"ChallengeQuestion"> | string
   challengeId?: Prisma.StringFilter<"ChallengeQuestion"> | string
   lessonContentId?: Prisma.StringNullableFilter<"ChallengeQuestion"> | string | null
+  gameType?: Prisma.EnumGameTypeFilter<"ChallengeQuestion"> | $Enums.GameType
   question?: Prisma.StringFilter<"ChallengeQuestion"> | string
   answer?: Prisma.StringNullableFilter<"ChallengeQuestion"> | string | null
   optionA?: Prisma.StringNullableFilter<"ChallengeQuestion"> | string | null
@@ -295,12 +303,14 @@ export type ChallengeQuestionWhereInput = {
   challenge?: Prisma.XOR<Prisma.GroupChallengeScalarRelationFilter, Prisma.GroupChallengeWhereInput>
   lessonContent?: Prisma.XOR<Prisma.LessonContentNullableScalarRelationFilter, Prisma.LessonContentWhereInput> | null
   answers?: Prisma.ChallengeAnswerListRelationFilter
+  challengeQuestionItems?: Prisma.ChallengeQuestionItemListRelationFilter
 }
 
 export type ChallengeQuestionOrderByWithRelationInput = {
   id?: Prisma.SortOrder
   challengeId?: Prisma.SortOrder
   lessonContentId?: Prisma.SortOrderInput | Prisma.SortOrder
+  gameType?: Prisma.SortOrder
   question?: Prisma.SortOrder
   answer?: Prisma.SortOrderInput | Prisma.SortOrder
   optionA?: Prisma.SortOrderInput | Prisma.SortOrder
@@ -315,6 +325,7 @@ export type ChallengeQuestionOrderByWithRelationInput = {
   challenge?: Prisma.GroupChallengeOrderByWithRelationInput
   lessonContent?: Prisma.LessonContentOrderByWithRelationInput
   answers?: Prisma.ChallengeAnswerOrderByRelationAggregateInput
+  challengeQuestionItems?: Prisma.ChallengeQuestionItemOrderByRelationAggregateInput
 }
 
 export type ChallengeQuestionWhereUniqueInput = Prisma.AtLeast<{
@@ -325,6 +336,7 @@ export type ChallengeQuestionWhereUniqueInput = Prisma.AtLeast<{
   NOT?: Prisma.ChallengeQuestionWhereInput | Prisma.ChallengeQuestionWhereInput[]
   challengeId?: Prisma.StringFilter<"ChallengeQuestion"> | string
   lessonContentId?: Prisma.StringNullableFilter<"ChallengeQuestion"> | string | null
+  gameType?: Prisma.EnumGameTypeFilter<"ChallengeQuestion"> | $Enums.GameType
   question?: Prisma.StringFilter<"ChallengeQuestion"> | string
   answer?: Prisma.StringNullableFilter<"ChallengeQuestion"> | string | null
   optionA?: Prisma.StringNullableFilter<"ChallengeQuestion"> | string | null
@@ -339,12 +351,14 @@ export type ChallengeQuestionWhereUniqueInput = Prisma.AtLeast<{
   challenge?: Prisma.XOR<Prisma.GroupChallengeScalarRelationFilter, Prisma.GroupChallengeWhereInput>
   lessonContent?: Prisma.XOR<Prisma.LessonContentNullableScalarRelationFilter, Prisma.LessonContentWhereInput> | null
   answers?: Prisma.ChallengeAnswerListRelationFilter
+  challengeQuestionItems?: Prisma.ChallengeQuestionItemListRelationFilter
 }, "id" | "challengeId_order">
 
 export type ChallengeQuestionOrderByWithAggregationInput = {
   id?: Prisma.SortOrder
   challengeId?: Prisma.SortOrder
   lessonContentId?: Prisma.SortOrderInput | Prisma.SortOrder
+  gameType?: Prisma.SortOrder
   question?: Prisma.SortOrder
   answer?: Prisma.SortOrderInput | Prisma.SortOrder
   optionA?: Prisma.SortOrderInput | Prisma.SortOrder
@@ -370,6 +384,7 @@ export type ChallengeQuestionScalarWhereWithAggregatesInput = {
   id?: Prisma.StringWithAggregatesFilter<"ChallengeQuestion"> | string
   challengeId?: Prisma.StringWithAggregatesFilter<"ChallengeQuestion"> | string
   lessonContentId?: Prisma.StringNullableWithAggregatesFilter<"ChallengeQuestion"> | string | null
+  gameType?: Prisma.EnumGameTypeWithAggregatesFilter<"ChallengeQuestion"> | $Enums.GameType
   question?: Prisma.StringWithAggregatesFilter<"ChallengeQuestion"> | string
   answer?: Prisma.StringNullableWithAggregatesFilter<"ChallengeQuestion"> | string | null
   optionA?: Prisma.StringNullableWithAggregatesFilter<"ChallengeQuestion"> | string | null
@@ -385,6 +400,7 @@ export type ChallengeQuestionScalarWhereWithAggregatesInput = {
 
 export type ChallengeQuestionCreateInput = {
   id?: string
+  gameType?: $Enums.GameType
   question: string
   answer?: string | null
   optionA?: string | null
@@ -399,12 +415,14 @@ export type ChallengeQuestionCreateInput = {
   challenge: Prisma.GroupChallengeCreateNestedOneWithoutQuestionsInput
   lessonContent?: Prisma.LessonContentCreateNestedOneWithoutChallengeQuestionsInput
   answers?: Prisma.ChallengeAnswerCreateNestedManyWithoutQuestionInput
+  challengeQuestionItems?: Prisma.ChallengeQuestionItemCreateNestedManyWithoutChallengeQuestionInput
 }
 
 export type ChallengeQuestionUncheckedCreateInput = {
   id?: string
   challengeId: string
   lessonContentId?: string | null
+  gameType?: $Enums.GameType
   question: string
   answer?: string | null
   optionA?: string | null
@@ -417,10 +435,12 @@ export type ChallengeQuestionUncheckedCreateInput = {
   timeLimit?: number
   createdAt?: Date | string
   answers?: Prisma.ChallengeAnswerUncheckedCreateNestedManyWithoutQuestionInput
+  challengeQuestionItems?: Prisma.ChallengeQuestionItemUncheckedCreateNestedManyWithoutChallengeQuestionInput
 }
 
 export type ChallengeQuestionUpdateInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
+  gameType?: Prisma.EnumGameTypeFieldUpdateOperationsInput | $Enums.GameType
   question?: Prisma.StringFieldUpdateOperationsInput | string
   answer?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   optionA?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -435,12 +455,14 @@ export type ChallengeQuestionUpdateInput = {
   challenge?: Prisma.GroupChallengeUpdateOneRequiredWithoutQuestionsNestedInput
   lessonContent?: Prisma.LessonContentUpdateOneWithoutChallengeQuestionsNestedInput
   answers?: Prisma.ChallengeAnswerUpdateManyWithoutQuestionNestedInput
+  challengeQuestionItems?: Prisma.ChallengeQuestionItemUpdateManyWithoutChallengeQuestionNestedInput
 }
 
 export type ChallengeQuestionUncheckedUpdateInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   challengeId?: Prisma.StringFieldUpdateOperationsInput | string
   lessonContentId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  gameType?: Prisma.EnumGameTypeFieldUpdateOperationsInput | $Enums.GameType
   question?: Prisma.StringFieldUpdateOperationsInput | string
   answer?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   optionA?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -453,12 +475,14 @@ export type ChallengeQuestionUncheckedUpdateInput = {
   timeLimit?: Prisma.IntFieldUpdateOperationsInput | number
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   answers?: Prisma.ChallengeAnswerUncheckedUpdateManyWithoutQuestionNestedInput
+  challengeQuestionItems?: Prisma.ChallengeQuestionItemUncheckedUpdateManyWithoutChallengeQuestionNestedInput
 }
 
 export type ChallengeQuestionCreateManyInput = {
   id?: string
   challengeId: string
   lessonContentId?: string | null
+  gameType?: $Enums.GameType
   question: string
   answer?: string | null
   optionA?: string | null
@@ -474,6 +498,7 @@ export type ChallengeQuestionCreateManyInput = {
 
 export type ChallengeQuestionUpdateManyMutationInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
+  gameType?: Prisma.EnumGameTypeFieldUpdateOperationsInput | $Enums.GameType
   question?: Prisma.StringFieldUpdateOperationsInput | string
   answer?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   optionA?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -491,6 +516,7 @@ export type ChallengeQuestionUncheckedUpdateManyInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   challengeId?: Prisma.StringFieldUpdateOperationsInput | string
   lessonContentId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  gameType?: Prisma.EnumGameTypeFieldUpdateOperationsInput | $Enums.GameType
   question?: Prisma.StringFieldUpdateOperationsInput | string
   answer?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   optionA?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -523,6 +549,7 @@ export type ChallengeQuestionCountOrderByAggregateInput = {
   id?: Prisma.SortOrder
   challengeId?: Prisma.SortOrder
   lessonContentId?: Prisma.SortOrder
+  gameType?: Prisma.SortOrder
   question?: Prisma.SortOrder
   answer?: Prisma.SortOrder
   optionA?: Prisma.SortOrder
@@ -545,6 +572,7 @@ export type ChallengeQuestionMaxOrderByAggregateInput = {
   id?: Prisma.SortOrder
   challengeId?: Prisma.SortOrder
   lessonContentId?: Prisma.SortOrder
+  gameType?: Prisma.SortOrder
   question?: Prisma.SortOrder
   answer?: Prisma.SortOrder
   optionA?: Prisma.SortOrder
@@ -562,6 +590,7 @@ export type ChallengeQuestionMinOrderByAggregateInput = {
   id?: Prisma.SortOrder
   challengeId?: Prisma.SortOrder
   lessonContentId?: Prisma.SortOrder
+  gameType?: Prisma.SortOrder
   question?: Prisma.SortOrder
   answer?: Prisma.SortOrder
   optionA?: Prisma.SortOrder
@@ -683,8 +712,23 @@ export type ChallengeQuestionUpdateOneRequiredWithoutAnswersNestedInput = {
   update?: Prisma.XOR<Prisma.XOR<Prisma.ChallengeQuestionUpdateToOneWithWhereWithoutAnswersInput, Prisma.ChallengeQuestionUpdateWithoutAnswersInput>, Prisma.ChallengeQuestionUncheckedUpdateWithoutAnswersInput>
 }
 
+export type ChallengeQuestionCreateNestedOneWithoutChallengeQuestionItemsInput = {
+  create?: Prisma.XOR<Prisma.ChallengeQuestionCreateWithoutChallengeQuestionItemsInput, Prisma.ChallengeQuestionUncheckedCreateWithoutChallengeQuestionItemsInput>
+  connectOrCreate?: Prisma.ChallengeQuestionCreateOrConnectWithoutChallengeQuestionItemsInput
+  connect?: Prisma.ChallengeQuestionWhereUniqueInput
+}
+
+export type ChallengeQuestionUpdateOneRequiredWithoutChallengeQuestionItemsNestedInput = {
+  create?: Prisma.XOR<Prisma.ChallengeQuestionCreateWithoutChallengeQuestionItemsInput, Prisma.ChallengeQuestionUncheckedCreateWithoutChallengeQuestionItemsInput>
+  connectOrCreate?: Prisma.ChallengeQuestionCreateOrConnectWithoutChallengeQuestionItemsInput
+  upsert?: Prisma.ChallengeQuestionUpsertWithoutChallengeQuestionItemsInput
+  connect?: Prisma.ChallengeQuestionWhereUniqueInput
+  update?: Prisma.XOR<Prisma.XOR<Prisma.ChallengeQuestionUpdateToOneWithWhereWithoutChallengeQuestionItemsInput, Prisma.ChallengeQuestionUpdateWithoutChallengeQuestionItemsInput>, Prisma.ChallengeQuestionUncheckedUpdateWithoutChallengeQuestionItemsInput>
+}
+
 export type ChallengeQuestionCreateWithoutLessonContentInput = {
   id?: string
+  gameType?: $Enums.GameType
   question: string
   answer?: string | null
   optionA?: string | null
@@ -698,11 +742,13 @@ export type ChallengeQuestionCreateWithoutLessonContentInput = {
   createdAt?: Date | string
   challenge: Prisma.GroupChallengeCreateNestedOneWithoutQuestionsInput
   answers?: Prisma.ChallengeAnswerCreateNestedManyWithoutQuestionInput
+  challengeQuestionItems?: Prisma.ChallengeQuestionItemCreateNestedManyWithoutChallengeQuestionInput
 }
 
 export type ChallengeQuestionUncheckedCreateWithoutLessonContentInput = {
   id?: string
   challengeId: string
+  gameType?: $Enums.GameType
   question: string
   answer?: string | null
   optionA?: string | null
@@ -715,6 +761,7 @@ export type ChallengeQuestionUncheckedCreateWithoutLessonContentInput = {
   timeLimit?: number
   createdAt?: Date | string
   answers?: Prisma.ChallengeAnswerUncheckedCreateNestedManyWithoutQuestionInput
+  challengeQuestionItems?: Prisma.ChallengeQuestionItemUncheckedCreateNestedManyWithoutChallengeQuestionInput
 }
 
 export type ChallengeQuestionCreateOrConnectWithoutLessonContentInput = {
@@ -750,6 +797,7 @@ export type ChallengeQuestionScalarWhereInput = {
   id?: Prisma.StringFilter<"ChallengeQuestion"> | string
   challengeId?: Prisma.StringFilter<"ChallengeQuestion"> | string
   lessonContentId?: Prisma.StringNullableFilter<"ChallengeQuestion"> | string | null
+  gameType?: Prisma.EnumGameTypeFilter<"ChallengeQuestion"> | $Enums.GameType
   question?: Prisma.StringFilter<"ChallengeQuestion"> | string
   answer?: Prisma.StringNullableFilter<"ChallengeQuestion"> | string | null
   optionA?: Prisma.StringNullableFilter<"ChallengeQuestion"> | string | null
@@ -765,6 +813,7 @@ export type ChallengeQuestionScalarWhereInput = {
 
 export type ChallengeQuestionCreateWithoutChallengeInput = {
   id?: string
+  gameType?: $Enums.GameType
   question: string
   answer?: string | null
   optionA?: string | null
@@ -778,11 +827,13 @@ export type ChallengeQuestionCreateWithoutChallengeInput = {
   createdAt?: Date | string
   lessonContent?: Prisma.LessonContentCreateNestedOneWithoutChallengeQuestionsInput
   answers?: Prisma.ChallengeAnswerCreateNestedManyWithoutQuestionInput
+  challengeQuestionItems?: Prisma.ChallengeQuestionItemCreateNestedManyWithoutChallengeQuestionInput
 }
 
 export type ChallengeQuestionUncheckedCreateWithoutChallengeInput = {
   id?: string
   lessonContentId?: string | null
+  gameType?: $Enums.GameType
   question: string
   answer?: string | null
   optionA?: string | null
@@ -795,6 +846,7 @@ export type ChallengeQuestionUncheckedCreateWithoutChallengeInput = {
   timeLimit?: number
   createdAt?: Date | string
   answers?: Prisma.ChallengeAnswerUncheckedCreateNestedManyWithoutQuestionInput
+  challengeQuestionItems?: Prisma.ChallengeQuestionItemUncheckedCreateNestedManyWithoutChallengeQuestionInput
 }
 
 export type ChallengeQuestionCreateOrConnectWithoutChallengeInput = {
@@ -825,6 +877,7 @@ export type ChallengeQuestionUpdateManyWithWhereWithoutChallengeInput = {
 
 export type ChallengeQuestionCreateWithoutAnswersInput = {
   id?: string
+  gameType?: $Enums.GameType
   question: string
   answer?: string | null
   optionA?: string | null
@@ -838,12 +891,14 @@ export type ChallengeQuestionCreateWithoutAnswersInput = {
   createdAt?: Date | string
   challenge: Prisma.GroupChallengeCreateNestedOneWithoutQuestionsInput
   lessonContent?: Prisma.LessonContentCreateNestedOneWithoutChallengeQuestionsInput
+  challengeQuestionItems?: Prisma.ChallengeQuestionItemCreateNestedManyWithoutChallengeQuestionInput
 }
 
 export type ChallengeQuestionUncheckedCreateWithoutAnswersInput = {
   id?: string
   challengeId: string
   lessonContentId?: string | null
+  gameType?: $Enums.GameType
   question: string
   answer?: string | null
   optionA?: string | null
@@ -855,6 +910,7 @@ export type ChallengeQuestionUncheckedCreateWithoutAnswersInput = {
   order: number
   timeLimit?: number
   createdAt?: Date | string
+  challengeQuestionItems?: Prisma.ChallengeQuestionItemUncheckedCreateNestedManyWithoutChallengeQuestionInput
 }
 
 export type ChallengeQuestionCreateOrConnectWithoutAnswersInput = {
@@ -875,6 +931,7 @@ export type ChallengeQuestionUpdateToOneWithWhereWithoutAnswersInput = {
 
 export type ChallengeQuestionUpdateWithoutAnswersInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
+  gameType?: Prisma.EnumGameTypeFieldUpdateOperationsInput | $Enums.GameType
   question?: Prisma.StringFieldUpdateOperationsInput | string
   answer?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   optionA?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -888,12 +945,14 @@ export type ChallengeQuestionUpdateWithoutAnswersInput = {
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   challenge?: Prisma.GroupChallengeUpdateOneRequiredWithoutQuestionsNestedInput
   lessonContent?: Prisma.LessonContentUpdateOneWithoutChallengeQuestionsNestedInput
+  challengeQuestionItems?: Prisma.ChallengeQuestionItemUpdateManyWithoutChallengeQuestionNestedInput
 }
 
 export type ChallengeQuestionUncheckedUpdateWithoutAnswersInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   challengeId?: Prisma.StringFieldUpdateOperationsInput | string
   lessonContentId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  gameType?: Prisma.EnumGameTypeFieldUpdateOperationsInput | $Enums.GameType
   question?: Prisma.StringFieldUpdateOperationsInput | string
   answer?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   optionA?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -905,11 +964,105 @@ export type ChallengeQuestionUncheckedUpdateWithoutAnswersInput = {
   order?: Prisma.IntFieldUpdateOperationsInput | number
   timeLimit?: Prisma.IntFieldUpdateOperationsInput | number
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  challengeQuestionItems?: Prisma.ChallengeQuestionItemUncheckedUpdateManyWithoutChallengeQuestionNestedInput
+}
+
+export type ChallengeQuestionCreateWithoutChallengeQuestionItemsInput = {
+  id?: string
+  gameType?: $Enums.GameType
+  question: string
+  answer?: string | null
+  optionA?: string | null
+  optionB?: string | null
+  optionC?: string | null
+  optionD?: string | null
+  leftText?: string | null
+  rightText?: string | null
+  order: number
+  timeLimit?: number
+  createdAt?: Date | string
+  challenge: Prisma.GroupChallengeCreateNestedOneWithoutQuestionsInput
+  lessonContent?: Prisma.LessonContentCreateNestedOneWithoutChallengeQuestionsInput
+  answers?: Prisma.ChallengeAnswerCreateNestedManyWithoutQuestionInput
+}
+
+export type ChallengeQuestionUncheckedCreateWithoutChallengeQuestionItemsInput = {
+  id?: string
+  challengeId: string
+  lessonContentId?: string | null
+  gameType?: $Enums.GameType
+  question: string
+  answer?: string | null
+  optionA?: string | null
+  optionB?: string | null
+  optionC?: string | null
+  optionD?: string | null
+  leftText?: string | null
+  rightText?: string | null
+  order: number
+  timeLimit?: number
+  createdAt?: Date | string
+  answers?: Prisma.ChallengeAnswerUncheckedCreateNestedManyWithoutQuestionInput
+}
+
+export type ChallengeQuestionCreateOrConnectWithoutChallengeQuestionItemsInput = {
+  where: Prisma.ChallengeQuestionWhereUniqueInput
+  create: Prisma.XOR<Prisma.ChallengeQuestionCreateWithoutChallengeQuestionItemsInput, Prisma.ChallengeQuestionUncheckedCreateWithoutChallengeQuestionItemsInput>
+}
+
+export type ChallengeQuestionUpsertWithoutChallengeQuestionItemsInput = {
+  update: Prisma.XOR<Prisma.ChallengeQuestionUpdateWithoutChallengeQuestionItemsInput, Prisma.ChallengeQuestionUncheckedUpdateWithoutChallengeQuestionItemsInput>
+  create: Prisma.XOR<Prisma.ChallengeQuestionCreateWithoutChallengeQuestionItemsInput, Prisma.ChallengeQuestionUncheckedCreateWithoutChallengeQuestionItemsInput>
+  where?: Prisma.ChallengeQuestionWhereInput
+}
+
+export type ChallengeQuestionUpdateToOneWithWhereWithoutChallengeQuestionItemsInput = {
+  where?: Prisma.ChallengeQuestionWhereInput
+  data: Prisma.XOR<Prisma.ChallengeQuestionUpdateWithoutChallengeQuestionItemsInput, Prisma.ChallengeQuestionUncheckedUpdateWithoutChallengeQuestionItemsInput>
+}
+
+export type ChallengeQuestionUpdateWithoutChallengeQuestionItemsInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  gameType?: Prisma.EnumGameTypeFieldUpdateOperationsInput | $Enums.GameType
+  question?: Prisma.StringFieldUpdateOperationsInput | string
+  answer?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  optionA?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  optionB?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  optionC?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  optionD?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  leftText?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  rightText?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  order?: Prisma.IntFieldUpdateOperationsInput | number
+  timeLimit?: Prisma.IntFieldUpdateOperationsInput | number
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  challenge?: Prisma.GroupChallengeUpdateOneRequiredWithoutQuestionsNestedInput
+  lessonContent?: Prisma.LessonContentUpdateOneWithoutChallengeQuestionsNestedInput
+  answers?: Prisma.ChallengeAnswerUpdateManyWithoutQuestionNestedInput
+}
+
+export type ChallengeQuestionUncheckedUpdateWithoutChallengeQuestionItemsInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  challengeId?: Prisma.StringFieldUpdateOperationsInput | string
+  lessonContentId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  gameType?: Prisma.EnumGameTypeFieldUpdateOperationsInput | $Enums.GameType
+  question?: Prisma.StringFieldUpdateOperationsInput | string
+  answer?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  optionA?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  optionB?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  optionC?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  optionD?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  leftText?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  rightText?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  order?: Prisma.IntFieldUpdateOperationsInput | number
+  timeLimit?: Prisma.IntFieldUpdateOperationsInput | number
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  answers?: Prisma.ChallengeAnswerUncheckedUpdateManyWithoutQuestionNestedInput
 }
 
 export type ChallengeQuestionCreateManyLessonContentInput = {
   id?: string
   challengeId: string
+  gameType?: $Enums.GameType
   question: string
   answer?: string | null
   optionA?: string | null
@@ -925,6 +1078,7 @@ export type ChallengeQuestionCreateManyLessonContentInput = {
 
 export type ChallengeQuestionUpdateWithoutLessonContentInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
+  gameType?: Prisma.EnumGameTypeFieldUpdateOperationsInput | $Enums.GameType
   question?: Prisma.StringFieldUpdateOperationsInput | string
   answer?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   optionA?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -938,11 +1092,13 @@ export type ChallengeQuestionUpdateWithoutLessonContentInput = {
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   challenge?: Prisma.GroupChallengeUpdateOneRequiredWithoutQuestionsNestedInput
   answers?: Prisma.ChallengeAnswerUpdateManyWithoutQuestionNestedInput
+  challengeQuestionItems?: Prisma.ChallengeQuestionItemUpdateManyWithoutChallengeQuestionNestedInput
 }
 
 export type ChallengeQuestionUncheckedUpdateWithoutLessonContentInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   challengeId?: Prisma.StringFieldUpdateOperationsInput | string
+  gameType?: Prisma.EnumGameTypeFieldUpdateOperationsInput | $Enums.GameType
   question?: Prisma.StringFieldUpdateOperationsInput | string
   answer?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   optionA?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -955,11 +1111,13 @@ export type ChallengeQuestionUncheckedUpdateWithoutLessonContentInput = {
   timeLimit?: Prisma.IntFieldUpdateOperationsInput | number
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   answers?: Prisma.ChallengeAnswerUncheckedUpdateManyWithoutQuestionNestedInput
+  challengeQuestionItems?: Prisma.ChallengeQuestionItemUncheckedUpdateManyWithoutChallengeQuestionNestedInput
 }
 
 export type ChallengeQuestionUncheckedUpdateManyWithoutLessonContentInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   challengeId?: Prisma.StringFieldUpdateOperationsInput | string
+  gameType?: Prisma.EnumGameTypeFieldUpdateOperationsInput | $Enums.GameType
   question?: Prisma.StringFieldUpdateOperationsInput | string
   answer?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   optionA?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -976,6 +1134,7 @@ export type ChallengeQuestionUncheckedUpdateManyWithoutLessonContentInput = {
 export type ChallengeQuestionCreateManyChallengeInput = {
   id?: string
   lessonContentId?: string | null
+  gameType?: $Enums.GameType
   question: string
   answer?: string | null
   optionA?: string | null
@@ -991,6 +1150,7 @@ export type ChallengeQuestionCreateManyChallengeInput = {
 
 export type ChallengeQuestionUpdateWithoutChallengeInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
+  gameType?: Prisma.EnumGameTypeFieldUpdateOperationsInput | $Enums.GameType
   question?: Prisma.StringFieldUpdateOperationsInput | string
   answer?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   optionA?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -1004,11 +1164,13 @@ export type ChallengeQuestionUpdateWithoutChallengeInput = {
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   lessonContent?: Prisma.LessonContentUpdateOneWithoutChallengeQuestionsNestedInput
   answers?: Prisma.ChallengeAnswerUpdateManyWithoutQuestionNestedInput
+  challengeQuestionItems?: Prisma.ChallengeQuestionItemUpdateManyWithoutChallengeQuestionNestedInput
 }
 
 export type ChallengeQuestionUncheckedUpdateWithoutChallengeInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   lessonContentId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  gameType?: Prisma.EnumGameTypeFieldUpdateOperationsInput | $Enums.GameType
   question?: Prisma.StringFieldUpdateOperationsInput | string
   answer?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   optionA?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -1021,11 +1183,13 @@ export type ChallengeQuestionUncheckedUpdateWithoutChallengeInput = {
   timeLimit?: Prisma.IntFieldUpdateOperationsInput | number
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   answers?: Prisma.ChallengeAnswerUncheckedUpdateManyWithoutQuestionNestedInput
+  challengeQuestionItems?: Prisma.ChallengeQuestionItemUncheckedUpdateManyWithoutChallengeQuestionNestedInput
 }
 
 export type ChallengeQuestionUncheckedUpdateManyWithoutChallengeInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   lessonContentId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  gameType?: Prisma.EnumGameTypeFieldUpdateOperationsInput | $Enums.GameType
   question?: Prisma.StringFieldUpdateOperationsInput | string
   answer?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   optionA?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -1046,10 +1210,12 @@ export type ChallengeQuestionUncheckedUpdateManyWithoutChallengeInput = {
 
 export type ChallengeQuestionCountOutputType = {
   answers: number
+  challengeQuestionItems: number
 }
 
 export type ChallengeQuestionCountOutputTypeSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   answers?: boolean | ChallengeQuestionCountOutputTypeCountAnswersArgs
+  challengeQuestionItems?: boolean | ChallengeQuestionCountOutputTypeCountChallengeQuestionItemsArgs
 }
 
 /**
@@ -1069,11 +1235,19 @@ export type ChallengeQuestionCountOutputTypeCountAnswersArgs<ExtArgs extends run
   where?: Prisma.ChallengeAnswerWhereInput
 }
 
+/**
+ * ChallengeQuestionCountOutputType without action
+ */
+export type ChallengeQuestionCountOutputTypeCountChallengeQuestionItemsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  where?: Prisma.ChallengeQuestionItemWhereInput
+}
+
 
 export type ChallengeQuestionSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
   id?: boolean
   challengeId?: boolean
   lessonContentId?: boolean
+  gameType?: boolean
   question?: boolean
   answer?: boolean
   optionA?: boolean
@@ -1088,6 +1262,7 @@ export type ChallengeQuestionSelect<ExtArgs extends runtime.Types.Extensions.Int
   challenge?: boolean | Prisma.GroupChallengeDefaultArgs<ExtArgs>
   lessonContent?: boolean | Prisma.ChallengeQuestion$lessonContentArgs<ExtArgs>
   answers?: boolean | Prisma.ChallengeQuestion$answersArgs<ExtArgs>
+  challengeQuestionItems?: boolean | Prisma.ChallengeQuestion$challengeQuestionItemsArgs<ExtArgs>
   _count?: boolean | Prisma.ChallengeQuestionCountOutputTypeDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["challengeQuestion"]>
 
@@ -1095,6 +1270,7 @@ export type ChallengeQuestionSelectCreateManyAndReturn<ExtArgs extends runtime.T
   id?: boolean
   challengeId?: boolean
   lessonContentId?: boolean
+  gameType?: boolean
   question?: boolean
   answer?: boolean
   optionA?: boolean
@@ -1114,6 +1290,7 @@ export type ChallengeQuestionSelectUpdateManyAndReturn<ExtArgs extends runtime.T
   id?: boolean
   challengeId?: boolean
   lessonContentId?: boolean
+  gameType?: boolean
   question?: boolean
   answer?: boolean
   optionA?: boolean
@@ -1133,6 +1310,7 @@ export type ChallengeQuestionSelectScalar = {
   id?: boolean
   challengeId?: boolean
   lessonContentId?: boolean
+  gameType?: boolean
   question?: boolean
   answer?: boolean
   optionA?: boolean
@@ -1146,11 +1324,12 @@ export type ChallengeQuestionSelectScalar = {
   createdAt?: boolean
 }
 
-export type ChallengeQuestionOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "challengeId" | "lessonContentId" | "question" | "answer" | "optionA" | "optionB" | "optionC" | "optionD" | "leftText" | "rightText" | "order" | "timeLimit" | "createdAt", ExtArgs["result"]["challengeQuestion"]>
+export type ChallengeQuestionOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "challengeId" | "lessonContentId" | "gameType" | "question" | "answer" | "optionA" | "optionB" | "optionC" | "optionD" | "leftText" | "rightText" | "order" | "timeLimit" | "createdAt", ExtArgs["result"]["challengeQuestion"]>
 export type ChallengeQuestionInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   challenge?: boolean | Prisma.GroupChallengeDefaultArgs<ExtArgs>
   lessonContent?: boolean | Prisma.ChallengeQuestion$lessonContentArgs<ExtArgs>
   answers?: boolean | Prisma.ChallengeQuestion$answersArgs<ExtArgs>
+  challengeQuestionItems?: boolean | Prisma.ChallengeQuestion$challengeQuestionItemsArgs<ExtArgs>
   _count?: boolean | Prisma.ChallengeQuestionCountOutputTypeDefaultArgs<ExtArgs>
 }
 export type ChallengeQuestionIncludeCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
@@ -1168,11 +1347,13 @@ export type $ChallengeQuestionPayload<ExtArgs extends runtime.Types.Extensions.I
     challenge: Prisma.$GroupChallengePayload<ExtArgs>
     lessonContent: Prisma.$LessonContentPayload<ExtArgs> | null
     answers: Prisma.$ChallengeAnswerPayload<ExtArgs>[]
+    challengeQuestionItems: Prisma.$ChallengeQuestionItemPayload<ExtArgs>[]
   }
   scalars: runtime.Types.Extensions.GetPayloadResult<{
     id: string
     challengeId: string
     lessonContentId: string | null
+    gameType: $Enums.GameType
     question: string
     answer: string | null
     optionA: string | null
@@ -1581,6 +1762,7 @@ export interface Prisma__ChallengeQuestionClient<T, Null = never, ExtArgs extend
   challenge<T extends Prisma.GroupChallengeDefaultArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.GroupChallengeDefaultArgs<ExtArgs>>): Prisma.Prisma__GroupChallengeClient<runtime.Types.Result.GetResult<Prisma.$GroupChallengePayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
   lessonContent<T extends Prisma.ChallengeQuestion$lessonContentArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.ChallengeQuestion$lessonContentArgs<ExtArgs>>): Prisma.Prisma__LessonContentClient<runtime.Types.Result.GetResult<Prisma.$LessonContentPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
   answers<T extends Prisma.ChallengeQuestion$answersArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.ChallengeQuestion$answersArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$ChallengeAnswerPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+  challengeQuestionItems<T extends Prisma.ChallengeQuestion$challengeQuestionItemsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.ChallengeQuestion$challengeQuestionItemsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$ChallengeQuestionItemPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   /**
    * Attaches callbacks for the resolution and/or rejection of the Promise.
    * @param onfulfilled The callback to execute when the Promise is resolved.
@@ -1613,6 +1795,7 @@ export interface ChallengeQuestionFieldRefs {
   readonly id: Prisma.FieldRef<"ChallengeQuestion", 'String'>
   readonly challengeId: Prisma.FieldRef<"ChallengeQuestion", 'String'>
   readonly lessonContentId: Prisma.FieldRef<"ChallengeQuestion", 'String'>
+  readonly gameType: Prisma.FieldRef<"ChallengeQuestion", 'GameType'>
   readonly question: Prisma.FieldRef<"ChallengeQuestion", 'String'>
   readonly answer: Prisma.FieldRef<"ChallengeQuestion", 'String'>
   readonly optionA: Prisma.FieldRef<"ChallengeQuestion", 'String'>
@@ -2065,6 +2248,30 @@ export type ChallengeQuestion$answersArgs<ExtArgs extends runtime.Types.Extensio
   take?: number
   skip?: number
   distinct?: Prisma.ChallengeAnswerScalarFieldEnum | Prisma.ChallengeAnswerScalarFieldEnum[]
+}
+
+/**
+ * ChallengeQuestion.challengeQuestionItems
+ */
+export type ChallengeQuestion$challengeQuestionItemsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the ChallengeQuestionItem
+   */
+  select?: Prisma.ChallengeQuestionItemSelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the ChallengeQuestionItem
+   */
+  omit?: Prisma.ChallengeQuestionItemOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.ChallengeQuestionItemInclude<ExtArgs> | null
+  where?: Prisma.ChallengeQuestionItemWhereInput
+  orderBy?: Prisma.ChallengeQuestionItemOrderByWithRelationInput | Prisma.ChallengeQuestionItemOrderByWithRelationInput[]
+  cursor?: Prisma.ChallengeQuestionItemWhereUniqueInput
+  take?: number
+  skip?: number
+  distinct?: Prisma.ChallengeQuestionItemScalarFieldEnum | Prisma.ChallengeQuestionItemScalarFieldEnum[]
 }
 
 /**

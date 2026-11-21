@@ -59,6 +59,7 @@ export type ChallengeAnswerCountAggregateOutputType = {
   challengeQuestionId: number
   participantId: number
   answer: number
+  answerData: number
   isCorrect: number
   responseTime: number
   submittedAt: number
@@ -99,6 +100,7 @@ export type ChallengeAnswerCountAggregateInputType = {
   challengeQuestionId?: true
   participantId?: true
   answer?: true
+  answerData?: true
   isCorrect?: true
   responseTime?: true
   submittedAt?: true
@@ -196,6 +198,7 @@ export type ChallengeAnswerGroupByOutputType = {
   challengeQuestionId: string
   participantId: string
   answer: string
+  answerData: runtime.JsonValue | null
   isCorrect: boolean
   responseTime: number
   submittedAt: Date
@@ -229,6 +232,7 @@ export type ChallengeAnswerWhereInput = {
   challengeQuestionId?: Prisma.StringFilter<"ChallengeAnswer"> | string
   participantId?: Prisma.StringFilter<"ChallengeAnswer"> | string
   answer?: Prisma.StringFilter<"ChallengeAnswer"> | string
+  answerData?: Prisma.JsonNullableFilter<"ChallengeAnswer">
   isCorrect?: Prisma.BoolFilter<"ChallengeAnswer"> | boolean
   responseTime?: Prisma.IntFilter<"ChallengeAnswer"> | number
   submittedAt?: Prisma.DateTimeFilter<"ChallengeAnswer"> | Date | string
@@ -241,6 +245,7 @@ export type ChallengeAnswerOrderByWithRelationInput = {
   challengeQuestionId?: Prisma.SortOrder
   participantId?: Prisma.SortOrder
   answer?: Prisma.SortOrder
+  answerData?: Prisma.SortOrderInput | Prisma.SortOrder
   isCorrect?: Prisma.SortOrder
   responseTime?: Prisma.SortOrder
   submittedAt?: Prisma.SortOrder
@@ -257,6 +262,7 @@ export type ChallengeAnswerWhereUniqueInput = Prisma.AtLeast<{
   challengeQuestionId?: Prisma.StringFilter<"ChallengeAnswer"> | string
   participantId?: Prisma.StringFilter<"ChallengeAnswer"> | string
   answer?: Prisma.StringFilter<"ChallengeAnswer"> | string
+  answerData?: Prisma.JsonNullableFilter<"ChallengeAnswer">
   isCorrect?: Prisma.BoolFilter<"ChallengeAnswer"> | boolean
   responseTime?: Prisma.IntFilter<"ChallengeAnswer"> | number
   submittedAt?: Prisma.DateTimeFilter<"ChallengeAnswer"> | Date | string
@@ -269,6 +275,7 @@ export type ChallengeAnswerOrderByWithAggregationInput = {
   challengeQuestionId?: Prisma.SortOrder
   participantId?: Prisma.SortOrder
   answer?: Prisma.SortOrder
+  answerData?: Prisma.SortOrderInput | Prisma.SortOrder
   isCorrect?: Prisma.SortOrder
   responseTime?: Prisma.SortOrder
   submittedAt?: Prisma.SortOrder
@@ -287,6 +294,7 @@ export type ChallengeAnswerScalarWhereWithAggregatesInput = {
   challengeQuestionId?: Prisma.StringWithAggregatesFilter<"ChallengeAnswer"> | string
   participantId?: Prisma.StringWithAggregatesFilter<"ChallengeAnswer"> | string
   answer?: Prisma.StringWithAggregatesFilter<"ChallengeAnswer"> | string
+  answerData?: Prisma.JsonNullableWithAggregatesFilter<"ChallengeAnswer">
   isCorrect?: Prisma.BoolWithAggregatesFilter<"ChallengeAnswer"> | boolean
   responseTime?: Prisma.IntWithAggregatesFilter<"ChallengeAnswer"> | number
   submittedAt?: Prisma.DateTimeWithAggregatesFilter<"ChallengeAnswer"> | Date | string
@@ -295,6 +303,7 @@ export type ChallengeAnswerScalarWhereWithAggregatesInput = {
 export type ChallengeAnswerCreateInput = {
   id?: string
   answer: string
+  answerData?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   isCorrect: boolean
   responseTime: number
   submittedAt?: Date | string
@@ -307,6 +316,7 @@ export type ChallengeAnswerUncheckedCreateInput = {
   challengeQuestionId: string
   participantId: string
   answer: string
+  answerData?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   isCorrect: boolean
   responseTime: number
   submittedAt?: Date | string
@@ -315,6 +325,7 @@ export type ChallengeAnswerUncheckedCreateInput = {
 export type ChallengeAnswerUpdateInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   answer?: Prisma.StringFieldUpdateOperationsInput | string
+  answerData?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   isCorrect?: Prisma.BoolFieldUpdateOperationsInput | boolean
   responseTime?: Prisma.IntFieldUpdateOperationsInput | number
   submittedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -327,6 +338,7 @@ export type ChallengeAnswerUncheckedUpdateInput = {
   challengeQuestionId?: Prisma.StringFieldUpdateOperationsInput | string
   participantId?: Prisma.StringFieldUpdateOperationsInput | string
   answer?: Prisma.StringFieldUpdateOperationsInput | string
+  answerData?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   isCorrect?: Prisma.BoolFieldUpdateOperationsInput | boolean
   responseTime?: Prisma.IntFieldUpdateOperationsInput | number
   submittedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -337,6 +349,7 @@ export type ChallengeAnswerCreateManyInput = {
   challengeQuestionId: string
   participantId: string
   answer: string
+  answerData?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   isCorrect: boolean
   responseTime: number
   submittedAt?: Date | string
@@ -345,6 +358,7 @@ export type ChallengeAnswerCreateManyInput = {
 export type ChallengeAnswerUpdateManyMutationInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   answer?: Prisma.StringFieldUpdateOperationsInput | string
+  answerData?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   isCorrect?: Prisma.BoolFieldUpdateOperationsInput | boolean
   responseTime?: Prisma.IntFieldUpdateOperationsInput | number
   submittedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -355,6 +369,7 @@ export type ChallengeAnswerUncheckedUpdateManyInput = {
   challengeQuestionId?: Prisma.StringFieldUpdateOperationsInput | string
   participantId?: Prisma.StringFieldUpdateOperationsInput | string
   answer?: Prisma.StringFieldUpdateOperationsInput | string
+  answerData?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   isCorrect?: Prisma.BoolFieldUpdateOperationsInput | boolean
   responseTime?: Prisma.IntFieldUpdateOperationsInput | number
   submittedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -380,6 +395,7 @@ export type ChallengeAnswerCountOrderByAggregateInput = {
   challengeQuestionId?: Prisma.SortOrder
   participantId?: Prisma.SortOrder
   answer?: Prisma.SortOrder
+  answerData?: Prisma.SortOrder
   isCorrect?: Prisma.SortOrder
   responseTime?: Prisma.SortOrder
   submittedAt?: Prisma.SortOrder
@@ -500,6 +516,7 @@ export type ChallengeAnswerUncheckedUpdateManyWithoutParticipantNestedInput = {
 export type ChallengeAnswerCreateWithoutQuestionInput = {
   id?: string
   answer: string
+  answerData?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   isCorrect: boolean
   responseTime: number
   submittedAt?: Date | string
@@ -510,6 +527,7 @@ export type ChallengeAnswerUncheckedCreateWithoutQuestionInput = {
   id?: string
   participantId: string
   answer: string
+  answerData?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   isCorrect: boolean
   responseTime: number
   submittedAt?: Date | string
@@ -549,6 +567,7 @@ export type ChallengeAnswerScalarWhereInput = {
   challengeQuestionId?: Prisma.StringFilter<"ChallengeAnswer"> | string
   participantId?: Prisma.StringFilter<"ChallengeAnswer"> | string
   answer?: Prisma.StringFilter<"ChallengeAnswer"> | string
+  answerData?: Prisma.JsonNullableFilter<"ChallengeAnswer">
   isCorrect?: Prisma.BoolFilter<"ChallengeAnswer"> | boolean
   responseTime?: Prisma.IntFilter<"ChallengeAnswer"> | number
   submittedAt?: Prisma.DateTimeFilter<"ChallengeAnswer"> | Date | string
@@ -557,6 +576,7 @@ export type ChallengeAnswerScalarWhereInput = {
 export type ChallengeAnswerCreateWithoutParticipantInput = {
   id?: string
   answer: string
+  answerData?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   isCorrect: boolean
   responseTime: number
   submittedAt?: Date | string
@@ -567,6 +587,7 @@ export type ChallengeAnswerUncheckedCreateWithoutParticipantInput = {
   id?: string
   challengeQuestionId: string
   answer: string
+  answerData?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   isCorrect: boolean
   responseTime: number
   submittedAt?: Date | string
@@ -602,6 +623,7 @@ export type ChallengeAnswerCreateManyQuestionInput = {
   id?: string
   participantId: string
   answer: string
+  answerData?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   isCorrect: boolean
   responseTime: number
   submittedAt?: Date | string
@@ -610,6 +632,7 @@ export type ChallengeAnswerCreateManyQuestionInput = {
 export type ChallengeAnswerUpdateWithoutQuestionInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   answer?: Prisma.StringFieldUpdateOperationsInput | string
+  answerData?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   isCorrect?: Prisma.BoolFieldUpdateOperationsInput | boolean
   responseTime?: Prisma.IntFieldUpdateOperationsInput | number
   submittedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -620,6 +643,7 @@ export type ChallengeAnswerUncheckedUpdateWithoutQuestionInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   participantId?: Prisma.StringFieldUpdateOperationsInput | string
   answer?: Prisma.StringFieldUpdateOperationsInput | string
+  answerData?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   isCorrect?: Prisma.BoolFieldUpdateOperationsInput | boolean
   responseTime?: Prisma.IntFieldUpdateOperationsInput | number
   submittedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -629,6 +653,7 @@ export type ChallengeAnswerUncheckedUpdateManyWithoutQuestionInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   participantId?: Prisma.StringFieldUpdateOperationsInput | string
   answer?: Prisma.StringFieldUpdateOperationsInput | string
+  answerData?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   isCorrect?: Prisma.BoolFieldUpdateOperationsInput | boolean
   responseTime?: Prisma.IntFieldUpdateOperationsInput | number
   submittedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -638,6 +663,7 @@ export type ChallengeAnswerCreateManyParticipantInput = {
   id?: string
   challengeQuestionId: string
   answer: string
+  answerData?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   isCorrect: boolean
   responseTime: number
   submittedAt?: Date | string
@@ -646,6 +672,7 @@ export type ChallengeAnswerCreateManyParticipantInput = {
 export type ChallengeAnswerUpdateWithoutParticipantInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   answer?: Prisma.StringFieldUpdateOperationsInput | string
+  answerData?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   isCorrect?: Prisma.BoolFieldUpdateOperationsInput | boolean
   responseTime?: Prisma.IntFieldUpdateOperationsInput | number
   submittedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -656,6 +683,7 @@ export type ChallengeAnswerUncheckedUpdateWithoutParticipantInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   challengeQuestionId?: Prisma.StringFieldUpdateOperationsInput | string
   answer?: Prisma.StringFieldUpdateOperationsInput | string
+  answerData?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   isCorrect?: Prisma.BoolFieldUpdateOperationsInput | boolean
   responseTime?: Prisma.IntFieldUpdateOperationsInput | number
   submittedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -665,6 +693,7 @@ export type ChallengeAnswerUncheckedUpdateManyWithoutParticipantInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   challengeQuestionId?: Prisma.StringFieldUpdateOperationsInput | string
   answer?: Prisma.StringFieldUpdateOperationsInput | string
+  answerData?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   isCorrect?: Prisma.BoolFieldUpdateOperationsInput | boolean
   responseTime?: Prisma.IntFieldUpdateOperationsInput | number
   submittedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -677,6 +706,7 @@ export type ChallengeAnswerSelect<ExtArgs extends runtime.Types.Extensions.Inter
   challengeQuestionId?: boolean
   participantId?: boolean
   answer?: boolean
+  answerData?: boolean
   isCorrect?: boolean
   responseTime?: boolean
   submittedAt?: boolean
@@ -689,6 +719,7 @@ export type ChallengeAnswerSelectCreateManyAndReturn<ExtArgs extends runtime.Typ
   challengeQuestionId?: boolean
   participantId?: boolean
   answer?: boolean
+  answerData?: boolean
   isCorrect?: boolean
   responseTime?: boolean
   submittedAt?: boolean
@@ -701,6 +732,7 @@ export type ChallengeAnswerSelectUpdateManyAndReturn<ExtArgs extends runtime.Typ
   challengeQuestionId?: boolean
   participantId?: boolean
   answer?: boolean
+  answerData?: boolean
   isCorrect?: boolean
   responseTime?: boolean
   submittedAt?: boolean
@@ -713,12 +745,13 @@ export type ChallengeAnswerSelectScalar = {
   challengeQuestionId?: boolean
   participantId?: boolean
   answer?: boolean
+  answerData?: boolean
   isCorrect?: boolean
   responseTime?: boolean
   submittedAt?: boolean
 }
 
-export type ChallengeAnswerOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "challengeQuestionId" | "participantId" | "answer" | "isCorrect" | "responseTime" | "submittedAt", ExtArgs["result"]["challengeAnswer"]>
+export type ChallengeAnswerOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "challengeQuestionId" | "participantId" | "answer" | "answerData" | "isCorrect" | "responseTime" | "submittedAt", ExtArgs["result"]["challengeAnswer"]>
 export type ChallengeAnswerInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   question?: boolean | Prisma.ChallengeQuestionDefaultArgs<ExtArgs>
   participant?: boolean | Prisma.ChallengeParticipantDefaultArgs<ExtArgs>
@@ -743,6 +776,7 @@ export type $ChallengeAnswerPayload<ExtArgs extends runtime.Types.Extensions.Int
     challengeQuestionId: string
     participantId: string
     answer: string
+    answerData: runtime.JsonValue | null
     isCorrect: boolean
     responseTime: number
     submittedAt: Date
@@ -1175,6 +1209,7 @@ export interface ChallengeAnswerFieldRefs {
   readonly challengeQuestionId: Prisma.FieldRef<"ChallengeAnswer", 'String'>
   readonly participantId: Prisma.FieldRef<"ChallengeAnswer", 'String'>
   readonly answer: Prisma.FieldRef<"ChallengeAnswer", 'String'>
+  readonly answerData: Prisma.FieldRef<"ChallengeAnswer", 'Json'>
   readonly isCorrect: Prisma.FieldRef<"ChallengeAnswer", 'Boolean'>
   readonly responseTime: Prisma.FieldRef<"ChallengeAnswer", 'Int'>
   readonly submittedAt: Prisma.FieldRef<"ChallengeAnswer", 'DateTime'>

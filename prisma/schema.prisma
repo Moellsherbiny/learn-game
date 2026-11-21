@@ -379,7 +379,7 @@ model ChallengeQuestion {
   id              String  @id @default(cuid())
   challengeId     String
   lessonContentId String?
-
+  gameType GameType @default(QUIZ)
   question String
   answer   String?
 
@@ -403,6 +403,7 @@ model ChallengeQuestion {
 
   @@unique([challengeId, order])
   @@index([lessonContentId])
+  challengeQuestionItems ChallengeQuestionItem[]
 }
 
 model ChallengeParticipant {
@@ -433,6 +434,7 @@ model ChallengeAnswer {
   participant ChallengeParticipant @relation(fields: [participantId], references: [id], onDelete: Cascade)
 
   answer       String
+  answerData   Json?
   isCorrect    Boolean
   responseTime Int
 
@@ -460,4 +462,18 @@ model ChallengeInvitation {
   @@unique([challengeId, studentId])
   @@index([studentId, status])
   @@index([challengeId, status])
+}
+
+model ChallengeQuestionItem {
+  id                  String @id @default(cuid())
+  challengeQuestionId String
+
+  leftText  String
+  rightText String
+
+  challengeQuestion ChallengeQuestion @relation(fields: [challengeQuestionId],references: [id],onDelete: Cascade)
+
+  createdAt DateTime @default(now())
+
+  @@index([challengeQuestionId])
 }

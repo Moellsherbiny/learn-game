@@ -39,30 +39,70 @@ export function StudentGroupChallengeLobby({
 
   const { participant, challenge } = data;
 
-  useEffect(() => {
-    const interval = setInterval(async () => {
-      try {
-        const updated = await getStudentGroupChallengeAction(challengeId);
-        setData(updated);
+useEffect(() => {
+  let isActive = true;
+  let isNavigating = false;
+  let isChecking = false;
 
-        if (updated.challenge.status === "LIVE") {
-          router.replace(
-            `/student/group-challenges/${challengeId}/live`
-          );
-        }
+  const checkChallengeStatus = async () => {
+    if (!isActive || isNavigating || isChecking) return;
 
-        if (updated.challenge.status === "FINISHED") {
-          router.replace(
-            `/student/group-challenges/${challengeId}/results`
-          );
-        }
-      } catch {
-        // Keep the current lobby state if a refresh temporarily fails.
+    isChecking = true;
+
+    try {
+      const updated =
+        await getStudentGroupChallengeAction(challengeId);
+
+      if (!isActive) return;
+
+      setData(updated);
+
+      console.log(
+        "[Student Lobby] Challenge status:",
+        updated.challenge.status
+      );
+
+      if (updated.challenge.status === "LIVE") {
+        isNavigating = true;
+
+        router.replace(
+          `/student/group-challenges/${challengeId}/live`
+        );
+
+        return;
       }
-    }, 3000);
 
-    return () => clearInterval(interval);
-  }, [challengeId, router]);
+      if (updated.challenge.status === "FINISHED") {
+        isNavigating = true;
+
+        router.replace(
+          `/student/group-challenges/${challengeId}/results`
+        );
+      }
+    } catch (error) {
+      console.error(
+        "[Student Lobby] Failed to check challenge status:",
+        error
+      );
+    } finally {
+      isChecking = false;
+    }
+  };
+
+  // Check immediately when the lobby mounts.
+  checkChallengeStatus();
+
+  // Continue checking every 2 seconds.
+  const interval = setInterval(
+    checkChallengeStatus,
+    2000
+  );
+
+  return () => {
+    isActive = false;
+    clearInterval(interval);
+  };
+}, [challengeId, router]);
 
   const handleReady = () => {
     startTransition(async () => {

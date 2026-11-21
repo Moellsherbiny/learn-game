@@ -1,4 +1,3 @@
-
 "use server";
 
 import { auth } from "@/auth";
@@ -60,9 +59,7 @@ export async function getTeacherCoursesForChallengeAction() {
 // 2. Get Course Questions
 // ============================================
 
-export async function getCourseChallengeQuestionsAction(
-  courseId: string
-) {
+export async function getCourseChallengeQuestionsAction(courseId: string) {
   const teacherId = await requireTeacher();
 
   if (!courseId?.trim()) {
@@ -108,6 +105,7 @@ export async function getCourseChallengeQuestionsAction(
           id: true,
           title: true,
           order: true,
+          gameType: true,
 
           contents: {
             orderBy: {

@@ -18,6 +18,9 @@ type CreateGroupChallengeInput = {
   timeLimit?: number;
 };
 
+const QUESTION_TIME_LIMIT = 60;
+const MAX_CHALLENGE_QUESTIONS = 50;
+
 // ============================================
 // Authentication
 // ============================================
@@ -46,7 +49,7 @@ async function generateChallengeCode() {
   for (let attempt = 0; attempt < 5; attempt++) {
     const code = Array.from(
       { length: 8 },
-      () => characters[randomInt(characters.length)]
+      () => characters[randomInt(characters.length)],
     ).join("");
 
     const existing = await prisma.groupChallenge.findUnique({
@@ -63,11 +66,19 @@ async function generateChallengeCode() {
 }
 
 // ============================================
+// Matching Helpers
+// ============================================
+
+function getMatchingGroupKey(lessonId: string, question: string) {
+  return JSON.stringify([lessonId, question]);
+}
+
+// ============================================
 // 1. Create Group Challenge
 // ============================================
 
 export async function createGroupChallengeAction(
-  data: CreateGroupChallengeInput
+  data: CreateGroupChallengeInput,
 ) {
   const teacherId = await requireTeacher();
 
@@ -87,13 +98,13 @@ export async function createGroupChallengeAction(
     throw new Error("يجب اختيار سؤال واحد على الأقل.");
   }
 
-  if (questionIds.length > 50) {
-    throw new Error("الحد الأقصى للأسئلة هو 50 سؤالاً.");
+  if (questionIds.length > 250) {
+    throw new Error("عدد العناصر المختارة كبير جدًا.");
   }
 
   if (
     questionIds.some(
-      (id) => typeof id !== "string" || !id.trim()
+      (id) => typeof id !== "string" || !id.trim(),
     )
   ) {
     throw new Error("قائمة الأسئلة غير صحيحة.");
@@ -105,17 +116,13 @@ export async function createGroupChallengeAction(
     throw new Error("لا يمكن اختيار السؤال أكثر من مرة.");
   }
 
-  const timeLimit = 60;
+  // Fixed question time
+  const timeLimit = QUESTION_TIME_LIMIT;
 
-  if (
-    !Number.isInteger(timeLimit) ||
-    timeLimit < 5 ||
-    timeLimit > 300
-  ) {
-    throw new Error("وقت السؤال يجب أن يكون بين 5 و300 ثانية.");
-  }
-
+  // ============================================
   // Verify course ownership
+  // ============================================
+
   const course = await prisma.course.findFirst({
     where: {
       id: courseId,
@@ -130,7 +137,10 @@ export async function createGroupChallengeAction(
     throw new Error("الكورس غير موجود أو غير مصرح لك.");
   }
 
-  // Fetch selected questions from the teacher's course
+  // ============================================
+  // Fetch selected lesson contents
+  // ============================================
+
   const contents = await prisma.lessonContent.findMany({
     where: {
       id: {
@@ -153,6 +163,7 @@ export async function createGroupChallengeAction(
     },
     select: {
       id: true,
+      lessonId: true,
       question: true,
       answer: true,
       optionA: true,
@@ -161,18 +172,27 @@ export async function createGroupChallengeAction(
       optionD: true,
       leftText: true,
       rightText: true,
+      sortOrder: true,
+      lesson: {
+        select: {
+          gameType: true,
+        },
+      },
     },
   });
 
   if (contents.length !== uniqueQuestionIds.length) {
     throw new Error(
-      "بعض الأسئلة غير موجودة أو لا تنتمي إلى هذا الكورس."
+      "بعض الأسئلة غير موجودة أو لا تنتمي إلى هذا الكورس.",
     );
   }
 
-  // Keep the same order selected by the teacher
+  // ============================================
+  // Preserve teacher selection order
+  // ============================================
+
   const contentById = new Map(
-    contents.map((content) => [content.id, content])
+    contents.map((content) => [content.id, content]),
   );
 
   const orderedContents = uniqueQuestionIds.map((id) => {
@@ -185,9 +205,229 @@ export async function createGroupChallengeAction(
     return content;
   });
 
+  // ============================================
+  // Fetch all Matching items for selected lessons
+  // ============================================
+
+  const matchingLessonIds = [
+    ...new Set(
+      orderedContents
+        .filter((content) => content.lesson.gameType === "MATCHING")
+        .map((content) => content.lessonId),
+    ),
+  ];
+
+  const allMatchingContents =
+    matchingLessonIds.length > 0
+      ? await prisma.lessonContent.findMany({
+          where: {
+            lessonId: {
+              in: matchingLessonIds,
+            },
+            lesson: {
+              is: {
+                module: {
+                  is: {
+                    course: {
+                      is: {
+                        id: courseId,
+                        teacherId,
+                      },
+                    },
+                  },
+                },
+              },
+            },
+          },
+          select: {
+            id: true,
+            lessonId: true,
+            question: true,
+            leftText: true,
+            rightText: true,
+            sortOrder: true,
+          },
+          orderBy: {
+            sortOrder: "asc",
+          },
+        })
+      : [];
+
+  // ============================================
+  // Group Matching items
+  // ============================================
+
+  const matchingGroups = new Map<
+    string,
+    typeof allMatchingContents
+  >();
+
+  for (const item of allMatchingContents) {
+    const key = getMatchingGroupKey(
+      item.lessonId,
+      item.question,
+    );
+
+    const group = matchingGroups.get(key) ?? [];
+
+    group.push(item);
+
+    matchingGroups.set(key, group);
+  }
+
+  // ============================================
+  // Prepare challenge questions
+  // ============================================
+
+  type PreparedQuestion = {
+    lessonContentId: string;
+    gameType: (typeof orderedContents)[number]["lesson"]["gameType"];
+    question: string;
+    answer: string | null;
+    optionA: string | null;
+    optionB: string | null;
+    optionC: string | null;
+    optionD: string | null;
+    leftText: string | null;
+    rightText: string | null;
+    matchingItems?: {
+      leftText: string;
+      rightText: string;
+    }[];
+  };
+
+  const preparedQuestions: PreparedQuestion[] = [];
+  const processedMatchingGroups = new Set<string>();
+
+  for (const content of orderedContents) {
+    const gameType = content.lesson.gameType;
+
+    // --------------------------------------------
+    // Matching
+    // --------------------------------------------
+
+    if (gameType === "MATCHING") {
+      const groupKey = getMatchingGroupKey(
+        content.lessonId,
+        content.question,
+      );
+
+      // A matching group should become one question.
+      if (processedMatchingGroups.has(groupKey)) {
+        continue;
+      }
+
+      processedMatchingGroups.add(groupKey);
+
+      const matchingItems = matchingGroups.get(groupKey) ?? [];
+
+      if (matchingItems.length === 0) {
+        throw new Error(
+          "مجموعة المطابقة لا تحتوي على عناصر.",
+        );
+      }
+
+      // Ensure teacher selected the entire matching group.
+      const selectedIds = new Set(
+        orderedContents
+          .filter(
+            (item) =>
+              item.lesson.gameType === "MATCHING" &&
+              getMatchingGroupKey(
+                item.lessonId,
+                item.question,
+              ) === groupKey,
+          )
+          .map((item) => item.id),
+      );
+
+      const allGroupIds = new Set(
+        matchingItems.map((item) => item.id),
+      );
+
+      const isComplete =
+        selectedIds.size === allGroupIds.size &&
+        [...allGroupIds].every((id) => selectedIds.has(id));
+
+      if (!isComplete) {
+        throw new Error(
+          "يجب اختيار جميع عناصر مجموعة المطابقة معًا.",
+        );
+      }
+
+      // Validate matching pairs.
+      const hasInvalidPair = matchingItems.some(
+        (item) =>
+          !item.leftText?.trim() ||
+          !item.rightText?.trim(),
+      );
+
+      if (hasInvalidPair) {
+        throw new Error(
+          "بعض عناصر المطابقة لا تحتوي على طرفي السؤال.",
+        );
+      }
+
+      preparedQuestions.push({
+        lessonContentId: matchingItems[0].id,
+        gameType,
+        question: content.question,
+        answer: null,
+        optionA: null,
+        optionB: null,
+        optionC: null,
+        optionD: null,
+        leftText: null,
+        rightText: null,
+        matchingItems: matchingItems.map((item) => ({
+          leftText: item.leftText!,
+          rightText: item.rightText!,
+        })),
+      });
+
+      continue;
+    }
+
+    // --------------------------------------------
+    // Other question types
+    // --------------------------------------------
+
+    preparedQuestions.push({
+      lessonContentId: content.id,
+      gameType,
+      question: content.question,
+      answer: content.answer,
+      optionA: content.optionA,
+      optionB: content.optionB,
+      optionC: content.optionC,
+      optionD: content.optionD,
+      leftText: content.leftText,
+      rightText: content.rightText,
+    });
+  }
+
+  // ============================================
+  // Validate final question count
+  // ============================================
+
+  if (preparedQuestions.length === 0) {
+    throw new Error("لا توجد أسئلة صالحة لإنشاء التحدي.");
+  }
+
+  if (preparedQuestions.length > MAX_CHALLENGE_QUESTIONS) {
+    throw new Error("الحد الأقصى للأسئلة هو 50 سؤالاً.");
+  }
+
+  // ============================================
+  // Generate challenge code
+  // ============================================
+
   const code = await generateChallengeCode();
 
-  // Create challenge and snapshot questions atomically
+  // ============================================
+  // Create challenge and snapshot atomically
+  // ============================================
+
   const challenge = await prisma.$transaction(async (tx) => {
     return tx.groupChallenge.create({
       data: {
@@ -195,24 +435,32 @@ export async function createGroupChallengeAction(
         code,
         teacherId,
         courseId,
-        questionTimeSeconds: 60,
+        questionTimeSeconds: timeLimit,
+
         questions: {
-          create: orderedContents.map((content, index) => ({
-            lessonContentId: content.id,
+          create: preparedQuestions.map((question, index) => ({
+            lessonContentId: question.lessonContentId,
 
-            question: content.question,
-            answer: content.answer,
+            gameType: question.gameType,
+            question: question.question,
+            answer: question.answer,
 
-            optionA: content.optionA,
-            optionB: content.optionB,
-            optionC: content.optionC,
-            optionD: content.optionD,
+            optionA: question.optionA,
+            optionB: question.optionB,
+            optionC: question.optionC,
+            optionD: question.optionD,
 
-            leftText: content.leftText,
-            rightText: content.rightText,
+            leftText: question.leftText,
+            rightText: question.rightText,
 
             order: index + 1,
-            timeLimit: 60,
+            timeLimit,
+
+            ...(question.matchingItems && {
+              challengeQuestionItems: {
+                create: question.matchingItems,
+              },
+            }),
           })),
         },
       },
@@ -222,6 +470,15 @@ export async function createGroupChallengeAction(
           select: {
             id: true,
             title: true,
+          },
+        },
+
+        questions: {
+          orderBy: {
+            order: "asc",
+          },
+          include: {
+            challengeQuestionItems: true,
           },
         },
 
@@ -286,7 +543,7 @@ export async function getTeacherGroupChallengesAction() {
 // ============================================
 
 export async function getGroupChallengeByIdAction(
-  challengeId: string
+  challengeId: string,
 ) {
   const teacherId = await requireTeacher();
 
@@ -314,6 +571,12 @@ export async function getGroupChallengeByIdAction(
         },
 
         include: {
+          challengeQuestionItems: {
+            orderBy: {
+              createdAt: "asc",
+            },
+          },
+
           lessonContent: {
             select: {
               id: true,

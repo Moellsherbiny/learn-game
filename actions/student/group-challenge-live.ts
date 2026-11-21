@@ -27,6 +27,37 @@ async function requireStudent() {
 }
 
 // ============================================
+// Helpers
+// ============================================
+
+function hashString(value: string): number {
+  let hash = 0;
+
+  for (let index = 0; index < value.length; index++) {
+    hash = (hash * 31 + value.charCodeAt(index)) | 0;
+  }
+
+  return hash >>> 0;
+}
+
+function stableShuffle<T>(
+  items: T[],
+  getKey: (item: T) => string,
+  seed: string
+): T[] {
+  return [...items].sort((a, b) => {
+    const hashA = hashString(`${seed}:${getKey(a)}`);
+    const hashB = hashString(`${seed}:${getKey(b)}`);
+
+    if (hashA === hashB) {
+      return getKey(a).localeCompare(getKey(b));
+    }
+
+    return hashA - hashB;
+  });
+}
+
+// ============================================
 // Get Live Challenge State
 // ============================================
 
@@ -47,7 +78,6 @@ export async function getStudentGroupChallengeLiveStateAction(
         studentId,
       },
     },
-
     select: {
       id: true,
       team: true,
@@ -65,7 +95,6 @@ export async function getStudentGroupChallengeLiveStateAction(
     where: {
       id: challengeId,
     },
-
     select: {
       id: true,
       title: true,
@@ -83,7 +112,6 @@ export async function getStudentGroupChallengeLiveStateAction(
         orderBy: {
           joinedAt: "asc",
         },
-
         select: {
           id: true,
           team: true,
@@ -105,6 +133,10 @@ export async function getStudentGroupChallengeLiveStateAction(
   if (!challenge) {
     throw new Error("التحدي غير موجود.");
   }
+
+  // ============================================
+  // Team Statistics
+  // ============================================
 
   const teamA = challenge.participants.filter(
     (item) => item.team === "TEAM_A"
@@ -138,34 +170,58 @@ export async function getStudentGroupChallengeLiveStateAction(
     (item) => item.isReady
   ).length;
 
-  // Do not expose questions before the challenge starts
+  // ============================================
+  // Current Question State
+  // ============================================
+
   let currentQuestion = null;
   let hasAnswered = false;
-  let remainingSeconds = null;
+  let remainingSeconds: number | null = null;
 
+  // Do not expose questions before the challenge starts
   if (challenge.status === GroupChallengeStatus.LIVE) {
     const question = await prisma.challengeQuestion.findFirst({
       where: {
         challengeId,
         order: challenge.currentQuestionIndex + 1,
       },
-
       select: {
         id: true,
         question: true,
+        gameType: true,
+
         optionA: true,
         optionB: true,
         optionC: true,
         optionD: true,
+
         leftText: true,
         rightText: true,
+
         order: true,
         timeLimit: true,
+
+        challengeQuestionItems: {
+          select: {
+            id: true,
+            leftText: true,
+            rightText: true,
+          },
+        },
       },
     });
 
     if (question) {
-      currentQuestion = question;
+      // Reject unsupported game types in Group Challenge.
+      if (
+        question.gameType !== "QUIZ" &&
+        question.gameType !== "MATCHING" &&
+        question.gameType !== "FILL_BLANKS"
+      ) {
+        throw new Error(
+          "نوع السؤال غير مدعوم في تحديات المجموعات."
+        );
+      }
 
       const existingAnswer = await prisma.challengeAnswer.findUnique({
         where: {
@@ -174,7 +230,6 @@ export async function getStudentGroupChallengeLiveStateAction(
             participantId: participant.id,
           },
         },
-
         select: {
           id: true,
           isCorrect: true,
@@ -198,8 +253,62 @@ export async function getStudentGroupChallengeLiveStateAction(
           question.timeLimit - elapsedSeconds
         );
       }
+
+      // ============================================
+      // Prepare Safe Question Data
+      // ============================================
+
+      const {
+        challengeQuestionItems,
+        leftText,
+        rightText,
+        ...safeQuestion
+      } = question;
+
+      if (question.gameType === "MATCHING") {
+        const matchingItems = challengeQuestionItems;
+
+        const leftOptions = stableShuffle(
+          matchingItems.map((item) => ({
+            id: item.id,
+            text: item.leftText,
+          })),
+          (item) => item.id,
+          `${question.id}:left`
+        );
+
+        const rightOptions = stableShuffle(
+          matchingItems.map((item) => ({
+            id: item.id,
+            text: item.rightText,
+          })),
+          (item) => item.id,
+          `${question.id}:right`
+        );
+
+        currentQuestion = {
+          ...safeQuestion,
+          leftText: null,
+          rightText: null,
+          matchingOptions: {
+            left: leftOptions,
+            right: rightOptions,
+          },
+        };
+      } else {
+        currentQuestion = {
+          ...safeQuestion,
+          leftText,
+          rightText,
+          matchingOptions: null,
+        };
+      }
     }
   }
+
+  // ============================================
+  // Response
+  // ============================================
 
   return {
     success: true,

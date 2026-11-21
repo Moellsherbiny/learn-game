@@ -16,13 +16,23 @@ type ChallengeLiveState = Awaited<
   ReturnType<typeof getStudentGroupChallengeLiveStateAction>
 >;
 
+type StoredState = {
+  challengeId: string;
+  data: ChallengeLiveState | null;
+  error: string | null;
+};
+
 export function useGroupChallengeRealtime(
   challengeId: string,
   interval = 2000
 ) {
-  const [data, setData] = useState<ChallengeLiveState | null>(null);
+  const [state, setState] = useState<StoredState>({
+    challengeId,
+    data: null,
+    error: null,
+  });
+
   const [isLoading, setIsLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
 
   const requestInProgress = useRef(false);
   const mounted = useRef(false);
@@ -39,16 +49,25 @@ export function useGroupChallengeRealtime(
         await getStudentGroupChallengeLiveStateAction(challengeId);
 
       if (mounted.current) {
-        setData(result);
-        setError(null);
+        setState({
+          challengeId,
+          data: result,
+          error: null,
+        });
       }
     } catch (err) {
       if (mounted.current) {
-        setError(
-          err instanceof Error
-            ? err.message
-            : "حدث خطأ أثناء تحديث بيانات التحدي."
-        );
+        setState((previous) => ({
+          challengeId,
+          data:
+            previous.challengeId === challengeId
+              ? previous.data
+              : null,
+          error:
+            err instanceof Error
+              ? err.message
+              : "حدث خطأ أثناء تحديث بيانات التحدي.",
+        }));
       }
     } finally {
       requestInProgress.current = false;
@@ -60,27 +79,75 @@ export function useGroupChallengeRealtime(
   }, [challengeId]);
 
   useEffect(() => {
+    let active = true;
+
     mounted.current = true;
+    requestInProgress.current = false;
+
+    const runFetch = async () => {
+      if (!active || requestInProgress.current) {
+        return;
+      }
+
+      requestInProgress.current = true;
+
+      try {
+        const result =
+          await getStudentGroupChallengeLiveStateAction(challengeId);
+
+        if (active) {
+          setState({
+            challengeId,
+            data: result,
+            error: null,
+          });
+        }
+      } catch (err) {
+        if (active) {
+          setState((previous) => ({
+            challengeId,
+            data:
+              previous.challengeId === challengeId
+                ? previous.data
+                : null,
+            error:
+              err instanceof Error
+                ? err.message
+                : "حدث خطأ أثناء تحديث بيانات التحدي.",
+          }));
+        }
+      } finally {
+        requestInProgress.current = false;
+
+        if (active) {
+          setIsLoading(false);
+        }
+      }
+    };
 
     const initialRequest = setTimeout(() => {
-      void fetchState();
+      void runFetch();
     }, 0);
 
     const timer = setInterval(() => {
-      void fetchState();
+      void runFetch();
     }, interval);
 
     return () => {
+      active = false;
       mounted.current = false;
+
       clearTimeout(initialRequest);
       clearInterval(timer);
     };
-  }, [fetchState, interval]);
+  }, [challengeId, interval]);
+
+  const isCurrentChallenge = state.challengeId === challengeId;
 
   return {
-    data,
-    isLoading,
-    error,
+    data: isCurrentChallenge ? state.data : null,
+    isLoading: isCurrentChallenge ? isLoading : true,
+    error: isCurrentChallenge ? state.error : null,
     refresh: fetchState,
   };
 }

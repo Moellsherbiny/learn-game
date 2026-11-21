@@ -2,7 +2,7 @@
 
 import { useMemo, useState } from "react";
 import Link from "next/link";
-
+import { useRouter } from "next/navigation";
 import {
   ArrowRight,
   BookOpen,
@@ -17,17 +17,12 @@ import {
   Users,
   X,
 } from "lucide-react";
-
 import { toast } from "sonner";
-import { useRouter } from "next/navigation";
 
 import { getCourseChallengeQuestionsAction } from "@/actions/teacher/group-challenge-form";
-
 import { createGroupChallengeAction } from "@/actions/teacher/group-challenge";
-
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-
 import {
   Card,
   CardContent,
@@ -35,13 +30,8 @@ import {
   CardTitle,
   CardDescription,
 } from "@/components/ui/card";
-
 import { Badge } from "@/components/ui/badge";
 import { ChallengeInvitationManager } from "./challenge-invitation-manager";
-
-// ============================================
-// Types
-// ============================================
 
 type Course = {
   id: string;
@@ -51,67 +41,41 @@ type Course = {
   studentsCount: number;
 };
 
-type Question = {
-  id: string;
-  question: string;
-  optionA: string | null;
-  optionB: string | null;
-  optionC: string | null;
-  optionD: string | null;
-  leftText: string | null;
-  rightText: string | null;
-  sortOrder: number;
-};
-
-type Lesson = {
-  id: string;
-  title: string;
-  order: number;
-  contents: Question[];
-};
-
 type CourseQuestionsResult = Awaited<
   ReturnType<typeof getCourseChallengeQuestionsAction>
 >;
+
+type Lesson = CourseQuestionsResult["modules"][number]["lessons"][number];
+
+type GameType = "QUIZ" | "MATCHING" | "FILL_BLANKS" | "CONVERSATION";
 
 type Props = {
   courses: Course[];
 };
 
-// ============================================
-// Component
-// ============================================
+const GAME_TYPE_LABELS: Record<GameType, string> = {
+  QUIZ: "اختيار من متعدد",
+  MATCHING: "مطابقة",
+  FILL_BLANKS: "أكمل الفراغ",
+  CONVERSATION: "محادثة",
+};
 
 export function CreateGroupChallengeForm({ courses }: Props) {
   const router = useRouter();
 
-  // Form State
   const [title, setTitle] = useState("");
   const [courseId, setCourseId] = useState("");
-  const [timeLimit, setTimeLimit] = useState("60");
-
-  // Questions State
   const [courseData, setCourseData] = useState<CourseQuestionsResult | null>(
     null,
   );
-
   const [selectedQuestionIds, setSelectedQuestionIds] = useState<string[]>([]);
-
-  // UI State
   const [isLoadingQuestions, setIsLoadingQuestions] = useState(false);
-
   const [isCreating, setIsCreating] = useState(false);
-
   const [error, setError] = useState<string | null>(null);
-
   const [createdChallenge, setCreatedChallenge] = useState<{
     id: string;
     code: string;
   } | null>(null);
-
-  // ============================================
-  // Derived Data
-  // ============================================
 
   const allQuestions = useMemo(() => {
     if (!courseData) return [];
@@ -120,6 +84,8 @@ export function CreateGroupChallengeForm({ courses }: Props) {
       module.lessons.flatMap((lesson) =>
         lesson.contents.map((question) => ({
           ...question,
+          lessonId: lesson.id,
+          gameType: lesson.gameType as GameType,
           moduleTitle: module.title,
           lessonTitle: lesson.title,
         })),
@@ -127,15 +93,76 @@ export function CreateGroupChallengeForm({ courses }: Props) {
     );
   }, [courseData]);
 
+  // Matching content rows that share the same lesson and prompt form one challenge question.
+  const getMatchingGroup = (questionId: string) => {
+    const question = allQuestions.find((item) => item.id === questionId);
+    if (!question || question.gameType !== "MATCHING") return [questionId];
+
+    return allQuestions
+      .filter(
+        (item) =>
+          item.gameType === "MATCHING" &&
+          item.lessonId === question.lessonId &&
+          item.question === question.question,
+      )
+      .map((item) => item.id);
+  };
+
   const selectedQuestions = useMemo(() => {
     const selectedIds = new Set(selectedQuestionIds);
+    const result: {
+      id: string;
+      question: string;
+      moduleTitle: string;
+      lessonTitle: string;
+      gameType: GameType;
+      contentIds: string[];
+    }[] = [];
+    const processedMatchingGroups = new Set<string>();
 
-    return allQuestions.filter((question) => selectedIds.has(question.id));
+    for (const item of allQuestions) {
+      if (!selectedIds.has(item.id)) continue;
+
+      if (item.gameType === "MATCHING") {
+        const groupKey = JSON.stringify([item.lessonId, item.question]);
+        if (processedMatchingGroups.has(groupKey)) continue;
+
+        processedMatchingGroups.add(groupKey);
+        const group = allQuestions.filter(
+          (candidate) =>
+            candidate.gameType === "MATCHING" &&
+            candidate.lessonId === item.lessonId &&
+            candidate.question === item.question,
+        );
+
+        // A matching group is counted only when all its rows are selected.
+        if (!group.every((entry) => selectedIds.has(entry.id))) continue;
+
+        result.push({
+          id: item.id,
+          question: item.question,
+          moduleTitle: item.moduleTitle,
+          lessonTitle: item.lessonTitle,
+          gameType: item.gameType,
+          contentIds: group.map((entry) => entry.id),
+        });
+        continue;
+      }
+
+      result.push({
+        id: item.id,
+        question: item.question,
+        moduleTitle: item.moduleTitle,
+        lessonTitle: item.lessonTitle,
+        gameType: item.gameType,
+        contentIds: [item.id],
+      });
+    }
+
+    return result;
   }, [allQuestions, selectedQuestionIds]);
 
-  // ============================================
-  // Course Selection
-  // ============================================
+  const selectedChallengeQuestionCount = selectedQuestions.length;
 
   async function handleCourseChange(nextCourseId: string) {
     setCourseId(nextCourseId);
@@ -146,10 +173,8 @@ export function CreateGroupChallengeForm({ courses }: Props) {
     if (!nextCourseId) return;
 
     setIsLoadingQuestions(true);
-
     try {
       const result = await getCourseChallengeQuestionsAction(nextCourseId);
-
       setCourseData(result);
 
       const totalQuestions = result.modules.reduce(
@@ -168,7 +193,6 @@ export function CreateGroupChallengeForm({ courses }: Props) {
     } catch (err) {
       const message =
         err instanceof Error ? err.message : "تعذر تحميل أسئلة الكورس.";
-
       setError(message);
       toast.error(message);
     } finally {
@@ -176,47 +200,42 @@ export function CreateGroupChallengeForm({ courses }: Props) {
     }
   }
 
-  // ============================================
-  // Question Selection
-  // ============================================
-
   function toggleQuestion(questionId: string) {
-    setSelectedQuestionIds((current) =>
-      current.includes(questionId)
-        ? current.filter((id) => id !== questionId)
-        : [...current, questionId],
-    );
-  }
-
-  function toggleLessonQuestions(lesson: Lesson) {
-    const lessonIds = lesson.contents.map((question) => question.id);
-
-    const allSelected = lessonIds.every((id) =>
-      selectedQuestionIds.includes(id),
-    );
+    const ids = getMatchingGroup(questionId);
 
     setSelectedQuestionIds((current) => {
+      const allSelected = ids.every((id) => current.includes(id));
       if (allSelected) {
-        return current.filter((id) => !lessonIds.includes(id));
+        return current.filter((id) => !ids.includes(id));
       }
-
-      return Array.from(new Set([...current, ...lessonIds]));
+      return Array.from(new Set([...current, ...ids]));
     });
   }
 
   function removeSelectedQuestion(questionId: string) {
+    const ids = getMatchingGroup(questionId);
     setSelectedQuestionIds((current) =>
-      current.filter((id) => id !== questionId),
+      current.filter((id) => !ids.includes(id)),
     );
   }
 
-  // ============================================
-  // Create Challenge
-  // ============================================
+  function toggleLessonQuestions(lesson: Lesson) {
+    const lessonIds = lesson.contents.flatMap((question) =>
+      getMatchingGroup(question.id),
+    );
+    const uniqueLessonIds = Array.from(new Set(lessonIds));
+
+    setSelectedQuestionIds((current) => {
+      const allSelected = uniqueLessonIds.every((id) => current.includes(id));
+      if (allSelected) {
+        return current.filter((id) => !uniqueLessonIds.includes(id));
+      }
+      return Array.from(new Set([...current, ...uniqueLessonIds]));
+    });
+  }
 
   async function handleSubmit(event: React.FormEvent<HTMLFormElement>) {
     event.preventDefault();
-
     setError(null);
 
     if (!title.trim()) {
@@ -234,37 +253,42 @@ export function CreateGroupChallengeForm({ courses }: Props) {
       return;
     }
 
-    const parsedTimeLimit = Number(timeLimit);
+    if (selectedChallengeQuestionCount > 50) {
+      setError("الحد الأقصى للأسئلة هو 50 سؤالاً.");
+      return;
+    }
 
-    if (
-      !Number.isInteger(parsedTimeLimit) ||
-      parsedTimeLimit < 5 ||
-      parsedTimeLimit > 300
-    ) {
-      setError("وقت السؤال يجب أن يكون بين 5 و300 ثانية.");
+    // Prevent sending an incomplete matching group if the selection ever becomes inconsistent.
+    const incompleteMatchingGroup = allQuestions.some((item) => {
+      if (item.gameType !== "MATCHING") return false;
+      const groupIds = getMatchingGroup(item.id);
+      const selectedCount = groupIds.filter((id) =>
+        selectedQuestionIds.includes(id),
+      ).length;
+      return selectedCount > 0 && selectedCount !== groupIds.length;
+    });
+
+    if (incompleteMatchingGroup) {
+      setError("يجب اختيار جميع عناصر سؤال المطابقة أو إلغاء اختيارها.");
       return;
     }
 
     setIsCreating(true);
-
     try {
       const result = await createGroupChallengeAction({
         title: title.trim(),
         courseId,
         questionIds: selectedQuestionIds,
-        timeLimit: parsedTimeLimit,
       });
 
       setCreatedChallenge({
         id: result.challenge.id,
         code: result.challenge.code,
       });
-
       toast.success("تم إنشاء التحدي بنجاح.");
     } catch (err) {
       const message =
         err instanceof Error ? err.message : "حدث خطأ أثناء إنشاء التحدي.";
-
       setError(message);
       toast.error(message);
     } finally {
@@ -272,25 +296,16 @@ export function CreateGroupChallengeForm({ courses }: Props) {
     }
   }
 
-  // ============================================
-  // Copy Code
-  // ============================================
-
   async function copyCode() {
     if (!createdChallenge) return;
 
     try {
       await navigator.clipboard.writeText(createdChallenge.code);
-
       toast.success("تم نسخ كود التحدي.");
     } catch {
       toast.error("تعذر نسخ الكود.");
     }
   }
-
-  // ============================================
-  // Success Screen
-  // ============================================
 
   if (createdChallenge) {
     return (
@@ -303,7 +318,6 @@ export function CreateGroupChallengeForm({ courses }: Props) {
 
             <div className="space-y-2">
               <h1 className="text-2xl font-bold">تم إنشاء التحدي بنجاح!</h1>
-
               <p className="text-sm text-muted-foreground">
                 أصبح التحدي جاهزًا. شارك الكود مع الطلاب حتى يتمكنوا من
                 الانضمام.
@@ -312,11 +326,9 @@ export function CreateGroupChallengeForm({ courses }: Props) {
 
             <div className="rounded-xl border bg-muted/40 p-5">
               <p className="mb-3 text-sm text-muted-foreground">كود الانضمام</p>
-
               <div dir="ltr" className="text-3xl font-bold tracking-[0.25em]">
                 {createdChallenge.code}
               </div>
-
               <Button
                 type="button"
                 variant="outline"
@@ -327,7 +339,9 @@ export function CreateGroupChallengeForm({ courses }: Props) {
                 نسخ الكود
               </Button>
             </div>
+
             <ChallengeInvitationManager challengeId={createdChallenge.id} />
+
             <div className="flex flex-col gap-3 sm:flex-row">
               <Button
                 className="flex-1 gap-2"
@@ -340,7 +354,6 @@ export function CreateGroupChallengeForm({ courses }: Props) {
                 إدارة التحدي
                 <ArrowRight className="size-4" />
               </Button>
-
               <Button variant="outline" className="flex-1" asChild>
                 <Link href="/teacher/group-challenges">العودة للتحديات</Link>
               </Button>
@@ -351,14 +364,8 @@ export function CreateGroupChallengeForm({ courses }: Props) {
     );
   }
 
-  // ============================================
-  // Main Form
-  // ============================================
-
   return (
     <div dir="rtl" className="mx-auto max-w-6xl space-y-8">
-      {/* Header */}
-
       <div className="space-y-3">
         <Link
           href="/teacher/group-challenges"
@@ -372,12 +379,10 @@ export function CreateGroupChallengeForm({ courses }: Props) {
           <div className="flex size-12 items-center justify-center rounded-xl bg-primary/10 text-primary">
             <Swords className="size-6" />
           </div>
-
           <div>
             <h1 className="text-2xl font-bold tracking-tight sm:text-3xl">
               إنشاء تحدٍ جماعي جديد
             </h1>
-
             <p className="mt-1 text-sm text-muted-foreground">
               جهّز الأسئلة وحدد إعدادات التحدي قبل مشاركته مع الطلاب.
             </p>
@@ -387,19 +392,13 @@ export function CreateGroupChallengeForm({ courses }: Props) {
 
       <form onSubmit={handleSubmit}>
         <div className="grid gap-6 lg:grid-cols-3">
-          {/* Main Form Column */}
-
           <div className="space-y-6 lg:col-span-2">
-            {/* Basic Information */}
-
             <Card>
               <CardHeader>
                 <div className="flex items-center gap-2">
                   <ClipboardList className="size-5 text-primary" />
-
                   <CardTitle className="text-lg">المعلومات الأساسية</CardTitle>
                 </div>
-
                 <CardDescription>
                   أدخل اسم التحدي واختر الكورس الذي ستُسحب منه الأسئلة.
                 </CardDescription>
@@ -413,7 +412,6 @@ export function CreateGroupChallengeForm({ courses }: Props) {
                   >
                     عنوان التحدي
                   </label>
-
                   <Input
                     id="challenge-title"
                     value={title}
@@ -431,7 +429,6 @@ export function CreateGroupChallengeForm({ courses }: Props) {
                   >
                     الكورس التعليمي
                   </label>
-
                   <select
                     id="challenge-course"
                     value={courseId}
@@ -442,7 +439,6 @@ export function CreateGroupChallengeForm({ courses }: Props) {
                     className="h-10 w-full rounded-md border border-input bg-background px-3 text-sm outline-none focus:ring-2 focus:ring-ring"
                   >
                     <option value="">اختر الكورس</option>
-
                     {courses.map((course) => (
                       <option key={course.id} value={course.id}>
                         {course.title}
@@ -461,30 +457,25 @@ export function CreateGroupChallengeForm({ courses }: Props) {
                   <div className="grid gap-3 sm:grid-cols-2">
                     <div className="flex items-center gap-3 rounded-lg border p-3">
                       <BookOpen className="size-5 text-muted-foreground" />
-
                       <div>
                         <p className="text-xs text-muted-foreground">
                           عدد الموديولات
                         </p>
-
                         <p className="font-semibold">
                           {courseData.modules.length.toLocaleString("ar-EG")}
                         </p>
                       </div>
                     </div>
-
                     <div className="flex items-center gap-3 rounded-lg border p-3">
                       <Users className="size-5 text-muted-foreground" />
-
                       <div>
                         <p className="text-xs text-muted-foreground">
                           عدد الطلاب المسجلين
                         </p>
-
                         <p className="font-semibold">
                           {courses
                             .find((item) => item.id === courseId)
-                            ?.studentsCount.toLocaleString("ar-EG")}
+                            ?.studentsCount.toLocaleString("ar-EG") ?? "—"}
                         </p>
                       </div>
                     </div>
@@ -493,24 +484,21 @@ export function CreateGroupChallengeForm({ courses }: Props) {
               </CardContent>
             </Card>
 
-            {/* Questions Selection */}
-
             <Card>
               <CardHeader>
                 <div className="flex items-center justify-between gap-3">
                   <div className="flex items-center gap-2">
                     <FileQuestion className="size-5 text-primary" />
-
                     <CardTitle className="text-lg">اختيار الأسئلة</CardTitle>
                   </div>
-
                   <Badge variant="secondary">
-                    {selectedQuestionIds.length.toLocaleString("ar-EG")} محدد
+                    {selectedChallengeQuestionCount.toLocaleString("ar-EG")}{" "}
+                    محدد
                   </Badge>
                 </div>
-
                 <CardDescription>
-                  اختر الأسئلة التي تريد إضافتها إلى التحدي.
+                  اختر الأسئلة التي تريد إضافتها إلى التحدي. عناصر المطابقة
+                  المرتبطة ببعضها تُضاف كمجموعة واحدة.
                 </CardDescription>
               </CardHeader>
 
@@ -518,7 +506,6 @@ export function CreateGroupChallengeForm({ courses }: Props) {
                 {!courseId ? (
                   <div className="flex min-h-48 flex-col items-center justify-center gap-3 text-center">
                     <BookOpen className="size-9 text-muted-foreground" />
-
                     <p className="text-sm text-muted-foreground">
                       اختر كورسًا أولاً لعرض الموديولات والدروس والأسئلة.
                     </p>
@@ -526,7 +513,6 @@ export function CreateGroupChallengeForm({ courses }: Props) {
                 ) : isLoadingQuestions ? (
                   <div className="flex min-h-48 flex-col items-center justify-center gap-3">
                     <Loader2 className="size-7 animate-spin text-primary" />
-
                     <p className="text-sm text-muted-foreground">
                       جاري تحميل أسئلة الكورس...
                     </p>
@@ -541,31 +527,30 @@ export function CreateGroupChallengeForm({ courses }: Props) {
                         <div className="flex items-center justify-between gap-3 bg-muted/40 p-4">
                           <div className="min-w-0">
                             <h3 className="font-semibold">{module.title}</h3>
-
                             <p className="mt-1 text-xs text-muted-foreground">
                               {module.lessons.length.toLocaleString("ar-EG")}{" "}
                               دروس
                             </p>
                           </div>
-
                           <Badge variant="outline">
-                            {module.lessons
-                              .reduce(
-                                (total, lesson) =>
-                                  total + lesson.contents.length,
-                                0,
-                              )
-                              .toLocaleString("ar-EG")}{" "}
+                            {module.lessons.reduce(
+                              (total, lesson) =>
+                                total + lesson.contents.length,
+                              0,
+                            ).toLocaleString("ar-EG")}{" "}
                             سؤال
                           </Badge>
                         </div>
 
                         <div className="divide-y">
                           {module.lessons.map((lesson) => {
-                            const lessonIds = lesson.contents.map(
-                              (question) => question.id,
+                            const lessonIds = Array.from(
+                              new Set(
+                                lesson.contents.flatMap((question) =>
+                                  getMatchingGroup(question.id),
+                                ),
+                              ),
                             );
-
                             const allSelected =
                               lessonIds.length > 0 &&
                               lessonIds.every((id) =>
@@ -579,12 +564,15 @@ export function CreateGroupChallengeForm({ courses }: Props) {
                                     <h4 className="text-sm font-medium">
                                       {lesson.title}
                                     </h4>
-
                                     <p className="mt-1 text-xs text-muted-foreground">
                                       {lesson.contents.length.toLocaleString(
                                         "ar-EG",
                                       )}{" "}
-                                      أسئلة
+                                      عناصر محتوى
+                                      <span className="mx-2">•</span>
+                                      {GAME_TYPE_LABELS[
+                                        lesson.gameType as GameType
+                                      ] ?? lesson.gameType}
                                     </p>
                                   </div>
 
@@ -609,6 +597,11 @@ export function CreateGroupChallengeForm({ courses }: Props) {
                                   {lesson.contents.map((question, index) => {
                                     const checked =
                                       selectedQuestionIds.includes(question.id);
+                                    const isMatching =
+                                      lesson.gameType === "MATCHING";
+                                    const matchingGroupSize = isMatching
+                                      ? getMatchingGroup(question.id).length
+                                      : 1;
 
                                     return (
                                       <label
@@ -629,11 +622,21 @@ export function CreateGroupChallengeForm({ courses }: Props) {
                                         />
 
                                         <div className="min-w-0 flex-1">
-                                          <div className="mb-1 flex items-center gap-2">
+                                          <div className="mb-1 flex flex-wrap items-center gap-2">
                                             <span className="text-xs font-semibold text-muted-foreground">
-                                              سؤال {index + 1}
+                                              عنصر {index + 1}
                                             </span>
-
+                                            <Badge variant="outline">
+                                              {GAME_TYPE_LABELS[
+                                                lesson.gameType as GameType
+                                              ] ?? lesson.gameType}
+                                            </Badge>
+                                            {isMatching && (
+                                              <Badge variant="secondary">
+                                                المجموعة: {matchingGroupSize}{" "}
+                                                أزواج
+                                              </Badge>
+                                            )}
                                             {checked && (
                                               <Check className="size-3.5 text-primary" />
                                             )}
@@ -671,17 +674,21 @@ export function CreateGroupChallengeForm({ courses }: Props) {
 
                                           {(question.leftText ||
                                             question.rightText) && (
-                                            <div className="mt-2 flex flex-wrap gap-2 text-xs text-muted-foreground">
+                                            <div className="mt-2 flex flex-wrap items-center gap-2 text-xs">
                                               {question.leftText && (
                                                 <Badge variant="outline">
                                                   {question.leftText}
                                                 </Badge>
                                               )}
-
                                               {question.rightText && (
-                                                <Badge variant="outline">
-                                                  {question.rightText}
-                                                </Badge>
+                                                <>
+                                                  <span className="text-muted-foreground">
+                                                    ↔
+                                                  </span>
+                                                  <Badge variant="outline">
+                                                    {question.rightText}
+                                                  </Badge>
+                                                </>
                                               )}
                                             </div>
                                           )}
@@ -706,7 +713,6 @@ export function CreateGroupChallengeForm({ courses }: Props) {
                 ) : courseData ? (
                   <div className="flex min-h-48 flex-col items-center justify-center gap-3 text-center">
                     <FileQuestion className="size-9 text-muted-foreground" />
-
                     <p className="text-sm text-muted-foreground">
                       لا توجد أسئلة متاحة داخل هذا الكورس.
                     </p>
@@ -715,54 +721,34 @@ export function CreateGroupChallengeForm({ courses }: Props) {
               </CardContent>
             </Card>
 
-            {/* Time Settings */}
-
             <Card>
               <CardHeader>
                 <CardTitle className="text-lg">إعدادات الوقت</CardTitle>
-
                 <CardDescription>
-                  حدد الوقت المسموح به للإجابة على كل سؤال.
+                  وقت الإجابة موحد وثابت لكل سؤال في التحدي.
                 </CardDescription>
               </CardHeader>
-
               <CardContent>
-                <div className="max-w-xs space-y-2">
-                  <label
-                    htmlFor="question-time"
-                    className="text-sm font-medium"
-                  >
-                    وقت السؤال بالثواني
-                  </label>
-
-                  <Input
-                    id="question-time"
-                    type="number"
-                    min={5}
-                    max={300}
-                    value={timeLimit}
-                    onChange={(event) => setTimeLimit(event.target.value)}
-                  />
-
-                  <p className="text-xs text-muted-foreground">
-                    يمكنك تحديد وقت من 5 إلى 300 ثانية لكل سؤال.
+                <div className="rounded-lg bg-muted/50 p-3">
+                  <p className="text-xs text-muted-foreground">وقت السؤال</p>
+                  <p className="mt-1 text-2xl font-bold tabular-nums">
+                    60
+                    <span className="mr-1 text-xs font-normal text-muted-foreground">
+                      ثانية
+                    </span>
                   </p>
                 </div>
               </CardContent>
             </Card>
           </div>
 
-          {/* Summary Column */}
-
           <div className="space-y-6">
             <Card className="lg:sticky lg:top-6">
               <CardHeader>
                 <div className="flex items-center gap-2">
                   <ClipboardList className="size-5 text-primary" />
-
                   <CardTitle className="text-lg">ملخص التحدي</CardTitle>
                 </div>
-
                 <CardDescription>
                   راجع إعدادات التحدي قبل إنشائه.
                 </CardDescription>
@@ -771,7 +757,6 @@ export function CreateGroupChallengeForm({ courses }: Props) {
               <CardContent className="space-y-5">
                 <div className="space-y-1">
                   <p className="text-xs text-muted-foreground">عنوان التحدي</p>
-
                   <p className="font-medium">
                     {title.trim() || "لم يتم تحديد العنوان"}
                   </p>
@@ -779,7 +764,6 @@ export function CreateGroupChallengeForm({ courses }: Props) {
 
                 <div className="space-y-1">
                   <p className="text-xs text-muted-foreground">الكورس</p>
-
                   <p className="font-medium">
                     {courses.find((item) => item.id === courseId)?.title ||
                       "لم يتم اختيار الكورس"}
@@ -791,17 +775,14 @@ export function CreateGroupChallengeForm({ courses }: Props) {
                     <p className="text-xs text-muted-foreground">
                       الأسئلة المختارة
                     </p>
-
                     <p className="mt-1 text-2xl font-bold tabular-nums">
-                      {selectedQuestionIds.length.toLocaleString("ar-EG")}
+                      {selectedChallengeQuestionCount.toLocaleString("ar-EG")}
                     </p>
                   </div>
-
                   <div className="rounded-lg bg-muted/50 p-3">
                     <p className="text-xs text-muted-foreground">وقت السؤال</p>
-
                     <p className="mt-1 text-2xl font-bold tabular-nums">
-                      {Number(timeLimit) || 0}
+                      60
                       <span className="mr-1 text-xs font-normal text-muted-foreground">
                         ثانية
                       </span>
@@ -809,12 +790,9 @@ export function CreateGroupChallengeForm({ courses }: Props) {
                   </div>
                 </div>
 
-                {/* Selected Questions */}
-
                 <div className="space-y-3">
                   <div className="flex items-center justify-between">
                     <h3 className="text-sm font-semibold">الأسئلة المحددة</h3>
-
                     <Badge variant="secondary">
                       {selectedQuestions.length.toLocaleString("ar-EG")}
                     </Badge>
@@ -824,23 +802,30 @@ export function CreateGroupChallengeForm({ courses }: Props) {
                     <div className="max-h-72 space-y-2 overflow-y-auto">
                       {selectedQuestions.map((question, index) => (
                         <div
-                          key={question.id}
+                          key={`${question.gameType}-${question.id}`}
                           className="flex items-start gap-2 rounded-lg border p-3"
                         >
                           <span className="flex size-6 shrink-0 items-center justify-center rounded-md bg-primary/10 text-xs font-semibold text-primary">
                             {index + 1}
                           </span>
-
                           <div className="min-w-0 flex-1">
                             <p className="line-clamp-2 text-xs leading-5">
                               {question.question}
                             </p>
-
-                            <p className="mt-1 truncate text-[11px] text-muted-foreground">
-                              {question.moduleTitle} / {question.lessonTitle}
-                            </p>
+                            <div className="mt-1 flex flex-wrap items-center gap-1">
+                              <p className="truncate text-[11px] text-muted-foreground">
+                                {question.moduleTitle} / {question.lessonTitle}
+                              </p>
+                              <Badge variant="outline" className="text-[10px]">
+                                {GAME_TYPE_LABELS[question.gameType]}
+                              </Badge>
+                            </div>
+                            {question.gameType === "MATCHING" && (
+                              <p className="mt-1 text-[11px] text-muted-foreground">
+                                {question.contentIds.length} أزواج مطابقة
+                              </p>
+                            )}
                           </div>
-
                           <button
                             type="button"
                             onClick={() => removeSelectedQuestion(question.id)}
@@ -855,7 +840,6 @@ export function CreateGroupChallengeForm({ courses }: Props) {
                   ) : (
                     <div className="rounded-lg border border-dashed p-5 text-center">
                       <FileQuestion className="mx-auto mb-2 size-6 text-muted-foreground" />
-
                       <p className="text-xs text-muted-foreground">
                         لم تختر أي أسئلة بعد.
                       </p>
@@ -876,7 +860,10 @@ export function CreateGroupChallengeForm({ courses }: Props) {
                   type="submit"
                   className="w-full gap-2"
                   disabled={
-                    isCreating || isLoadingQuestions || courses.length === 0
+                    isCreating ||
+                    isLoadingQuestions ||
+                    courses.length === 0 ||
+                    selectedChallengeQuestionCount === 0
                   }
                 >
                   {isCreating ? (

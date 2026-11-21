@@ -339,22 +339,22 @@ export default async function StudentPage() {
                       </h3>
 
                       <div className="mt-4 flex items-center gap-3">
-  <div className="h-2.5 flex-1 overflow-hidden rounded-full bg-muted">
-    <div
-      className="h-full rounded-full bg-primary transition-all duration-500"
-      style={{
-        width: `${Math.min(
-          100,
-          Math.max(0, currentCourse.progress),
-        )}%`,
-      }}
-    />
-  </div>
+                        <div className="h-2.5 flex-1 overflow-hidden rounded-full bg-muted">
+                          <div
+                            className="h-full rounded-full bg-primary transition-all duration-500"
+                            style={{
+                              width: `${Math.min(
+                                100,
+                                Math.max(0, currentCourse.progress),
+                              )}%`,
+                            }}
+                          />
+                        </div>
 
-  <span className="shrink-0 text-sm font-bold text-primary">
-    {currentCourse.progress}%
-  </span>
-</div>
+                        <span className="shrink-0 text-sm font-bold text-primary">
+                          {currentCourse.progress}%
+                        </span>
+                      </div>
                     </div>
                   </div>
 
@@ -596,8 +596,6 @@ export default async function StudentPage() {
               ))}
             </div>
           </section>
-
-       
         </div>
       </section>
     </main>

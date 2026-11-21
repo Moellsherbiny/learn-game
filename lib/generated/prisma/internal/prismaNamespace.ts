@@ -404,7 +404,8 @@ export const ModelName = {
   ChallengeQuestion: 'ChallengeQuestion',
   ChallengeParticipant: 'ChallengeParticipant',
   ChallengeAnswer: 'ChallengeAnswer',
-  ChallengeInvitation: 'ChallengeInvitation'
+  ChallengeInvitation: 'ChallengeInvitation',
+  ChallengeQuestionItem: 'ChallengeQuestionItem'
 } as const
 
 export type ModelName = (typeof ModelName)[keyof typeof ModelName]
@@ -420,7 +421,7 @@ export type TypeMap<ExtArgs extends runtime.Types.Extensions.InternalArgs = runt
     omit: GlobalOmitOptions
   }
   meta: {
-    modelProps: "user" | "account" | "session" | "verificationToken" | "authenticator" | "course" | "module" | "lesson" | "lessonContent" | "progress" | "enrollment" | "leaderboard" | "placementTest" | "placementResult" | "conversation" | "message" | "groupChallenge" | "challengeQuestion" | "challengeParticipant" | "challengeAnswer" | "challengeInvitation"
+    modelProps: "user" | "account" | "session" | "verificationToken" | "authenticator" | "course" | "module" | "lesson" | "lessonContent" | "progress" | "enrollment" | "leaderboard" | "placementTest" | "placementResult" | "conversation" | "message" | "groupChallenge" | "challengeQuestion" | "challengeParticipant" | "challengeAnswer" | "challengeInvitation" | "challengeQuestionItem"
     txIsolationLevel: TransactionIsolationLevel
   }
   model: {
@@ -1978,6 +1979,80 @@ export type TypeMap<ExtArgs extends runtime.Types.Extensions.InternalArgs = runt
         }
       }
     }
+    ChallengeQuestionItem: {
+      payload: Prisma.$ChallengeQuestionItemPayload<ExtArgs>
+      fields: Prisma.ChallengeQuestionItemFieldRefs
+      operations: {
+        findUnique: {
+          args: Prisma.ChallengeQuestionItemFindUniqueArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ChallengeQuestionItemPayload> | null
+        }
+        findUniqueOrThrow: {
+          args: Prisma.ChallengeQuestionItemFindUniqueOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ChallengeQuestionItemPayload>
+        }
+        findFirst: {
+          args: Prisma.ChallengeQuestionItemFindFirstArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ChallengeQuestionItemPayload> | null
+        }
+        findFirstOrThrow: {
+          args: Prisma.ChallengeQuestionItemFindFirstOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ChallengeQuestionItemPayload>
+        }
+        findMany: {
+          args: Prisma.ChallengeQuestionItemFindManyArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ChallengeQuestionItemPayload>[]
+        }
+        create: {
+          args: Prisma.ChallengeQuestionItemCreateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ChallengeQuestionItemPayload>
+        }
+        createMany: {
+          args: Prisma.ChallengeQuestionItemCreateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        createManyAndReturn: {
+          args: Prisma.ChallengeQuestionItemCreateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ChallengeQuestionItemPayload>[]
+        }
+        delete: {
+          args: Prisma.ChallengeQuestionItemDeleteArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ChallengeQuestionItemPayload>
+        }
+        update: {
+          args: Prisma.ChallengeQuestionItemUpdateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ChallengeQuestionItemPayload>
+        }
+        deleteMany: {
+          args: Prisma.ChallengeQuestionItemDeleteManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateMany: {
+          args: Prisma.ChallengeQuestionItemUpdateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateManyAndReturn: {
+          args: Prisma.ChallengeQuestionItemUpdateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ChallengeQuestionItemPayload>[]
+        }
+        upsert: {
+          args: Prisma.ChallengeQuestionItemUpsertArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ChallengeQuestionItemPayload>
+        }
+        aggregate: {
+          args: Prisma.ChallengeQuestionItemAggregateArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.AggregateChallengeQuestionItem>
+        }
+        groupBy: {
+          args: Prisma.ChallengeQuestionItemGroupByArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.ChallengeQuestionItemGroupByOutputType>[]
+        }
+        count: {
+          args: Prisma.ChallengeQuestionItemCountArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.ChallengeQuestionItemCountAggregateOutputType> | number
+        }
+      }
+    }
   }
 } & {
   other: {
@@ -2277,6 +2352,7 @@ export const ChallengeQuestionScalarFieldEnum = {
   id: 'id',
   challengeId: 'challengeId',
   lessonContentId: 'lessonContentId',
+  gameType: 'gameType',
   question: 'question',
   answer: 'answer',
   optionA: 'optionA',
@@ -2311,6 +2387,7 @@ export const ChallengeAnswerScalarFieldEnum = {
   challengeQuestionId: 'challengeQuestionId',
   participantId: 'participantId',
   answer: 'answer',
+  answerData: 'answerData',
   isCorrect: 'isCorrect',
   responseTime: 'responseTime',
   submittedAt: 'submittedAt'
@@ -2329,6 +2406,17 @@ export const ChallengeInvitationScalarFieldEnum = {
 } as const
 
 export type ChallengeInvitationScalarFieldEnum = (typeof ChallengeInvitationScalarFieldEnum)[keyof typeof ChallengeInvitationScalarFieldEnum]
+
+
+export const ChallengeQuestionItemScalarFieldEnum = {
+  id: 'id',
+  challengeQuestionId: 'challengeQuestionId',
+  leftText: 'leftText',
+  rightText: 'rightText',
+  createdAt: 'createdAt'
+} as const
+
+export type ChallengeQuestionItemScalarFieldEnum = (typeof ChallengeQuestionItemScalarFieldEnum)[keyof typeof ChallengeQuestionItemScalarFieldEnum]
 
 
 export const SortOrder = {
@@ -2690,6 +2778,7 @@ export type GlobalOmitConfig = {
   challengeParticipant?: Prisma.ChallengeParticipantOmit
   challengeAnswer?: Prisma.ChallengeAnswerOmit
   challengeInvitation?: Prisma.ChallengeInvitationOmit
+  challengeQuestionItem?: Prisma.ChallengeQuestionItemOmit
 }
 
 /* Types for Logging */

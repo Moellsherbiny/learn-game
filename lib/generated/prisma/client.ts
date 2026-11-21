@@ -146,3 +146,8 @@ export type ChallengeAnswer = Prisma.ChallengeAnswerModel
  * 
  */
 export type ChallengeInvitation = Prisma.ChallengeInvitationModel
+/**
+ * Model ChallengeQuestionItem
+ * 
+ */
+export type ChallengeQuestionItem = Prisma.ChallengeQuestionItemModel

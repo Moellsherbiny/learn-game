@@ -71,7 +71,8 @@ export const ModelName = {
   ChallengeQuestion: 'ChallengeQuestion',
   ChallengeParticipant: 'ChallengeParticipant',
   ChallengeAnswer: 'ChallengeAnswer',
-  ChallengeInvitation: 'ChallengeInvitation'
+  ChallengeInvitation: 'ChallengeInvitation',
+  ChallengeQuestionItem: 'ChallengeQuestionItem'
 } as const
 
 export type ModelName = (typeof ModelName)[keyof typeof ModelName]
@@ -350,6 +351,7 @@ export const ChallengeQuestionScalarFieldEnum = {
   id: 'id',
   challengeId: 'challengeId',
   lessonContentId: 'lessonContentId',
+  gameType: 'gameType',
   question: 'question',
   answer: 'answer',
   optionA: 'optionA',
@@ -384,6 +386,7 @@ export const ChallengeAnswerScalarFieldEnum = {
   challengeQuestionId: 'challengeQuestionId',
   participantId: 'participantId',
   answer: 'answer',
+  answerData: 'answerData',
   isCorrect: 'isCorrect',
   responseTime: 'responseTime',
   submittedAt: 'submittedAt'
@@ -402,6 +405,17 @@ export const ChallengeInvitationScalarFieldEnum = {
 } as const
 
 export type ChallengeInvitationScalarFieldEnum = (typeof ChallengeInvitationScalarFieldEnum)[keyof typeof ChallengeInvitationScalarFieldEnum]
+
+
+export const ChallengeQuestionItemScalarFieldEnum = {
+  id: 'id',
+  challengeQuestionId: 'challengeQuestionId',
+  leftText: 'leftText',
+  rightText: 'rightText',
+  createdAt: 'createdAt'
+} as const
+
+export type ChallengeQuestionItemScalarFieldEnum = (typeof ChallengeQuestionItemScalarFieldEnum)[keyof typeof ChallengeQuestionItemScalarFieldEnum]
 
 
 export const SortOrder = {

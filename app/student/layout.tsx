@@ -9,9 +9,7 @@ interface StudentLayoutProps {
   children: ReactNode;
 }
 
-export default async function StudentLayout({
-  children,
-}: StudentLayoutProps) {
+export default async function StudentLayout({ children }: StudentLayoutProps) {
   const session = await auth();
 
   // التحقق من تسجيل الدخول
@@ -36,9 +34,7 @@ export default async function StudentLayout({
       <DashboardNavbar />
 
       {/* محتوى صفحات المعلم */}
-      <main className="min-h-[calc(100vh-4rem)]">
-        {children}
-      </main>
+      <main className="min-h-[calc(100vh-4rem)]">{children}</main>
       <DashboardFooter />
     </div>
   );

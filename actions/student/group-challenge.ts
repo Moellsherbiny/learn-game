@@ -444,109 +444,62 @@ export async function getStudentGroupChallengeAction(
 
   }
 
-  const participant = await prisma.challengeParticipant.findUnique({
-
+  // Advance the challenge before reading its current status.
+  await advanceGroupChallengeIfExpired(challengeId);
+ const participant = await prisma.challengeParticipant.findUnique({
     where: {
-
       challengeId_studentId: {
-
         challengeId,
-
         studentId,
-
       },
-
     },
-
     select: {
-
       id: true,
-
       studentId: true,
-
       team: true,
-
       isReady: true,
-
       joinedAt: true,
-
       challenge: {
-
         select: {
-
           id: true,
-
           title: true,
-
           code: true,
-
           status: true,
-
           currentQuestionIndex: true,
-
           startedAt: true,
-
           finishedAt: true,
-
           course: {
-
             select: {
-
               id: true,
-
               title: true,
-
             },
-
           },
-
           participants: {
-
             orderBy: {
-
               joinedAt: "asc",
-
             },
-
             select: {
-
               id: true,
-
               team: true,
-
               isReady: true,
-
               student: {
-
                 select: {
-
                   id: true,
-
                   name: true,
-
                   image: true,
-
                 },
-
               },
-
             },
-
           },
-
         },
-
       },
-
     },
-
   });
 
   if (!participant) {
-
     throw new Error("أنت غير منضم إلى هذا التحدي.");
-
   }
+
 
   return {
 
@@ -644,213 +597,136 @@ export async function getMyGroupChallengesAction() {
 // ============================================
 
 export async function getStudentGroupChallengeLiveAction(
-
   challengeId: string
-
 ) {
-
   const studentId = await requireStudent();
+
+  if (!challengeId?.trim()) {
+    throw new Error("معرف التحدي غير صحيح.");
+  }
 
   await advanceGroupChallengeIfExpired(challengeId);
 
   const participant = await prisma.challengeParticipant.findUnique({
-
     where: {
-
       challengeId_studentId: {
-
         challengeId,
-
         studentId,
-
       },
-
     },
-
     select: {
-
       id: true,
-
       team: true,
-
       score: true,
-
       challenge: {
-
         select: {
-
           id: true,
-
           title: true,
-
           status: true,
-
           currentQuestionIndex: true,
-
           currentQuestionStartedAt: true,
-
           pointsPerQuestion: true,
-
           questions: {
-
             orderBy: {
-
               order: "asc",
-
             },
-
             select: {
-
               id: true,
-
               question: true,
-
               optionA: true,
-
               optionB: true,
-
               optionC: true,
-
               optionD: true,
-
               leftText: true,
-
               rightText: true,
-
               order: true,
-
-              timeLimit: true,
-
             },
-
           },
-
           participants: {
-
             select: {
-
               team: true,
-
               score: true,
-
             },
-
           },
-
         },
-
       },
-
     },
-
   });
 
   if (!participant) {
-
     throw new Error("أنت غير منضم إلى هذا التحدي.");
-
   }
 
   const challenge = participant.challenge;
 
-  if (challenge.status !== GroupChallengeStatus.LIVE) {
-
-    throw new Error("التحدي ليس قيد التشغيل.");
-
+  if (challenge.status === GroupChallengeStatus.FINISHED) {
+    throw new Error("انتهى التحدي. يمكنك مشاهدة النتائج الآن.");
   }
 
-  const currentQuestion =
+  if (challenge.status !== GroupChallengeStatus.LIVE) {
+    throw new Error("التحدي ليس قيد التشغيل.");
+  }
 
+  const question =
     challenge.questions[challenge.currentQuestionIndex] ?? null;
 
-  if (!currentQuestion) {
-
+  if (!question) {
     throw new Error("السؤال الحالي غير موجود.");
-
   }
 
+  // Always use the fixed 60-second duration.
+  const currentQuestion = {
+    ...question,
+    timeLimit: GROUP_CHALLENGE_QUESTION_DURATION_SECONDS,
+  };
+
   const existingAnswer = await prisma.challengeAnswer.findUnique({
-
     where: {
-
       challengeQuestionId_participantId: {
-
         challengeQuestionId: currentQuestion.id,
-
         participantId: participant.id,
-
       },
-
     },
-
     select: {
-
       answer: true,
-
       isCorrect: true,
-
       responseTime: true,
-
     },
-
   });
 
   const teamA = challenge.participants.filter(
-
     (item) => item.team === "TEAM_A"
-
   );
 
   const teamB = challenge.participants.filter(
-
     (item) => item.team === "TEAM_B"
-
   );
 
   return {
-
     participant: {
-
       id: participant.id,
-
       team: participant.team,
-
       score: participant.score,
-
     },
 
     challenge: {
-
       id: challenge.id,
-
       title: challenge.title,
-
       status: challenge.status,
-
       currentQuestionIndex: challenge.currentQuestionIndex,
-
       currentQuestionStartedAt: challenge.currentQuestionStartedAt,
-
       totalQuestions: challenge.questions.length,
-
       pointsPerQuestion: challenge.pointsPerQuestion,
-
     },
 
     currentQuestion,
-
     existingAnswer,
 
     teamScores: {
-
       teamA: teamA.reduce((sum, item) => sum + item.score, 0),
-
       teamB: teamB.reduce((sum, item) => sum + item.score, 0),
-
     },
-
   };
-
 }
 // ============================================
 // 5. Submit Student Answer
