@@ -1,35 +1,18 @@
-
 "use client";
 
 import { useEffect, useState, useTransition } from "react";
 import { useRouter } from "next/navigation";
-import {
-  CheckCircle2,
-  Clock,
-  Loader2,
-  Trophy,
-  Users,
-  X,
-} from "lucide-react";
+import { CheckCircle2, Clock, Loader2, Trophy, Users, X } from "lucide-react";
 import { toast } from "sonner";
 
-import {
-  getStudentGroupChallengeLiveStateAction,
-} from "@/actions/student/group-challenge-live";
+import { getStudentGroupChallengeLiveStateAction } from "@/actions/student/group-challenge-live";
 
-import {
-  submitGroupChallengeAnswerAction,
-} from "@/actions/student/group-challenge-answer";
+import { submitGroupChallengeAnswerAction } from "@/actions/student/group-challenge-answer";
 
 import { useGroupChallengeRealtime } from "@/hooks/use-group-challenge-realtime";
 
 import { Button } from "@/components/ui/button";
-import {
-  Card,
-  CardContent,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 
 // ============================================
@@ -60,18 +43,12 @@ export function StudentGroupChallengeLive({
 }) {
   const router = useRouter();
 
-  const {
-    data,
-    isLoading,
-    error,
-    refresh,
-  } = useGroupChallengeRealtime(challengeId);
+  const { data, isLoading, error, refresh } =
+    useGroupChallengeRealtime(challengeId);
 
   useEffect(() => {
     if (data?.challenge.status === "FINISHED") {
-      router.replace(
-        `/student/group-challenges/${challengeId}/results`
-      );
+      router.replace(`/student/group-challenges/${challengeId}/results`);
     }
   }, [data?.challenge.status, challengeId, router]);
 
@@ -88,9 +65,7 @@ export function StudentGroupChallengeLive({
     return (
       <div className="mx-auto max-w-xl space-y-4 py-12 text-center">
         <p className="text-destructive">{error}</p>
-        <Button onClick={() => void refresh()}>
-          إعادة المحاولة
-        </Button>
+        <Button onClick={() => void refresh()}>إعادة المحاولة</Button>
       </div>
     );
   }
@@ -124,65 +99,47 @@ export function StudentGroupChallengeLive({
           <CardContent className="space-y-5 p-8 text-center">
             <Users className="mx-auto h-12 w-12 text-primary" />
 
-            <h1 className="text-2xl font-bold">
-              {challenge.title}
-            </h1>
+            <h1 className="text-2xl font-bold">{challenge.title}</h1>
 
-            <p className="text-muted-foreground">
-              في انتظار بدء التحدي...
-            </p>
+            <p className="text-muted-foreground">في انتظار بدء التحدي...</p>
 
             <div className="grid grid-cols-2 gap-4">
               <div className="rounded-xl bg-muted p-4">
-                <p className="text-sm text-muted-foreground">
-                  الطلاب الجاهزون
-                </p>
+                <p className="text-sm text-muted-foreground">الطلاب الجاهزون</p>
                 <p className="mt-1 text-2xl font-bold">
                   {statistics.readyCount}
                 </p>
               </div>
 
               <div className="rounded-xl bg-muted p-4">
-                <p className="text-sm text-muted-foreground">
-                  إجمالي الطلاب
-                </p>
+                <p className="text-sm text-muted-foreground">إجمالي الطلاب</p>
                 <p className="mt-1 text-2xl font-bold">
                   {statistics.totalParticipants}
                 </p>
               </div>
             </div>
 
-            <Button
-              variant="outline"
-              onClick={() => void refresh()}
-            >
+            <Button variant="outline" onClick={() => void refresh()}>
               تحديث الحالة
             </Button>
           </CardContent>
         </Card>
 
         {error && (
-          <p className="mt-4 text-center text-sm text-destructive">
-            {error}
-          </p>
+          <p className="mt-4 text-center text-sm text-destructive">{error}</p>
         )}
       </main>
     );
   }
 
   return (
-    <main
-      dir="rtl"
-      className="container mx-auto max-w-3xl space-y-6 px-4 py-8"
-    >
+    <main dir="rtl" className="container mx-auto max-w-3xl space-y-6 px-4 py-8">
       {/* Header */}
       <div className="flex flex-wrap items-center justify-between gap-3">
         <div>
           <Badge>التحدي مباشر</Badge>
 
-          <h1 className="mt-2 text-2xl font-bold">
-            {challenge.title}
-          </h1>
+          <h1 className="mt-2 text-2xl font-bold">{challenge.title}</h1>
 
           <p className="mt-1 text-sm text-muted-foreground">
             {challenge.course.title}
@@ -191,9 +148,7 @@ export function StudentGroupChallengeLive({
 
         <Badge variant="outline" className="gap-2 px-3 py-2">
           <Users className="h-4 w-4" />
-          {data.participant.team === "TEAM_A"
-            ? "الفريق A"
-            : "الفريق B"}
+          {data.participant.team === "TEAM_A" ? "الفريق A" : "الفريق B"}
         </Badge>
       </div>
 
@@ -201,9 +156,7 @@ export function StudentGroupChallengeLive({
       <div className="grid grid-cols-2 gap-3">
         <Card>
           <CardContent className="p-4 text-center">
-            <p className="text-sm text-muted-foreground">
-              نقاط الفريق A
-            </p>
+            <p className="text-sm text-muted-foreground">نقاط الفريق A</p>
             <p className="mt-1 text-2xl font-bold tabular-nums">
               {statistics.teamA.score}
             </p>
@@ -215,9 +168,7 @@ export function StudentGroupChallengeLive({
 
         <Card>
           <CardContent className="p-4 text-center">
-            <p className="text-sm text-muted-foreground">
-              نقاط الفريق B
-            </p>
+            <p className="text-sm text-muted-foreground">نقاط الفريق B</p>
             <p className="mt-1 text-2xl font-bold tabular-nums">
               {statistics.teamB.score}
             </p>
@@ -233,21 +184,15 @@ export function StudentGroupChallengeLive({
         <Card>
           <CardContent className="p-4 text-center">
             <Trophy className="mx-auto mb-2 h-5 w-5 text-primary" />
-            <p className="text-xs text-muted-foreground">
-              نقاطك
-            </p>
-            <p className="mt-1 text-xl font-bold">
-              {data.participant.score}
-            </p>
+            <p className="text-xs text-muted-foreground">نقاطك</p>
+            <p className="mt-1 text-xl font-bold">{data.participant.score}</p>
           </CardContent>
         </Card>
 
         <Card>
           <CardContent className="p-4 text-center">
             <Clock className="mx-auto mb-2 h-5 w-5 text-primary" />
-            <p className="text-xs text-muted-foreground">
-              الوقت المتبقي
-            </p>
+            <p className="text-xs text-muted-foreground">الوقت المتبقي</p>
             <p className="mt-1 text-xl font-bold tabular-nums">
               {data.remainingSeconds ?? "--"}s
             </p>
@@ -269,9 +214,7 @@ export function StudentGroupChallengeLive({
         <Card>
           <CardContent className="p-8 text-center">
             <Loader2 className="mx-auto mb-3 h-6 w-6 animate-spin text-primary" />
-            <p className="text-muted-foreground">
-              في انتظار السؤال التالي...
-            </p>
+            <p className="text-muted-foreground">في انتظار السؤال التالي...</p>
           </CardContent>
         </Card>
       )}
@@ -283,11 +226,7 @@ export function StudentGroupChallengeLive({
       )}
 
       <div className="text-center">
-        <Button
-          variant="ghost"
-          size="sm"
-          onClick={() => void refresh()}
-        >
+        <Button variant="ghost" size="sm" onClick={() => void refresh()}>
           تحديث الحالة
         </Button>
       </div>
@@ -330,9 +269,7 @@ function QuestionPanel({
   ].filter((option): option is string => Boolean(option));
 
   const matchingOptions =
-    "matchingOptions" in question
-      ? question.matchingOptions
-      : null;
+    "matchingOptions" in question ? question.matchingOptions : null;
 
   // ============================================
   // Matching Selection
@@ -341,9 +278,7 @@ function QuestionPanel({
   const handleSelectLeft = (id: string) => {
     if (isDisabled) return;
 
-    setSelectedLeftId((previous) =>
-      previous === id ? null : id
-    );
+    setSelectedLeftId((previous) => (previous === id ? null : id));
   };
 
   const handleSelectRight = (rightId: string) => {
@@ -352,21 +287,19 @@ function QuestionPanel({
     }
 
     const leftItem = matchingOptions.left.find(
-      (item) => item.id === selectedLeftId
+      (item) => item.id === selectedLeftId,
     );
 
-    const rightItem = matchingOptions.right.find(
-      (item) => item.id === rightId
-    );
+    const rightItem = matchingOptions.right.find((item) => item.id === rightId);
 
     if (!leftItem || !rightItem) return;
 
     const leftAlreadyUsed = matchingPairs.some(
-      (pair) => pair.leftId === leftItem.id
+      (pair) => pair.leftId === leftItem.id,
     );
 
     const rightAlreadyUsed = matchingPairs.some(
-      (pair) => pair.rightId === rightItem.id
+      (pair) => pair.rightId === rightItem.id,
     );
 
     if (leftAlreadyUsed || rightAlreadyUsed) return;
@@ -388,7 +321,7 @@ function QuestionPanel({
     if (isDisabled) return;
 
     setMatchingPairs((previous) =>
-      previous.filter((pair) => pair.leftId !== leftId)
+      previous.filter((pair) => pair.leftId !== leftId),
     );
   };
 
@@ -433,16 +366,14 @@ function QuestionPanel({
             ? {
                 answerData: {
                   pairs: matchingPairs.map((pair) => ({
-                    left: pair.left,
-                    right: pair.right,
+                    leftId: pair.leftId,
+                    rightId: pair.rightId,
                   })),
                 },
               }
             : {
                 answer:
-                  question.gameType === "QUIZ"
-                    ? selectedAnswer
-                    : fillAnswer,
+                  question.gameType === "QUIZ" ? selectedAnswer : fillAnswer,
               }),
         });
 
@@ -451,9 +382,7 @@ function QuestionPanel({
         await onSubmitted();
       } catch (error) {
         toast.error(
-          error instanceof Error
-            ? error.message
-            : "تعذر إرسال الإجابة."
+          error instanceof Error ? error.message : "تعذر إرسال الإجابة.",
         );
       }
     });
@@ -467,9 +396,7 @@ function QuestionPanel({
     <Card>
       <CardHeader>
         <div className="flex flex-wrap items-center justify-between gap-3">
-          <CardTitle className="text-base">
-            السؤال الحالي
-          </CardTitle>
+          <CardTitle className="text-base">السؤال الحالي</CardTitle>
 
           <Badge variant="outline">
             {question.gameType === "QUIZ" && "اختيار من متعدد"}
@@ -503,18 +430,14 @@ function QuestionPanel({
                   disabled={isDisabled}
                   onClick={() => setSelectedAnswer(option)}
                   className={`flex items-center gap-3 rounded-xl border p-4 text-right transition-colors ${
-                    selected
-                      ? "border-primary bg-primary/10"
-                      : "hover:bg-muted"
+                    selected ? "border-primary bg-primary/10" : "hover:bg-muted"
                   } disabled:cursor-not-allowed disabled:opacity-60`}
                 >
                   <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-muted text-sm font-semibold">
                     {String.fromCharCode(65 + index)}
                   </span>
 
-                  <span className="font-medium">
-                    {option}
-                  </span>
+                  <span className="font-medium">{option}</span>
 
                   {selected && (
                     <CheckCircle2 className="mr-auto h-5 w-5 text-primary" />
@@ -543,7 +466,8 @@ function QuestionPanel({
             ) : (
               <>
                 <p className="text-sm text-muted-foreground">
-                  اختر عنصرًا من العمود الأول، ثم اختر العنصر المرتبط به من العمود الثاني.
+                  اختر عنصرًا من العمود الأول، ثم اختر العنصر المرتبط به من
+                  العمود الثاني.
                 </p>
 
                 <div className="grid grid-cols-2 gap-3">
@@ -554,7 +478,7 @@ function QuestionPanel({
 
                     {matchingOptions.left.map((item) => {
                       const used = matchingPairs.some(
-                        (pair) => pair.leftId === item.id
+                        (pair) => pair.leftId === item.id,
                       );
 
                       const selected = selectedLeftId === item.id;
@@ -589,18 +513,14 @@ function QuestionPanel({
 
                     {matchingOptions.right.map((item) => {
                       const used = matchingPairs.some(
-                        (pair) => pair.rightId === item.id
+                        (pair) => pair.rightId === item.id,
                       );
 
                       return (
                         <button
                           key={item.id}
                           type="button"
-                          disabled={
-                            isDisabled ||
-                            used ||
-                            !selectedLeftId
-                          }
+                          disabled={isDisabled || used || !selectedLeftId}
                           onClick={() => handleSelectRight(item.id)}
                           className={`min-h-16 w-full rounded-xl border p-3 text-sm transition-colors ${
                             used
@@ -624,9 +544,7 @@ function QuestionPanel({
                 {matchingPairs.length > 0 && (
                   <div className="space-y-2 rounded-xl bg-muted/60 p-4">
                     <div className="flex items-center justify-between">
-                      <p className="text-sm font-semibold">
-                        الأزواج المحددة
-                      </p>
+                      <p className="text-sm font-semibold">الأزواج المحددة</p>
 
                       <Badge variant="secondary">
                         {matchingPairs.length} / {matchingOptions.left.length}
@@ -638,17 +556,11 @@ function QuestionPanel({
                         key={pair.leftId}
                         className="flex items-center gap-2 rounded-lg border bg-background p-3 text-sm"
                       >
-                        <span className="flex-1">
-                          {pair.left}
-                        </span>
+                        <span className="flex-1">{pair.left}</span>
 
-                        <span className="text-muted-foreground">
-                          ↔
-                        </span>
+                        <span className="text-muted-foreground">↔</span>
 
-                        <span className="flex-1">
-                          {pair.right}
-                        </span>
+                        <span className="flex-1">{pair.right}</span>
 
                         {!isDisabled && (
                           <Button
@@ -656,9 +568,7 @@ function QuestionPanel({
                             size="icon"
                             variant="ghost"
                             className="h-7 w-7 shrink-0"
-                            onClick={() =>
-                              removeMatchingPair(pair.leftId)
-                            }
+                            onClick={() => removeMatchingPair(pair.leftId)}
                           >
                             <X className="h-4 w-4" />
                           </Button>
@@ -700,9 +610,7 @@ function QuestionPanel({
           <div className="flex items-center gap-2 rounded-lg bg-muted p-4">
             <CheckCircle2 className="h-5 w-5 text-primary" />
             <div>
-              <p className="font-semibold">
-                تم تسجيل إجابتك
-              </p>
+              <p className="font-semibold">تم تسجيل إجابتك</p>
               <p className="text-sm text-muted-foreground">
                 انتظر السؤال التالي.
               </p>
@@ -728,7 +636,6 @@ function QuestionPanel({
             ) : (
               <CheckCircle2 className="h-4 w-4" />
             )}
-
             إرسال الإجابة
           </Button>
         )}
