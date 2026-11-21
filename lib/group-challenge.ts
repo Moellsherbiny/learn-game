@@ -1,3 +1,4 @@
+
 import { auth } from "@/auth";
 import { prisma } from "@/lib/prisma";
 import {
@@ -5,7 +6,9 @@ import {
   UserRole,
 } from "@/lib/generated/prisma/client";
 
-import { GROUP_CHALLENGE_QUESTION_DURATION_SECONDS } from "@/lib/group-challenge-constants";
+import {
+  GROUP_CHALLENGE_QUESTION_DURATION_SECONDS,
+} from "@/lib/group-challenge-constants";
 
 export async function advanceGroupChallengeIfExpired(
   challengeId: string
@@ -16,8 +19,13 @@ export async function advanceGroupChallengeIfExpired(
     throw new Error("يجب تسجيل الدخول أولاً.");
   }
 
+  if (!challengeId?.trim()) {
+    throw new Error("معرف التحدي غير صحيح.");
+  }
+
   const userId = session.user.id;
 
+  // Verify that the current user is authorized.
   const isAuthorized =
     session.user.role === UserRole.TEACHER
       ? await prisma.groupChallenge.findFirst({
@@ -25,7 +33,9 @@ export async function advanceGroupChallengeIfExpired(
             id: challengeId,
             teacherId: userId,
           },
-          select: { id: true },
+          select: {
+            id: true,
+          },
         })
       : session.user.role === UserRole.STUDENT
         ? await prisma.challengeParticipant.findUnique({
@@ -35,7 +45,9 @@ export async function advanceGroupChallengeIfExpired(
                 studentId: userId,
               },
             },
-            select: { id: true },
+            select: {
+              id: true,
+            },
           })
         : null;
 
@@ -43,8 +55,11 @@ export async function advanceGroupChallengeIfExpired(
     throw new Error("غير مصرح لك بالوصول إلى هذا التحدي.");
   }
 
+  // Get the current challenge state.
   const challenge = await prisma.groupChallenge.findUnique({
-    where: { id: challengeId },
+    where: {
+      id: challengeId,
+    },
     select: {
       status: true,
       currentQuestionIndex: true,
@@ -60,32 +75,40 @@ export async function advanceGroupChallengeIfExpired(
     return false;
   }
 
-  const elapsed =
-    Date.now() - challenge.currentQuestionStartedAt.getTime();
+  // Get the total number of questions.
+  const totalQuestions = await prisma.challengeQuestion.count({
+    where: {
+      challengeId,
+    },
+  });
 
-  if (
-    elapsed <
-    GROUP_CHALLENGE_QUESTION_DURATION_SECONDS * 1000
-  ) {
+  if (totalQuestions === 0) {
     return false;
   }
 
-  const totalQuestions = await prisma.challengeQuestion.count({
-    where: { challengeId },
-  });
+  // Check whether the current question has expired.
+  const elapsed =
+    Date.now() - challenge.currentQuestionStartedAt.getTime();
+
+  const durationMs =
+    GROUP_CHALLENGE_QUESTION_DURATION_SECONDS * 1000;
+
+  if (elapsed < durationMs) {
+    return false;
+  }
 
   const now = new Date();
 
   const isLastQuestion =
     challenge.currentQuestionIndex + 1 >= totalQuestions;
 
+  // Atomically advance the question or finish the challenge.
   const updated = await prisma.groupChallenge.updateMany({
     where: {
       id: challengeId,
       status: GroupChallengeStatus.LIVE,
       currentQuestionIndex: challenge.currentQuestionIndex,
-      currentQuestionStartedAt:
-        challenge.currentQuestionStartedAt,
+      currentQuestionStartedAt: challenge.currentQuestionStartedAt,
     },
 
     data: isLastQuestion

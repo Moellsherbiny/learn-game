@@ -1,8 +1,8 @@
+
 "use client";
 
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import Link from "next/link";
-
 import {
   Activity,
   ArrowRight,
@@ -16,22 +16,16 @@ import {
   RefreshCw,
   Trophy,
   Users,
-  Flag,
   Swords,
 } from "lucide-react";
-
 import { toast } from "sonner";
-
+import { GROUP_CHALLENGE_QUESTION_DURATION_SECONDS } from "@/lib/group-challenge-constants";
 import {
   getGroupChallengeControlStateAction,
   startGroupChallengeAction,
-  nextGroupChallengeQuestionAction,
-  finishGroupChallengeAction,
 } from "@/actions/teacher/group-challenge-control";
-
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-
 import {
   Card,
   CardContent,
@@ -66,24 +60,27 @@ function formatDate(date: Date | string | null) {
   }).format(new Date(date));
 }
 
-function getRemainingSeconds(
-  startedAt: Date | string | null,
-  timeLimit: number,
-) {
-  if (!startedAt) return timeLimit;
+function getRemainingSeconds(startedAt: Date | string | null) {
+  if (!startedAt) return GROUP_CHALLENGE_QUESTION_DURATION_SECONDS;
 
   const elapsed = Math.floor(
     (Date.now() - new Date(startedAt).getTime()) / 1000,
   );
 
-  return Math.max(0, timeLimit - elapsed);
+  return Math.max(
+    0,
+    GROUP_CHALLENGE_QUESTION_DURATION_SECONDS - elapsed,
+  );
 }
 
 // ============================================
 // Main Component
 // ============================================
 
-export function GroupChallengeLiveControl({ challengeId, initialData }: Props) {
+export function GroupChallengeLiveControl({
+  challengeId,
+  initialData,
+}: Props) {
   const [data, setData] = useState(initialData);
   const [actionLoading, setActionLoading] = useState(false);
   const [isRefreshing, setIsRefreshing] = useState(false);
@@ -106,7 +103,8 @@ export function GroupChallengeLiveControl({ challengeId, initialData }: Props) {
       }
 
       try {
-        const result = await getGroupChallengeControlStateAction(challengeId);
+        const result =
+          await getGroupChallengeControlStateAction(challengeId);
 
         if (mounted.current) {
           setData(result);
@@ -172,20 +170,14 @@ export function GroupChallengeLiveControl({ challengeId, initialData }: Props) {
 
   const allReady =
     challenge.participants.length > 0 &&
-    challenge.statistics.readyCount === challenge.statistics.totalParticipants;
+    challenge.statistics.readyCount ===
+      challenge.statistics.totalParticipants;
 
   const currentQuestion = challenge.currentQuestion;
 
   const remainingSeconds = currentQuestion
-    ? getRemainingSeconds(
-        challenge.currentQuestionStartedAt,
-        currentQuestion.timeLimit,
-      )
+    ? getRemainingSeconds(challenge.currentQuestionStartedAt)
     : 0;
-
-  const isLastQuestion =
-    currentQuestion !== null &&
-    currentQuestion.order >= challenge.questions.length;
 
   // ============================================
   // Actions
@@ -206,52 +198,10 @@ export function GroupChallengeLiveControl({ challengeId, initialData }: Props) {
 
       await refresh();
     } catch (error) {
-      toast.error(error instanceof Error ? error.message : "تعذر بدء التحدي.");
-
-      await refresh();
-    } finally {
-      setActionLoading(false);
-    }
-  }
-
-  async function handleNextQuestion() {
-    setActionLoading(true);
-
-    try {
-      await nextGroupChallengeQuestionAction(challengeId);
-
-      toast.success("تم الانتقال إلى السؤال التالي.");
-
-      await refresh();
-    } catch (error) {
       toast.error(
-        error instanceof Error ? error.message : "تعذر الانتقال للسؤال التالي.",
-      );
-
-      await refresh();
-    } finally {
-      setActionLoading(false);
-    }
-  }
-
-  async function handleFinishChallenge() {
-    const confirmed = window.confirm(
-      "هل أنت متأكد من إنهاء التحدي؟ لن يتمكن الطلاب من إرسال إجابات جديدة.",
-    );
-
-    if (!confirmed) return;
-
-    setActionLoading(true);
-
-    try {
-      await finishGroupChallengeAction(challengeId);
-
-      toast.success("تم إنهاء التحدي بنجاح.");
-
-      await refresh();
-    } catch (error) {
-      toast.error(
-        error instanceof Error ? error.message : "تعذر إنهاء التحدي.",
+        error instanceof Error
+          ? error.message
+          : "تعذر بدء التحدي.",
       );
 
       await refresh();
@@ -283,7 +233,9 @@ export function GroupChallengeLiveControl({ challengeId, initialData }: Props) {
             </div>
 
             <div className="space-y-2">
-              <h1 className="text-2xl font-bold">انتهى التحدي!</h1>
+              <h1 className="text-2xl font-bold">
+                انتهى التحدي!
+              </h1>
 
               <p className="text-sm text-muted-foreground">
                 تم إنهاء التحدي بنجاح. يمكنك الآن مراجعة النتائج النهائية.
@@ -292,6 +244,7 @@ export function GroupChallengeLiveControl({ challengeId, initialData }: Props) {
 
             <div className="rounded-lg border p-4 text-sm">
               <p className="font-semibold">{challenge.title}</p>
+
               <p className="mt-1 text-muted-foreground">
                 تاريخ الانتهاء: {formatDate(challenge.finishedAt)}
               </p>
@@ -299,14 +252,18 @@ export function GroupChallengeLiveControl({ challengeId, initialData }: Props) {
 
             <div className="flex flex-col gap-3 sm:flex-row">
               <Button asChild className="flex-1 gap-2">
-                <Link href={`/teacher/group-challenges/${challengeId}/results`}>
+                <Link
+                  href={`/teacher/group-challenges/${challengeId}/results`}
+                >
                   <Trophy className="size-4" />
                   عرض النتائج
                 </Link>
               </Button>
 
               <Button asChild variant="outline" className="flex-1">
-                <Link href="/teacher/group-challenges">العودة للتحديات</Link>
+                <Link href="/teacher/group-challenges">
+                  العودة للتحديات
+                </Link>
               </Button>
             </div>
           </CardContent>
@@ -339,7 +296,9 @@ export function GroupChallengeLiveControl({ challengeId, initialData }: Props) {
             </div>
 
             <div>
-              <h1 className="text-2xl font-bold">{challenge.title}</h1>
+              <h1 className="text-2xl font-bold">
+                {challenge.title}
+              </h1>
 
               <p className="text-sm text-muted-foreground">
                 {challenge.course.title}
@@ -374,7 +333,9 @@ export function GroupChallengeLiveControl({ challengeId, initialData }: Props) {
             </div>
 
             <div>
-              <p className="text-sm font-semibold">كود الانضمام</p>
+              <p className="text-sm font-semibold">
+                كود الانضمام
+              </p>
 
               <p className="text-xs text-muted-foreground">
                 شارك الكود مع الطلاب للانضمام إلى التحدي.
@@ -427,7 +388,9 @@ export function GroupChallengeLiveControl({ challengeId, initialData }: Props) {
         <StatCard
           title="السؤال الحالي"
           value={
-            challenge.status === "LIVE" ? challenge.currentQuestionIndex + 1 : 0
+            challenge.status === "LIVE"
+              ? challenge.currentQuestionIndex + 1
+              : 0
           }
           icon={Activity}
         />
@@ -443,7 +406,9 @@ export function GroupChallengeLiveControl({ challengeId, initialData }: Props) {
             <CardHeader>
               <div className="flex items-center justify-between gap-3">
                 <div>
-                  <CardTitle className="text-lg">غرفة الانتظار</CardTitle>
+                  <CardTitle className="text-lg">
+                    غرفة الانتظار
+                  </CardTitle>
 
                   <CardDescription>
                     تابع انضمام الطلاب واستعدادهم قبل بدء التحدي.
@@ -459,7 +424,9 @@ export function GroupChallengeLiveControl({ challengeId, initialData }: Props) {
 
             <CardContent className="space-y-4">
               <div className="flex items-center justify-between text-sm">
-                <span className="text-muted-foreground">جاهزية المشاركين</span>
+                <span className="text-muted-foreground">
+                  جاهزية المشاركين
+                </span>
 
                 <span className="font-semibold tabular-nums">
                   {challenge.statistics.readyCount} /{" "}
@@ -504,7 +471,9 @@ export function GroupChallengeLiveControl({ challengeId, initialData }: Props) {
 
           <div className="flex flex-col gap-3 rounded-xl border bg-card p-5 sm:flex-row sm:items-center sm:justify-between">
             <div>
-              <h3 className="font-semibold">هل أنت جاهز لبدء التحدي؟</h3>
+              <h3 className="font-semibold">
+                هل أنت جاهز لبدء التحدي؟
+              </h3>
 
               <p className="mt-1 text-sm text-muted-foreground">
                 لن يبدأ التحدي إلا بعد استعداد جميع الطلاب.
@@ -514,7 +483,9 @@ export function GroupChallengeLiveControl({ challengeId, initialData }: Props) {
             <Button
               onClick={handleStartChallenge}
               disabled={
-                actionLoading || !allReady || challenge.questions.length === 0
+                actionLoading ||
+                !allReady ||
+                challenge.questions.length === 0
               }
               className="gap-2"
             >
@@ -523,6 +494,7 @@ export function GroupChallengeLiveControl({ challengeId, initialData }: Props) {
               ) : (
                 <Play className="size-4" />
               )}
+
               بدء التحدي
             </Button>
           </div>
@@ -555,7 +527,6 @@ export function GroupChallengeLiveControl({ challengeId, initialData }: Props) {
 
           {/* Current Question */}
 
-          {/* Current Question */}
           {currentQuestion ? (
             <Card className="overflow-hidden border-primary/20 shadow-sm">
               <div className="h-1.5 bg-muted">
@@ -563,8 +534,10 @@ export function GroupChallengeLiveControl({ challengeId, initialData }: Props) {
                   className="h-full bg-primary transition-all duration-500"
                   style={{
                     width: `${
-                      currentQuestion.timeLimit > 0
-                        ? (remainingSeconds / currentQuestion.timeLimit) * 100
+                      GROUP_CHALLENGE_QUESTION_DURATION_SECONDS > 0
+                        ? (remainingSeconds /
+                            GROUP_CHALLENGE_QUESTION_DURATION_SECONDS) *
+                          100
                         : 0
                     }%`,
                   }}
@@ -579,10 +552,12 @@ export function GroupChallengeLiveControl({ challengeId, initialData }: Props) {
                       {challenge.questions.length}
                     </Badge>
 
-                    <CardTitle className="text-xl">السؤال الحالي</CardTitle>
+                    <CardTitle className="text-xl">
+                      السؤال الحالي
+                    </CardTitle>
 
                     <p className="text-sm text-muted-foreground">
-                      تابع إجابات الطلاب وتحكم في سير التحدي
+                      تابع إجابات الطلاب وانتظر الانتقال التلقائي للسؤال التالي.
                     </p>
                   </div>
 
@@ -599,7 +574,9 @@ export function GroupChallengeLiveControl({ challengeId, initialData }: Props) {
                       {remainingSeconds}
                     </span>
 
-                    <span className="text-xs">ثانية متبقية</span>
+                    <span className="text-xs">
+                      ثانية متبقية
+                    </span>
                   </div>
                 </div>
               </CardHeader>
@@ -621,8 +598,10 @@ export function GroupChallengeLiveControl({ challengeId, initialData }: Props) {
                       <p className="text-xs text-muted-foreground">
                         إجابات الطلاب
                       </p>
+
                       <p className="text-lg font-bold tabular-nums">
                         {currentQuestion._count.answers}
+
                         <span className="text-sm font-normal text-muted-foreground">
                           {" "}
                           / {challenge.statistics.totalParticipants}
@@ -640,50 +619,28 @@ export function GroupChallengeLiveControl({ challengeId, initialData }: Props) {
                       <p className="text-xs text-muted-foreground">
                         الوقت المحدد
                       </p>
+
                       <p className="text-lg font-bold">
-                        {currentQuestion.timeLimit} ثانية
+                        {GROUP_CHALLENGE_QUESTION_DURATION_SECONDS} ثانية
                       </p>
                     </div>
                   </div>
                 </div>
 
-                <div className="flex flex-col-reverse gap-3 border-t pt-5 sm:flex-row sm:items-center sm:justify-between">
-                  <Button
-                    variant="destructive"
-                    onClick={handleFinishChallenge}
-                    disabled={actionLoading}
-                    className="gap-2"
-                  >
-                    <Flag className="size-4" />
-                    إنهاء التحدي
-                  </Button>
+                <div className="flex items-center justify-center gap-2 border-t pt-5 text-sm text-muted-foreground">
+                  <RefreshCw className="size-4 animate-spin" />
 
-                  <Button
-                    onClick={handleNextQuestion}
-                    disabled={actionLoading || isLastQuestion}
-                    className="gap-2"
-                  >
-                    {actionLoading ? (
-                      <Loader2 className="size-4 animate-spin" />
-                    ) : (
-                      <ArrowRight className="size-4" />
-                    )}
-
-                    {isLastQuestion ? "آخر سؤال" : "السؤال التالي"}
-                  </Button>
+                  <span>
+                    ينتقل التحدي تلقائيًا بعد انتهاء الوقت المحدد للسؤال
+                  </span>
                 </div>
-
-                {isLastQuestion && (
-                  <p className="text-center text-sm text-muted-foreground">
-                    وصلت إلى آخر سؤال. يمكنك إنهاء التحدي لعرض النتائج.
-                  </p>
-                )}
               </CardContent>
             </Card>
           ) : (
             <Card>
               <CardContent className="flex min-h-40 flex-col items-center justify-center gap-3 p-8 text-center">
                 <FileQuestion className="size-9 text-muted-foreground" />
+
                 <p className="text-sm text-muted-foreground">
                   لم يتم العثور على السؤال الحالي.
                 </p>
@@ -734,7 +691,6 @@ function ChallengeStatusBadge({ status }: { status: string }) {
 // Stat Card
 // ============================================
 
-
 function StatCard({
   title,
   value,
@@ -768,7 +724,6 @@ function StatCard({
 // ============================================
 // Team Score Card
 // ============================================
-
 
 function TeamScoreCard({
   title,
@@ -811,20 +766,22 @@ function TeamScoreCard({
             <p className="text-3xl font-bold tabular-nums">
               {score.toLocaleString("ar-EG")}
             </p>
+
             <p className="text-xs text-muted-foreground">
               إجمالي النقاط
             </p>
           </div>
         </div>
 
-        <div className={`flex size-12 shrink-0 items-center justify-center rounded-xl ${styles.icon}`}>
+        <div
+          className={`flex size-12 shrink-0 items-center justify-center rounded-xl ${styles.icon}`}
+        >
           <Trophy className="size-6" />
         </div>
       </CardContent>
     </Card>
   );
 }
-
 
 // ============================================
 // Team Participants
@@ -860,7 +817,6 @@ function TeamParticipants({
   );
 }
 
-
 function TeamParticipantsCard({
   title,
   participants,
@@ -886,7 +842,7 @@ function TeamParticipantsCard({
         };
 
   const readyCount = participants.filter(
-    (participant) => participant.isReady
+    (participant) => participant.isReady,
   ).length;
 
   return (
@@ -894,7 +850,9 @@ function TeamParticipantsCard({
       <CardHeader className="border-b bg-muted/20">
         <div className="flex items-center justify-between gap-3">
           <div className="flex items-center gap-3">
-            <div className={`flex size-10 items-center justify-center rounded-xl ${teamColor.icon}`}>
+            <div
+              className={`flex size-10 items-center justify-center rounded-xl ${teamColor.icon}`}
+            >
               <Users className="size-5" />
             </div>
 
@@ -937,7 +895,9 @@ function TeamParticipantsCard({
                 className="flex items-center justify-between gap-3 rounded-xl border p-3 transition-colors hover:bg-muted/30"
               >
                 <div className="flex min-w-0 items-center gap-3">
-                  <div className={`flex size-10 shrink-0 items-center justify-center rounded-full text-sm font-bold ${teamColor.avatar}`}>
+                  <div
+                    className={`flex size-10 shrink-0 items-center justify-center rounded-full text-sm font-bold ${teamColor.avatar}`}
+                  >
                     {participant.student.name?.charAt(0) || "؟"}
                   </div>
 
@@ -986,4 +946,3 @@ function TeamParticipantsCard({
     </Card>
   );
 }
-

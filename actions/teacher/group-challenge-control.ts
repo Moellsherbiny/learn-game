@@ -1,3 +1,4 @@
+
 "use server";
 
 import { auth } from "@/auth";
@@ -8,6 +9,10 @@ import {
 } from "@/lib/generated/prisma/client";
 import { revalidatePath } from "next/cache";
 import { advanceGroupChallengeIfExpired } from "@/lib/group-challenge";
+import {
+  GROUP_CHALLENGE_QUESTION_DURATION_SECONDS,
+} from "@/lib/group-challenge-constants";
+
 // ============================================
 // Authentication
 // ============================================
@@ -40,7 +45,9 @@ export async function getGroupChallengeControlStateAction(
   }
 
   // Automatically advance the challenge if the current question expired.
+  // The helper also finishes the challenge after the last question.
   await advanceGroupChallengeIfExpired(challengeId);
+
   const challenge = await prisma.groupChallenge.findFirst({
     where: {
       id: challengeId,
@@ -59,11 +66,12 @@ export async function getGroupChallengeControlStateAction(
         orderBy: {
           order: "asc",
         },
+
         select: {
           id: true,
           question: true,
           order: true,
-          timeLimit: true,
+
           _count: {
             select: {
               answers: true,
@@ -121,15 +129,23 @@ export async function getGroupChallengeControlStateAction(
     (participant) => participant.isReady
   ).length;
 
+  // Every question has a fixed duration of 60 seconds.
+  const questions = challenge.questions.map((question) => ({
+    ...question,
+    timeLimit: GROUP_CHALLENGE_QUESTION_DURATION_SECONDS,
+  }));
+
   return {
     ...challenge,
+    questions,
 
     currentQuestion:
-      challenge.questions[challenge.currentQuestionIndex] ?? null,
+      questions[challenge.currentQuestionIndex] ?? null,
 
     statistics: {
       totalParticipants: challenge.participants.length,
       readyCount,
+
       waitingCount:
         challenge.participants.length - readyCount,
 
@@ -193,7 +209,9 @@ export async function startGroupChallengeAction(
     }
 
     if (challenge.status !== GroupChallengeStatus.WAITING) {
-      throw new Error("لا يمكن بدء هذا التحدي في حالته الحالية.");
+      throw new Error(
+        "لا يمكن بدء هذا التحدي في حالته الحالية."
+      );
     }
 
     if (challenge._count.questions === 0) {
@@ -209,8 +227,12 @@ export async function startGroupChallengeAction(
     );
 
     if (!allReady) {
-      throw new Error("يجب أن يكون جميع الطلاب جاهزين أولاً.");
+      throw new Error(
+        "يجب أن يكون جميع الطلاب جاهزين أولاً."
+      );
     }
+
+    const now = new Date();
 
     const updated = await tx.groupChallenge.updateMany({
       where: {
@@ -222,13 +244,15 @@ export async function startGroupChallengeAction(
       data: {
         status: GroupChallengeStatus.LIVE,
         currentQuestionIndex: 0,
-        startedAt: new Date(),
-        currentQuestionStartedAt: new Date()
+        startedAt: now,
+        currentQuestionStartedAt: now,
       },
     });
 
     if (updated.count !== 1) {
-      throw new Error("تم تغيير حالة التحدي بالفعل. حاول مرة أخرى.");
+      throw new Error(
+        "تم تغيير حالة التحدي بالفعل. حاول مرة أخرى."
+      );
     }
 
     return tx.groupChallenge.findUniqueOrThrow({
@@ -253,184 +277,6 @@ export async function startGroupChallengeAction(
   return {
     success: true,
     message: "تم بدء التحدي بنجاح.",
-    challenge: result,
-  };
-}
-
-// ============================================
-// 3. Next Challenge Question
-// ============================================
-
-export async function nextGroupChallengeQuestionAction(
-  challengeId: string
-) {
-  const teacherId = await requireTeacher();
-
-  if (!challengeId?.trim()) {
-    throw new Error("معرف التحدي غير صحيح.");
-  }
-
-  const result = await prisma.$transaction(async (tx) => {
-    const challenge = await tx.groupChallenge.findFirst({
-      where: {
-        id: challengeId,
-        teacherId,
-      },
-
-      include: {
-        _count: {
-          select: {
-            questions: true,
-          },
-        },
-      },
-    });
-
-    if (!challenge) {
-      throw new Error("التحدي غير موجود أو غير مصرح لك.");
-    }
-
-    if (challenge.status !== GroupChallengeStatus.LIVE) {
-      throw new Error("التحدي ليس قيد التشغيل.");
-    }
-
-    const nextIndex = challenge.currentQuestionIndex + 1;
-
-    if (nextIndex >= challenge._count.questions) {
-      throw new Error(
-        "وصلت إلى آخر سؤال. يمكنك إنهاء التحدي الآن."
-      );
-    }
-
-    const updated = await tx.groupChallenge.updateMany({
-      where: {
-        id: challengeId,
-        teacherId,
-        status: GroupChallengeStatus.LIVE,
-        currentQuestionIndex: challenge.currentQuestionIndex,
-      },
-
-      data: {
-        currentQuestionIndex: {
-          increment: 1,
-        },
-        currentQuestionStartedAt:new Date()
-      },
-    });
-
-    if (updated.count !== 1) {
-      throw new Error(
-        "تم تحديث السؤال بالفعل. أعد تحميل بيانات التحدي."
-      );
-    }
-
-    return tx.groupChallenge.findUniqueOrThrow({
-      where: {
-        id: challengeId,
-      },
-
-      include: {
-        questions: {
-          where: {
-            order: nextIndex + 1,
-          },
-
-          select: {
-            id: true,
-            question: true,
-            order: true,
-            timeLimit: true,
-          },
-        },
-      },
-    });
-  });
-
-  revalidatePath(`/teacher/group-challenges/${challengeId}`);
-  revalidatePath("/student/group-challenges");
-
-  return {
-    success: true,
-    message: "تم الانتقال إلى السؤال التالي.",
-    challenge: result,
-    currentQuestion: result.questions[0] ?? null,
-  };
-}
-
-// ============================================
-// 4. Finish Group Challenge
-// ============================================
-
-export async function finishGroupChallengeAction(
-  challengeId: string
-) {
-  const teacherId = await requireTeacher();
-
-  if (!challengeId?.trim()) {
-    throw new Error("معرف التحدي غير صحيح.");
-  }
-
-  const result = await prisma.$transaction(async (tx) => {
-    const challenge = await tx.groupChallenge.findFirst({
-      where: {
-        id: challengeId,
-        teacherId,
-      },
-
-      select: {
-        id: true,
-        status: true,
-      },
-    });
-
-    if (!challenge) {
-      throw new Error("التحدي غير موجود أو غير مصرح لك.");
-    }
-
-    if (challenge.status !== GroupChallengeStatus.LIVE) {
-      throw new Error("لا يمكن إنهاء التحدي في حالته الحالية.");
-    }
-
-    const updated = await tx.groupChallenge.updateMany({
-      where: {
-        id: challengeId,
-        teacherId,
-        status: GroupChallengeStatus.LIVE,
-      },
-
-      data: {
-        status: GroupChallengeStatus.FINISHED,
-        finishedAt: new Date(),
-      },
-    });
-
-    if (updated.count !== 1) {
-      throw new Error("تعذر إنهاء التحدي. حاول مرة أخرى.");
-    }
-
-    return tx.groupChallenge.findUniqueOrThrow({
-      where: {
-        id: challengeId,
-      },
-
-      select: {
-        id: true,
-        title: true,
-        status: true,
-        startedAt: true,
-        finishedAt: true,
-        currentQuestionIndex: true,
-      },
-    });
-  });
-
-  revalidatePath("/teacher/group-challenges");
-  revalidatePath(`/teacher/group-challenges/${challengeId}`);
-  revalidatePath("/student/group-challenges");
-
-  return {
-    success: true,
-    message: "تم إنهاء التحدي بنجاح.",
     challenge: result,
   };
 }

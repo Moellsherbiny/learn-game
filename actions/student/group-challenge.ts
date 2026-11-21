@@ -857,250 +857,167 @@ export async function getStudentGroupChallengeLiveAction(
 // ============================================
 
 export async function submitGroupChallengeAnswerAction(
-
   challengeId: string,
-
   answer: string
-
 ) {
-
   const studentId = await requireStudent();
-
   const normalizedAnswer = answer?.trim();
 
   if (!challengeId?.trim()) {
-
     throw new Error("معرف التحدي غير صحيح.");
-
   }
 
   if (!normalizedAnswer) {
-
     throw new Error("من فضلك اختر إجابة أولاً.");
-
   }
 
   const result = await prisma.$transaction(async (tx) => {
+    // Lock the challenge row to prevent concurrent question transitions
+    // while an answer is being submitted.
+    const lockedChallenges = await tx.$queryRaw<Array<{ id: string }>>`
+      SELECT "id"
+      FROM "GroupChallenge"
+      WHERE "id" = ${challengeId}
+      FOR UPDATE
+    `;
+
+    if (lockedChallenges.length === 0) {
+      throw new Error("التحدي غير موجود.");
+    }
 
     const participant = await tx.challengeParticipant.findUnique({
-
       where: {
-
         challengeId_studentId: {
-
           challengeId,
-
           studentId,
-
         },
-
       },
-
       select: {
-
         id: true,
-
         score: true,
-
       },
-
     });
 
     if (!participant) {
-
       throw new Error("أنت غير منضم إلى هذا التحدي.");
-
     }
 
+    // Read the challenge state after acquiring the row lock.
     const challenge = await tx.groupChallenge.findUnique({
-
       where: {
-
         id: challengeId,
-
       },
-
       select: {
-
         status: true,
-
         currentQuestionIndex: true,
-
         currentQuestionStartedAt: true,
-
         pointsPerQuestion: true,
-
         questions: {
-
           orderBy: {
-
             order: "asc",
-
           },
-
           select: {
-
             id: true,
-
             answer: true,
-
-            timeLimit: true,
-
           },
-
         },
-
       },
-
     });
 
     if (!challenge || challenge.status !== GroupChallengeStatus.LIVE) {
-
       throw new Error("التحدي ليس قيد التشغيل.");
-
     }
 
     const question =
-
       challenge.questions[challenge.currentQuestionIndex];
 
     if (!question) {
-
       throw new Error("السؤال الحالي غير موجود.");
-
     }
 
     const startedAt = challenge.currentQuestionStartedAt;
 
     if (!startedAt) {
-
       throw new Error("لم يتم تحديد وقت بداية السؤال.");
-
     }
 
     const responseTime = Date.now() - startedAt.getTime();
 
-    if (responseTime > GROUP_CHALLENGE_QUESTION_DURATION_SECONDS * 1000) {
-
+    // Every question has a fixed duration of 60 seconds.
+    if (
+      responseTime >=
+      GROUP_CHALLENGE_QUESTION_DURATION_SECONDS * 1000
+    ) {
       throw new Error("انتهى وقت الإجابة عن هذا السؤال.");
-
     }
 
     const existingAnswer = await tx.challengeAnswer.findUnique({
-
       where: {
-
         challengeQuestionId_participantId: {
-
           challengeQuestionId: question.id,
-
           participantId: participant.id,
-
         },
-
       },
-
       select: {
-
         id: true,
-
       },
-
     });
 
     if (existingAnswer) {
-
       throw new Error("لقد أرسلت إجابتك بالفعل.");
-
     }
 
     const isCorrect =
-
       normalizedAnswer.toLocaleLowerCase() ===
-
       (question.answer ?? "").trim().toLocaleLowerCase();
 
     const pointsAwarded = isCorrect
-
       ? challenge.pointsPerQuestion
-
       : 0;
 
     await tx.challengeAnswer.create({
-
       data: {
-
         challengeQuestionId: question.id,
-
         participantId: participant.id,
-
         answer: normalizedAnswer,
-
         isCorrect,
-
         responseTime,
-
       },
-
     });
 
     const updatedParticipant = await tx.challengeParticipant.update({
-
       where: {
-
         id: participant.id,
-
       },
-
       data: {
-
         score: {
-
           increment: pointsAwarded,
-
         },
-
       },
-
       select: {
-
         score: true,
-
       },
-
     });
 
     return {
-
       isCorrect,
-
       pointsAwarded,
-
       score: updatedParticipant.score,
-
       responseTime,
-
     };
-
   });
 
   revalidatePath(`/student/group-challenges/${challengeId}`);
 
   return {
-
     success: true,
-
     message: result.isCorrect
-
       ? "إجابة صحيحة! أحسنت."
-
       : "إجابة غير صحيحة. حاول في السؤال التالي.",
-
     ...result,
-
   };
-
 }
+
 // ============================================
 // 6. Get Student Challenge Results
 // ============================================
