@@ -1,9 +1,7 @@
-
 "use client";
 
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import Link from "next/link";
-
 
 import {
   Activity,
@@ -55,8 +53,6 @@ type Props = {
   initialData: LiveControlData;
 };
 
-
-
 // ============================================
 // Helpers
 // ============================================
@@ -72,12 +68,12 @@ function formatDate(date: Date | string | null) {
 
 function getRemainingSeconds(
   startedAt: Date | string | null,
-  timeLimit: number
+  timeLimit: number,
 ) {
   if (!startedAt) return timeLimit;
 
   const elapsed = Math.floor(
-    (Date.now() - new Date(startedAt).getTime()) / 1000
+    (Date.now() - new Date(startedAt).getTime()) / 1000,
   );
 
   return Math.max(0, timeLimit - elapsed);
@@ -87,11 +83,7 @@ function getRemainingSeconds(
 // Main Component
 // ============================================
 
-export function GroupChallengeLiveControl({
-  challengeId,
-  initialData,
-}: Props) {
-
+export function GroupChallengeLiveControl({ challengeId, initialData }: Props) {
   const [data, setData] = useState(initialData);
   const [actionLoading, setActionLoading] = useState(false);
   const [isRefreshing, setIsRefreshing] = useState(false);
@@ -103,38 +95,40 @@ export function GroupChallengeLiveControl({
   // Polling
   // ============================================
 
-  const refresh = useCallback(async (showIndicator = false) => {
-    if (requestInProgress.current) return;
+  const refresh = useCallback(
+    async (showIndicator = false) => {
+      if (requestInProgress.current) return;
 
-    requestInProgress.current = true;
+      requestInProgress.current = true;
 
-    if (showIndicator && mounted.current) {
-      setIsRefreshing(true);
-    }
-
-    try {
-      const result =
-        await getGroupChallengeControlStateAction(challengeId);
-
-      if (mounted.current) {
-        setData(result);
+      if (showIndicator && mounted.current) {
+        setIsRefreshing(true);
       }
-    } catch (error) {
-      if (mounted.current) {
-        toast.error(
-          error instanceof Error
-            ? error.message
-            : "تعذر تحديث بيانات التحدي."
-        );
-      }
-    } finally {
-      requestInProgress.current = false;
 
-      if (mounted.current) {
-        setIsRefreshing(false);
+      try {
+        const result = await getGroupChallengeControlStateAction(challengeId);
+
+        if (mounted.current) {
+          setData(result);
+        }
+      } catch (error) {
+        if (mounted.current) {
+          toast.error(
+            error instanceof Error
+              ? error.message
+              : "تعذر تحديث بيانات التحدي.",
+          );
+        }
+      } finally {
+        requestInProgress.current = false;
+
+        if (mounted.current) {
+          setIsRefreshing(false);
+        }
       }
-    }
-  }, [challengeId]);
+    },
+    [challengeId],
+  );
 
   useEffect(() => {
     mounted.current = true;
@@ -163,30 +157,29 @@ export function GroupChallengeLiveControl({
   const teamA = useMemo(
     () =>
       challenge.participants.filter(
-        (participant) => participant.team === "TEAM_A"
+        (participant) => participant.team === "TEAM_A",
       ),
-    [challenge.participants]
+    [challenge.participants],
   );
 
   const teamB = useMemo(
     () =>
       challenge.participants.filter(
-        (participant) => participant.team === "TEAM_B"
+        (participant) => participant.team === "TEAM_B",
       ),
-    [challenge.participants]
+    [challenge.participants],
   );
 
   const allReady =
     challenge.participants.length > 0 &&
-    challenge.statistics.readyCount ===
-      challenge.statistics.totalParticipants;
+    challenge.statistics.readyCount === challenge.statistics.totalParticipants;
 
   const currentQuestion = challenge.currentQuestion;
 
   const remainingSeconds = currentQuestion
     ? getRemainingSeconds(
         challenge.currentQuestionStartedAt,
-        currentQuestion.timeLimit
+        currentQuestion.timeLimit,
       )
     : 0;
 
@@ -213,11 +206,7 @@ export function GroupChallengeLiveControl({
 
       await refresh();
     } catch (error) {
-      toast.error(
-        error instanceof Error
-          ? error.message
-          : "تعذر بدء التحدي."
-      );
+      toast.error(error instanceof Error ? error.message : "تعذر بدء التحدي.");
 
       await refresh();
     } finally {
@@ -236,9 +225,7 @@ export function GroupChallengeLiveControl({
       await refresh();
     } catch (error) {
       toast.error(
-        error instanceof Error
-          ? error.message
-          : "تعذر الانتقال للسؤال التالي."
+        error instanceof Error ? error.message : "تعذر الانتقال للسؤال التالي.",
       );
 
       await refresh();
@@ -249,7 +236,7 @@ export function GroupChallengeLiveControl({
 
   async function handleFinishChallenge() {
     const confirmed = window.confirm(
-      "هل أنت متأكد من إنهاء التحدي؟ لن يتمكن الطلاب من إرسال إجابات جديدة."
+      "هل أنت متأكد من إنهاء التحدي؟ لن يتمكن الطلاب من إرسال إجابات جديدة.",
     );
 
     if (!confirmed) return;
@@ -264,9 +251,7 @@ export function GroupChallengeLiveControl({
       await refresh();
     } catch (error) {
       toast.error(
-        error instanceof Error
-          ? error.message
-          : "تعذر إنهاء التحدي."
+        error instanceof Error ? error.message : "تعذر إنهاء التحدي.",
       );
 
       await refresh();
@@ -298,9 +283,7 @@ export function GroupChallengeLiveControl({
             </div>
 
             <div className="space-y-2">
-              <h1 className="text-2xl font-bold">
-                انتهى التحدي!
-              </h1>
+              <h1 className="text-2xl font-bold">انتهى التحدي!</h1>
 
               <p className="text-sm text-muted-foreground">
                 تم إنهاء التحدي بنجاح. يمكنك الآن مراجعة النتائج النهائية.
@@ -316,18 +299,14 @@ export function GroupChallengeLiveControl({
 
             <div className="flex flex-col gap-3 sm:flex-row">
               <Button asChild className="flex-1 gap-2">
-                <Link
-                  href={`/teacher/group-challenges/${challengeId}/results`}
-                >
+                <Link href={`/teacher/group-challenges/${challengeId}/results`}>
                   <Trophy className="size-4" />
                   عرض النتائج
                 </Link>
               </Button>
 
               <Button asChild variant="outline" className="flex-1">
-                <Link href="/teacher/group-challenges">
-                  العودة للتحديات
-                </Link>
+                <Link href="/teacher/group-challenges">العودة للتحديات</Link>
               </Button>
             </div>
           </CardContent>
@@ -360,9 +339,7 @@ export function GroupChallengeLiveControl({
             </div>
 
             <div>
-              <h1 className="text-2xl font-bold">
-                {challenge.title}
-              </h1>
+              <h1 className="text-2xl font-bold">{challenge.title}</h1>
 
               <p className="text-sm text-muted-foreground">
                 {challenge.course.title}
@@ -397,9 +374,7 @@ export function GroupChallengeLiveControl({
             </div>
 
             <div>
-              <p className="text-sm font-semibold">
-                كود الانضمام
-              </p>
+              <p className="text-sm font-semibold">كود الانضمام</p>
 
               <p className="text-xs text-muted-foreground">
                 شارك الكود مع الطلاب للانضمام إلى التحدي.
@@ -452,9 +427,7 @@ export function GroupChallengeLiveControl({
         <StatCard
           title="السؤال الحالي"
           value={
-            challenge.status === "LIVE"
-              ? challenge.currentQuestionIndex + 1
-              : 0
+            challenge.status === "LIVE" ? challenge.currentQuestionIndex + 1 : 0
           }
           icon={Activity}
         />
@@ -470,9 +443,7 @@ export function GroupChallengeLiveControl({
             <CardHeader>
               <div className="flex items-center justify-between gap-3">
                 <div>
-                  <CardTitle className="text-lg">
-                    غرفة الانتظار
-                  </CardTitle>
+                  <CardTitle className="text-lg">غرفة الانتظار</CardTitle>
 
                   <CardDescription>
                     تابع انضمام الطلاب واستعدادهم قبل بدء التحدي.
@@ -488,9 +459,7 @@ export function GroupChallengeLiveControl({
 
             <CardContent className="space-y-4">
               <div className="flex items-center justify-between text-sm">
-                <span className="text-muted-foreground">
-                  جاهزية المشاركين
-                </span>
+                <span className="text-muted-foreground">جاهزية المشاركين</span>
 
                 <span className="font-semibold tabular-nums">
                   {challenge.statistics.readyCount} /{" "}
@@ -531,16 +500,11 @@ export function GroupChallengeLiveControl({
             </CardContent>
           </Card>
 
-          <TeamParticipants
-            teamA={teamA}
-            teamB={teamB}
-          />
+          <TeamParticipants teamA={teamA} teamB={teamB} />
 
           <div className="flex flex-col gap-3 rounded-xl border bg-card p-5 sm:flex-row sm:items-center sm:justify-between">
             <div>
-              <h3 className="font-semibold">
-                هل أنت جاهز لبدء التحدي؟
-              </h3>
+              <h3 className="font-semibold">هل أنت جاهز لبدء التحدي؟</h3>
 
               <p className="mt-1 text-sm text-muted-foreground">
                 لن يبدأ التحدي إلا بعد استعداد جميع الطلاب.
@@ -550,9 +514,7 @@ export function GroupChallengeLiveControl({
             <Button
               onClick={handleStartChallenge}
               disabled={
-                actionLoading ||
-                !allReady ||
-                challenge.questions.length === 0
+                actionLoading || !allReady || challenge.questions.length === 0
               }
               className="gap-2"
             >
@@ -561,7 +523,6 @@ export function GroupChallengeLiveControl({
               ) : (
                 <Play className="size-4" />
               )}
-
               بدء التحدي
             </Button>
           </div>
@@ -594,55 +555,99 @@ export function GroupChallengeLiveControl({
 
           {/* Current Question */}
 
+          {/* Current Question */}
           {currentQuestion ? (
-            <Card>
-              <CardHeader>
-                <div className="flex flex-wrap items-center justify-between gap-3">
-                  <div>
-                    <Badge className="mb-3">
+            <Card className="overflow-hidden border-primary/20 shadow-sm">
+              <div className="h-1.5 bg-muted">
+                <div
+                  className="h-full bg-primary transition-all duration-500"
+                  style={{
+                    width: `${
+                      currentQuestion.timeLimit > 0
+                        ? (remainingSeconds / currentQuestion.timeLimit) * 100
+                        : 0
+                    }%`,
+                  }}
+                />
+              </div>
+
+              <CardHeader className="border-b bg-muted/20 pb-5">
+                <div className="flex flex-wrap items-center justify-between gap-4">
+                  <div className="space-y-2">
+                    <Badge className="w-fit">
                       السؤال {currentQuestion.order} من{" "}
                       {challenge.questions.length}
                     </Badge>
 
-                    <CardTitle className="text-lg">
-                      السؤال الحالي
-                    </CardTitle>
+                    <CardTitle className="text-xl">السؤال الحالي</CardTitle>
+
+                    <p className="text-sm text-muted-foreground">
+                      تابع إجابات الطلاب وتحكم في سير التحدي
+                    </p>
                   </div>
 
-                  <div className="flex items-center gap-2 rounded-lg bg-muted px-4 py-2">
-                    <Clock3 className="size-4 text-muted-foreground" />
+                  <div
+                    className={`flex min-w-28 flex-col items-center rounded-xl border p-3 ${
+                      remainingSeconds <= 10
+                        ? "border-destructive/30 bg-destructive/5 text-destructive"
+                        : "border-primary/20 bg-primary/5 text-primary"
+                    }`}
+                  >
+                    <Clock3 className="mb-1 size-5" />
 
-                    <span className="font-semibold tabular-nums">
-                      {remainingSeconds} ثانية
+                    <span className="text-3xl font-bold tabular-nums">
+                      {remainingSeconds}
                     </span>
+
+                    <span className="text-xs">ثانية متبقية</span>
                   </div>
                 </div>
               </CardHeader>
 
-              <CardContent className="space-y-6">
-                <div className="rounded-xl border bg-muted/30 p-6">
-                  <p className="text-lg font-semibold leading-8">
+              <CardContent className="space-y-6 p-5 sm:p-6">
+                <div className="rounded-xl border bg-background p-6 sm:p-8">
+                  <p className="text-lg font-semibold leading-9 sm:text-xl">
                     {currentQuestion.question}
                   </p>
                 </div>
 
-                <div className="flex flex-wrap items-center justify-between gap-3">
-                  <div className="flex items-center gap-2 text-sm text-muted-foreground">
-                    <Users className="size-4" />
+                <div className="grid gap-3 sm:grid-cols-2">
+                  <div className="flex items-center gap-3 rounded-xl bg-muted/50 p-4">
+                    <div className="flex size-10 items-center justify-center rounded-lg bg-primary/10 text-primary">
+                      <Users className="size-5" />
+                    </div>
 
-                    <span>
-                      إجابات الطلاب:{" "}
-                      {currentQuestion._count.answers} /{" "}
-                      {challenge.statistics.totalParticipants}
-                    </span>
+                    <div>
+                      <p className="text-xs text-muted-foreground">
+                        إجابات الطلاب
+                      </p>
+                      <p className="text-lg font-bold tabular-nums">
+                        {currentQuestion._count.answers}
+                        <span className="text-sm font-normal text-muted-foreground">
+                          {" "}
+                          / {challenge.statistics.totalParticipants}
+                        </span>
+                      </p>
+                    </div>
                   </div>
 
-                  <Badge variant="outline">
-                    الوقت المحدد: {currentQuestion.timeLimit} ثانية
-                  </Badge>
+                  <div className="flex items-center gap-3 rounded-xl bg-muted/50 p-4">
+                    <div className="flex size-10 items-center justify-center rounded-lg bg-primary/10 text-primary">
+                      <Clock3 className="size-5" />
+                    </div>
+
+                    <div>
+                      <p className="text-xs text-muted-foreground">
+                        الوقت المحدد
+                      </p>
+                      <p className="text-lg font-bold">
+                        {currentQuestion.timeLimit} ثانية
+                      </p>
+                    </div>
+                  </div>
                 </div>
 
-                <div className="flex flex-col gap-3 border-t pt-5 sm:flex-row sm:justify-between">
+                <div className="flex flex-col-reverse gap-3 border-t pt-5 sm:flex-row sm:items-center sm:justify-between">
                   <Button
                     variant="destructive"
                     onClick={handleFinishChallenge}
@@ -664,9 +669,7 @@ export function GroupChallengeLiveControl({
                       <ArrowRight className="size-4" />
                     )}
 
-                    {isLastQuestion
-                      ? "آخر سؤال"
-                      : "السؤال التالي"}
+                    {isLastQuestion ? "آخر سؤال" : "السؤال التالي"}
                   </Button>
                 </div>
 
@@ -679,8 +682,9 @@ export function GroupChallengeLiveControl({
             </Card>
           ) : (
             <Card>
-              <CardContent className="p-8 text-center">
-                <p className="text-muted-foreground">
+              <CardContent className="flex min-h-40 flex-col items-center justify-center gap-3 p-8 text-center">
+                <FileQuestion className="size-9 text-muted-foreground" />
+                <p className="text-sm text-muted-foreground">
                   لم يتم العثور على السؤال الحالي.
                 </p>
               </CardContent>
@@ -689,11 +693,7 @@ export function GroupChallengeLiveControl({
 
           {/* Participants */}
 
-          <TeamParticipants
-            teamA={teamA}
-            teamB={teamB}
-            showScores
-          />
+          <TeamParticipants teamA={teamA} teamB={teamB} showScores />
         </div>
       )}
     </div>
@@ -704,11 +704,7 @@ export function GroupChallengeLiveControl({
 // Status Badge
 // ============================================
 
-function ChallengeStatusBadge({
-  status,
-}: {
-  status: string;
-}) {
+function ChallengeStatusBadge({ status }: { status: string }) {
   const config = {
     WAITING: {
       label: "في الانتظار",
@@ -731,16 +727,13 @@ function ChallengeStatusBadge({
     variant: "outline" as const,
   };
 
-  return (
-    <Badge variant={config.variant}>
-      {config.label}
-    </Badge>
-  );
+  return <Badge variant={config.variant}>{config.label}</Badge>;
 }
 
 // ============================================
 // Stat Card
 // ============================================
+
 
 function StatCard({
   title,
@@ -752,9 +745,9 @@ function StatCard({
   icon: typeof Users;
 }) {
   return (
-    <Card>
-      <CardContent className="flex items-center justify-between p-5">
-        <div>
+    <Card className="transition-shadow hover:shadow-sm">
+      <CardContent className="flex items-center justify-between gap-4 p-5">
+        <div className="min-w-0">
           <p className="text-sm text-muted-foreground">
             {title}
           </p>
@@ -764,7 +757,7 @@ function StatCard({
           </p>
         </div>
 
-        <div className="flex size-10 items-center justify-center rounded-xl bg-primary/10 text-primary">
+        <div className="flex size-11 shrink-0 items-center justify-center rounded-xl bg-primary/10 text-primary">
           <Icon className="size-5" />
         </div>
       </CardContent>
@@ -775,6 +768,7 @@ function StatCard({
 // ============================================
 // Team Score Card
 // ============================================
+
 
 function TeamScoreCard({
   title,
@@ -789,33 +783,48 @@ function TeamScoreCard({
 }) {
   const styles =
     color === "blue"
-      ? "border-blue-500/30 bg-blue-500/5"
-      : "border-emerald-500/30 bg-emerald-500/5";
+      ? {
+          card: "border-blue-500/20 bg-blue-500/[0.03]",
+          icon: "bg-blue-500/10 text-blue-600",
+          dot: "bg-blue-500",
+        }
+      : {
+          card: "border-emerald-500/20 bg-emerald-500/[0.03]",
+          icon: "bg-emerald-500/10 text-emerald-600",
+          dot: "bg-emerald-500",
+        };
 
   return (
-    <Card className={styles}>
-      <CardContent className="flex items-center justify-between p-5">
-        <div>
-          <p className="font-semibold">{title}</p>
+    <Card className={styles.card}>
+      <CardContent className="flex items-center justify-between gap-4 p-5">
+        <div className="space-y-2">
+          <div className="flex items-center gap-2">
+            <span className={`size-2 rounded-full ${styles.dot}`} />
+            <p className="font-semibold">{title}</p>
+          </div>
 
-          <p className="mt-1 text-sm text-muted-foreground">
+          <p className="text-sm text-muted-foreground">
             {count.toLocaleString("ar-EG")} طالب
           </p>
+
+          <div>
+            <p className="text-3xl font-bold tabular-nums">
+              {score.toLocaleString("ar-EG")}
+            </p>
+            <p className="text-xs text-muted-foreground">
+              إجمالي النقاط
+            </p>
+          </div>
         </div>
 
-        <div className="text-left">
-          <p className="text-3xl font-bold tabular-nums">
-            {score.toLocaleString("ar-EG")}
-          </p>
-
-          <p className="text-xs text-muted-foreground">
-            نقطة
-          </p>
+        <div className={`flex size-12 shrink-0 items-center justify-center rounded-xl ${styles.icon}`}>
+          <Trophy className="size-6" />
         </div>
       </CardContent>
     </Card>
   );
 }
+
 
 // ============================================
 // Team Participants
@@ -851,6 +860,7 @@ function TeamParticipants({
   );
 }
 
+
 function TeamParticipantsCard({
   title,
   participants,
@@ -864,19 +874,27 @@ function TeamParticipantsCard({
 }) {
   const teamColor =
     color === "blue"
-      ? "bg-blue-500/10 text-blue-600"
-      : "bg-emerald-500/10 text-emerald-600";
+      ? {
+          icon: "bg-blue-500/10 text-blue-600",
+          avatar: "bg-blue-500/10 text-blue-600",
+          border: "border-blue-500/20",
+        }
+      : {
+          icon: "bg-emerald-500/10 text-emerald-600",
+          avatar: "bg-emerald-500/10 text-emerald-600",
+          border: "border-emerald-500/20",
+        };
 
   const readyCount = participants.filter(
     (participant) => participant.isReady
   ).length;
 
   return (
-    <Card>
-      <CardHeader>
+    <Card className="overflow-hidden">
+      <CardHeader className="border-b bg-muted/20">
         <div className="flex items-center justify-between gap-3">
           <div className="flex items-center gap-3">
-            <div className={`flex size-10 items-center justify-center rounded-lg ${teamColor}`}>
+            <div className={`flex size-10 items-center justify-center rounded-xl ${teamColor.icon}`}>
               <Users className="size-5" />
             </div>
 
@@ -891,39 +909,52 @@ function TeamParticipantsCard({
             </div>
           </div>
 
-          <Badge variant="outline">
+          <Badge variant="outline" className="tabular-nums">
             {readyCount} / {participants.length} جاهز
           </Badge>
         </div>
+
+        <div className="h-1.5 overflow-hidden rounded-full bg-muted">
+          <div
+            className="h-full rounded-full bg-primary transition-all"
+            style={{
+              width: `${
+                participants.length
+                  ? (readyCount / participants.length) * 100
+                  : 0
+              }%`,
+            }}
+          />
+        </div>
       </CardHeader>
 
-      <CardContent>
+      <CardContent className="p-4">
         {participants.length > 0 ? (
-          <div className="space-y-3">
+          <div className="space-y-2">
             {participants.map((participant) => (
               <div
                 key={participant.id}
-                className="flex items-center justify-between gap-3 rounded-lg border p-3"
+                className="flex items-center justify-between gap-3 rounded-xl border p-3 transition-colors hover:bg-muted/30"
               >
                 <div className="flex min-w-0 items-center gap-3">
-                  <div className="flex size-9 shrink-0 items-center justify-center rounded-full bg-muted text-sm font-semibold">
+                  <div className={`flex size-10 shrink-0 items-center justify-center rounded-full text-sm font-bold ${teamColor.avatar}`}>
                     {participant.student.name?.charAt(0) || "؟"}
                   </div>
 
                   <div className="min-w-0">
-                    <p className="truncate text-sm font-medium">
+                    <p className="truncate text-sm font-semibold">
                       {participant.student.name || "طالب"}
                     </p>
 
-                    <p className="text-xs text-muted-foreground">
-                      المستوى: {participant.student.level}
+                    <p className="mt-1 text-xs text-muted-foreground">
+                      {participant.student.level}
                     </p>
                   </div>
                 </div>
 
-                <div className="flex shrink-0 items-center gap-2">
+                <div className="flex shrink-0 flex-col items-end gap-2">
                   {showScores && (
-                    <span className="text-sm font-semibold tabular-nums">
+                    <span className="text-sm font-bold tabular-nums">
                       {participant.score.toLocaleString("ar-EG")} نقطة
                     </span>
                   )}
@@ -945,8 +976,7 @@ function TeamParticipantsCard({
           </div>
         ) : (
           <div className="flex min-h-32 flex-col items-center justify-center gap-2 text-center">
-            <Users className="size-7 text-muted-foreground" />
-
+            <Users className="size-8 text-muted-foreground" />
             <p className="text-sm text-muted-foreground">
               لا يوجد طلاب في هذا الفريق حتى الآن.
             </p>
@@ -956,3 +986,4 @@ function TeamParticipantsCard({
     </Card>
   );
 }
+

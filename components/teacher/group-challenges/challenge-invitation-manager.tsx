@@ -2,7 +2,15 @@
 "use client";
 
 import { useEffect, useMemo, useState } from "react";
-import { Loader2, Search, Send, Users } from "lucide-react";
+import {
+  Loader2,
+  Search,
+  Send,
+  Users,
+  Trophy,
+  Zap,
+  Award,
+} from "lucide-react";
 import { toast } from "sonner";
 
 import {
@@ -154,16 +162,54 @@ export function ChallengeInvitationManager({
   function getInvitationStatus(status: string | null) {
     switch (status) {
       case "PENDING":
-        return <Badge variant="secondary">في انتظار الرد</Badge>;
+        return (
+          <Badge variant="secondary">
+            في انتظار الرد
+          </Badge>
+        );
 
       case "ACCEPTED":
-        return <Badge className="bg-green-600">قبل الدعوة</Badge>;
+        return (
+          <Badge className="bg-green-600">
+            قبل الدعوة
+          </Badge>
+        );
 
       case "DECLINED":
-        return <Badge variant="destructive">رفض الدعوة</Badge>;
+        return (
+          <Badge variant="destructive">
+            رفض الدعوة
+          </Badge>
+        );
 
       default:
         return null;
+    }
+  }
+
+  function getLevelLabel(level: string) {
+    switch (level) {
+      case "BEGINNER":
+        return "مبتدئ";
+      case "INTERMEDIATE":
+        return "متوسط";
+      case "ADVANCED":
+        return "متقدم";
+      default:
+        return level;
+    }
+  }
+
+  function getLevelStyle(level: string) {
+    switch (level) {
+      case "BEGINNER":
+        return "bg-blue-500/10 text-blue-600 border-blue-500/20";
+      case "INTERMEDIATE":
+        return "bg-amber-500/10 text-amber-600 border-amber-500/20";
+      case "ADVANCED":
+        return "bg-purple-500/10 text-purple-600 border-purple-500/20";
+      default:
+        return "bg-muted text-muted-foreground";
     }
   }
 
@@ -180,10 +226,12 @@ export function ChallengeInvitationManager({
 
         <p className="text-sm text-muted-foreground">
           اختر الطلاب المسجلين في الكورس لإرسال دعوة للمشاركة.
+          يمكنك مقارنة نقاطهم ومستوياتهم قبل الاختيار.
         </p>
       </CardHeader>
 
       <CardContent className="space-y-4">
+        {/* Search and selection */}
         <div className="flex flex-col gap-3 sm:flex-row">
           <div className="relative flex-1">
             <Search className="absolute right-3 top-1/2 size-4 -translate-y-1/2 text-muted-foreground" />
@@ -206,6 +254,7 @@ export function ChallengeInvitationManager({
           </Button>
         </div>
 
+        {/* Summary */}
         <div className="flex items-center justify-between text-sm">
           <span className="text-muted-foreground">
             الطلاب المتاحون: {students.length}
@@ -216,6 +265,7 @@ export function ChallengeInvitationManager({
           </Badge>
         </div>
 
+        {/* Students */}
         {isLoading ? (
           <div className="flex min-h-32 items-center justify-center">
             <Loader2 className="size-6 animate-spin text-primary" />
@@ -227,7 +277,7 @@ export function ChallengeInvitationManager({
               : "لا توجد نتائج مطابقة للبحث."}
           </div>
         ) : (
-          <div className="max-h-80 space-y-2 overflow-y-auto">
+          <div className="max-h-105 space-y-2 overflow-y-auto pe-1">
             {filteredStudents.map((student) => {
               const hasInvitation = Boolean(student.invitationStatus);
               const checked = selectedIds.includes(student.id);
@@ -235,30 +285,94 @@ export function ChallengeInvitationManager({
               return (
                 <label
                   key={student.id}
-                  className={`flex items-center gap-3 rounded-lg border p-3 ${
-                    hasInvitation
-                      ? "cursor-not-allowed bg-muted/30 opacity-80"
-                      : "cursor-pointer hover:bg-muted/40"
-                  }`}
+                  className={`
+                    flex cursor-pointer items-center gap-3 rounded-xl
+                    border p-3 transition-colors
+                    ${
+                      hasInvitation
+                        ? "cursor-not-allowed bg-muted/30 opacity-80"
+                        : checked
+                          ? "border-primary/50 bg-primary/5"
+                          : "hover:bg-muted/40"
+                    }
+                  `}
                 >
                   <input
                     type="checkbox"
                     checked={checked}
                     disabled={hasInvitation}
                     onChange={() => toggleStudent(student.id)}
-                    className="size-4 accent-primary"
+                    className="size-4 shrink-0 accent-primary"
                   />
 
+                  {/* Rank */}
+                  <div className="flex size-10 shrink-0 flex-col items-center justify-center rounded-lg bg-muted">
+                    {student.rank <= 3 ? (
+                      <Trophy
+                        className={`size-4 ${
+                          student.rank === 1
+                            ? "text-amber-500"
+                            : student.rank === 2
+                              ? "text-slate-400"
+                              : "text-orange-600"
+                        }`}
+                      />
+                    ) : (
+                      <span className="text-xs font-bold text-muted-foreground">
+                        #{student.rank}
+                      </span>
+                    )}
+
+                    {student.rank <= 3 && (
+                      <span className="text-[10px] font-bold">
+                        #{student.rank}
+                      </span>
+                    )}
+                  </div>
+
+                  {/* Student info */}
                   <div className="min-w-0 flex-1">
-                    <p className="truncate text-sm font-medium">
+                    <p className="truncate text-sm font-semibold">
                       {student.name || "طالب بدون اسم"}
                     </p>
 
                     <p className="truncate text-xs text-muted-foreground">
                       {student.email}
                     </p>
+
+                    <div className="mt-2 flex flex-wrap items-center gap-2">
+                      <Badge
+                        variant="outline"
+                        className={`gap-1 ${getLevelStyle(student.level)}`}
+                      >
+                        <Award className="size-3" />
+                        {getLevelLabel(student.level)}
+                      </Badge>
+
+                      <Badge
+                        variant="secondary"
+                        className="gap-1"
+                      >
+                        Level {student.currentLevel}
+                      </Badge>
+                    </div>
                   </div>
 
+                  {/* XP */}
+                  <div className="flex shrink-0 flex-col items-center gap-1 rounded-lg bg-primary/5 px-3 py-2">
+                    <div className="flex items-center gap-1 text-primary">
+                      <Zap className="size-4" />
+                      <span className="text-sm font-bold tabular-nums">
+                        {student.xp.toLocaleString()}
+                      </span>
+                    </div>
+
+                    <span className="text-[10px] text-muted-foreground">
+                      XP Points
+                    </span>
+                  </div>
+
+                  {/* Invitation status */}
                   {getInvitationStatus(student.invitationStatus)}
                 </label>
               );
@@ -266,6 +380,7 @@ export function ChallengeInvitationManager({
           </div>
         )}
 
+        {/* Invite button */}
         <Button
           type="button"
           className="w-full gap-2"

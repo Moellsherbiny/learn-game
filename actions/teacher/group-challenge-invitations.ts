@@ -23,11 +23,18 @@ async function requireTeacher() {
   return session.user.id;
 }
 
+// ============================================
 // 1. Get enrolled students for a challenge
+// ============================================
+
 export async function getChallengeStudentsAction(
   challengeId: string
 ) {
   const teacherId = await requireTeacher();
+
+  if (!challengeId?.trim()) {
+    throw new Error("معرف التحدي غير صحيح.");
+  }
 
   const challenge = await prisma.groupChallenge.findFirst({
     where: {
@@ -60,6 +67,8 @@ export async function getChallengeStudentsAction(
                   email: true,
                   image: true,
                   level: true,
+                  xp: true,
+                  currentLevel: true,
                 },
               },
             },
@@ -84,16 +93,42 @@ export async function getChallengeStudentsAction(
     ])
   );
 
-  return challenge.course.enrollments
+  const students = challenge.course.enrollments
     .map(({ student }) => ({
       ...student,
       isParticipant: participantIds.has(student.id),
-      invitationStatus: invitationMap.get(student.id) ?? null,
+      invitationStatus:
+        invitationMap.get(student.id) ?? null,
     }))
-    .filter((student) => !student.isParticipant);
+    .filter((student) => !student.isParticipant)
+    .sort((a, b) => {
+      // Highest XP first
+      if (b.xp !== a.xp) {
+        return b.xp - a.xp;
+      }
+
+      // Higher level first when XP is equal
+      if (b.currentLevel !== a.currentLevel) {
+        return b.currentLevel - a.currentLevel;
+      }
+
+      // Alphabetical order as a final fallback
+      return (a.name ?? "").localeCompare(
+        b.name ?? "",
+        "ar"
+      );
+    });
+
+  return students.map((student, index) => ({
+    ...student,
+    rank: index + 1,
+  }));
 }
 
+// ============================================
 // 2. Invite selected students
+// ============================================
+
 export async function inviteStudentsToChallengeAction(
   challengeId: string,
   studentIds: string[]
