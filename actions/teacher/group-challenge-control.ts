@@ -1,4 +1,3 @@
-
 "use server";
 
 import { auth } from "@/auth";
@@ -8,7 +7,7 @@ import {
   GroupChallengeStatus,
 } from "@/lib/generated/prisma/client";
 import { revalidatePath } from "next/cache";
-
+import { advanceGroupChallengeIfExpired } from "@/lib/group-challenge";
 // ============================================
 // Authentication
 // ============================================
@@ -40,6 +39,8 @@ export async function getGroupChallengeControlStateAction(
     throw new Error("معرف التحدي غير صحيح.");
   }
 
+  // Automatically advance the challenge if the current question expired.
+  await advanceGroupChallengeIfExpired(challengeId);
   const challenge = await prisma.groupChallenge.findFirst({
     where: {
       id: challengeId,
