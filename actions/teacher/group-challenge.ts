@@ -639,3 +639,47 @@ export async function getGroupChallengeByIdAction(
 
   return challenge;
 }
+
+// ============================================
+// 4. Delete Group Challenge
+// ============================================
+
+export async function deleteGroupChallengeAction(challengeId: string) {
+  const teacherId = await requireTeacher();
+
+  if (!challengeId?.trim()) {
+    throw new Error("معرف التحدي غير صحيح.");
+  }
+
+  // Verify that the challenge belongs to the current teacher.
+  const challenge = await prisma.groupChallenge.findFirst({
+    where: {
+      id: challengeId,
+      teacherId,
+    },
+    select: {
+      id: true,
+      title: true,
+    },
+  });
+
+  if (!challenge) {
+    throw new Error("التحدي غير موجود أو غير مصرح لك بحذفه.");
+  }
+
+  // Related questions, answers, participants and invitations
+  // are removed through the Prisma Cascade relations.
+  await prisma.groupChallenge.delete({
+    where: {
+      id: challenge.id,
+    },
+  });
+
+  revalidatePath("/teacher");
+  revalidatePath("/teacher/group-challenges");
+
+  return {
+    success: true,
+    message: "تم حذف التحدي بنجاح.",
+  };
+}

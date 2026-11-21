@@ -1,4 +1,3 @@
-
 "use client";
 
 import { useMemo, useState } from "react";
@@ -6,41 +5,32 @@ import Link from "next/link";
 
 import {
   Activity,
-  ArrowLeft,
   CalendarDays,
   CheckCircle2,
   Clock3,
   Copy,
   FileQuestion,
+  Loader2,
   Plus,
   Search,
   Trophy,
   Users,
   XCircle,
   Swords,
+  Trash2,
 } from "lucide-react";
-
 import { toast } from "sonner";
 
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import {
-  Card,
-  CardContent,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-
+import { deleteGroupChallengeAction } from "@/actions/teacher/group-challenge";
 // ============================================
 // Types
 // ============================================
 
-type ChallengeStatus =
-  | "WAITING"
-  | "LIVE"
-  | "FINISHED"
-  | "CANCELLED";
+type ChallengeStatus = "WAITING" | "LIVE" | "FINISHED" | "CANCELLED";
 
 type Challenge = {
   id: string;
@@ -119,53 +109,64 @@ function formatDate(date: string) {
 // Dashboard
 // ============================================
 
-export function GroupChallengesDashboard({
-  challenges,
-}: Props) {
+export function GroupChallengesDashboard({ challenges }: Props) {
   const [search, setSearch] = useState("");
   const [filter, setFilter] = useState<FilterStatus>("ALL");
+  const [challengeList, setChallengeList] = useState(challenges);
 
   // Dashboard Statistics
   const stats = useMemo(() => {
     return {
-      total: challenges.length,
+      total: challengeList.length,
 
-      waiting: challenges.filter(
-        (item) => item.status === "WAITING"
-      ).length,
+      waiting: challengeList.filter((item) => item.status === "WAITING").length,
 
-      live: challenges.filter(
-        (item) => item.status === "LIVE"
-      ).length,
+      live: challengeList.filter((item) => item.status === "LIVE").length,
 
-      finished: challenges.filter(
-        (item) => item.status === "FINISHED"
-      ).length,
+      finished: challengeList.filter((item) => item.status === "FINISHED")
+        .length,
 
-      participants: challenges.reduce(
+      participants: challengeList.reduce(
         (total, item) => total + item.counts.participants,
-        0
+        0,
       ),
     };
-  }, [challenges]);
+  }, [challengeList]);
 
   // Search and Filter
   const filteredChallenges = useMemo(() => {
     const normalizedSearch = search.trim().toLowerCase();
 
-    return challenges.filter((challenge) => {
+    return challengeList.filter((challenge) => {
       const matchesSearch =
         !normalizedSearch ||
         challenge.title.toLowerCase().includes(normalizedSearch) ||
         challenge.code.toLowerCase().includes(normalizedSearch) ||
         challenge.course.title.toLowerCase().includes(normalizedSearch);
 
-      const matchesStatus =
-        filter === "ALL" || challenge.status === filter;
+      const matchesStatus = filter === "ALL" || challenge.status === filter;
 
       return matchesSearch && matchesStatus;
     });
-  }, [challenges, search, filter]);
+  }, [challengeList, search, filter]);
+
+  async function handleDeleteChallenge(challengeId: string) {
+    try {
+      await deleteGroupChallengeAction(challengeId);
+
+      setChallengeList((current) =>
+        current.filter((challenge) => challenge.id !== challengeId),
+      );
+
+      toast.success("تم حذف التحدي بنجاح.");
+    } catch (error) {
+      const message =
+        error instanceof Error ? error.message : "تعذر حذف التحدي.";
+
+      toast.error(message);
+      throw error;
+    }
+  }
 
   // Copy Challenge Code
   async function copyCode(code: string) {
@@ -192,9 +193,7 @@ export function GroupChallengesDashboard({
 
             <span>/</span>
 
-            <span className="text-foreground">
-              التحديات الجماعية
-            </span>
+            <span className="text-foreground">التحديات الجماعية</span>
           </div>
 
           <div>
@@ -264,9 +263,7 @@ export function GroupChallengesDashboard({
       <div className="space-y-4">
         <div className="flex flex-col gap-3 lg:flex-row lg:items-center lg:justify-between">
           <div>
-            <h2 className="text-xl font-semibold">
-              التحديات الخاصة بك
-            </h2>
+            <h2 className="text-xl font-semibold">التحديات الخاصة بك</h2>
 
             <p className="text-sm text-muted-foreground">
               استعرض وأدر جميع التحديات الجماعية.
@@ -326,12 +323,13 @@ export function GroupChallengesDashboard({
                 key={challenge.id}
                 challenge={challenge}
                 onCopyCode={copyCode}
+                onDelete={handleDeleteChallenge}
               />
             ))}
           </div>
         ) : (
           <EmptyState
-            hasChallenges={challenges.length > 0}
+            hasChallenges={challengeList.length > 0}
             onClear={() => {
               setSearch("");
               setFilter("ALL");
@@ -373,9 +371,7 @@ function StatCard({
           {value.toLocaleString("ar-EG")}
         </div>
 
-        <p className="mt-1 text-xs text-muted-foreground">
-          {description}
-        </p>
+        <p className="mt-1 text-xs text-muted-foreground">{description}</p>
       </CardContent>
     </Card>
   );
@@ -388,13 +384,32 @@ function StatCard({
 function ChallengeCard({
   challenge,
   onCopyCode,
+  onDelete,
 }: {
   challenge: Challenge;
   onCopyCode: (code: string) => void;
+  onDelete: (challengeId: string) => Promise<void>;
 }) {
   const config = statusConfig[challenge.status];
   const StatusIcon = config.icon;
+  const [isDeleting, setIsDeleting] = useState(false);
+  async function handleDelete() {
+    const confirmed = window.confirm(
+      `هل أنت متأكد من حذف التحدي "${challenge.title}"؟\n\nسيتم حذف الأسئلة والمشاركين والإجابات والدعوات المرتبطة به، ولا يمكن التراجع عن هذا الإجراء.`,
+    );
 
+    if (!confirmed) return;
+
+    setIsDeleting(true);
+
+    try {
+      await onDelete(challenge.id);
+    } catch {
+      // The parent component already displays the error toast.
+    } finally {
+      setIsDeleting(false);
+    }
+  }
   return (
     <Card className="group flex flex-col overflow-hidden transition-all hover:border-primary/40 hover:shadow-md">
       <CardHeader className="space-y-4">
@@ -425,9 +440,7 @@ function ChallengeCard({
 
         <div className="flex items-center justify-between rounded-lg border bg-muted/40 px-3 py-2.5">
           <div className="space-y-0.5">
-            <p className="text-xs text-muted-foreground">
-              كود الانضمام
-            </p>
+            <p className="text-xs text-muted-foreground">كود الانضمام</p>
 
             <p
               dir="ltr"
@@ -480,21 +493,24 @@ function ChallengeCard({
         {/* Actions */}
 
         <div className="mt-auto grid grid-cols-2 gap-2 border-t pt-4">
-          <Button asChild variant="outline" className="gap-2">
-            <Link
-              href={`/teacher/group-challenges/${challenge.id}`}
-            >
-              التفاصيل
-              <ArrowLeft className="size-4" />
-            </Link>
+          <Button
+            type="button"
+            variant="destructive"
+            className="gap-2"
+            onClick={handleDelete}
+            disabled={isDeleting}
+          >
+            {isDeleting ? (
+              <Loader2 className="size-4 animate-spin" />
+            ) : (
+              <Trash2 className="size-4" />
+            )}
+            {isDeleting ? "جاري الحذف..." : "حذف التحدي"}
           </Button>
 
-          {challenge.status === "WAITING" ||
-          challenge.status === "LIVE" ? (
+          {challenge.status === "WAITING" || challenge.status === "LIVE" ? (
             <Button asChild className="gap-2">
-              <Link
-                href={`/teacher/group-challenges/${challenge.id}/live`}
-              >
+              <Link href={`/teacher/group-challenges/${challenge.id}/live`}>
                 <Activity className="size-4" />
                 {challenge.status === "LIVE"
                   ? "التحكم المباشر"
@@ -503,9 +519,7 @@ function ChallengeCard({
             </Button>
           ) : (
             <Button asChild variant="secondary" className="gap-2">
-              <Link
-                href={`/teacher/group-challenges/${challenge.id}/results`}
-              >
+              <Link href={`/teacher/group-challenges/${challenge.id}/results`}>
                 <Trophy className="size-4" />
                 النتائج
               </Link>
@@ -534,9 +548,7 @@ function EmptyState({
         <div className="space-y-3 p-8 text-center">
           <Search className="mx-auto size-8 text-muted-foreground" />
 
-          <h3 className="font-semibold">
-            لا توجد نتائج مطابقة
-          </h3>
+          <h3 className="font-semibold">لا توجد نتائج مطابقة</h3>
 
           <p className="text-sm text-muted-foreground">
             جرّب تغيير كلمات البحث أو خيارات التصفية.
@@ -558,9 +570,7 @@ function EmptyState({
         </div>
 
         <div className="space-y-2">
-          <h3 className="text-lg font-semibold">
-            لا توجد تحديات حتى الآن
-          </h3>
+          <h3 className="text-lg font-semibold">لا توجد تحديات حتى الآن</h3>
 
           <p className="text-sm text-muted-foreground">
             أنشئ أول تحدٍ جماعي لك، واجعل الطلاب يتنافسون في فرق.
