@@ -2,15 +2,7 @@
 
 import { useState, useTransition } from "react";
 import { useRouter } from "next/navigation";
-import {
-  BookOpen,
-  FileText,
-  ImageIcon,
-  Loader2,
-  Sparkles,
-  Upload,
-  X,
-} from "lucide-react";
+import { BookOpen, FileText, Loader2, Sparkles, Upload, X } from "lucide-react";
 import { toast } from "sonner";
 
 import { createCourse } from "@/actions/teacher/create-course";
@@ -20,6 +12,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
+import Image from "next/image";
 
 export default function CourseForm() {
   const router = useRouter();
@@ -29,14 +22,11 @@ export default function CourseForm() {
   const [description, setDescription] = useState("");
   const [thumbnail, setThumbnail] = useState("");
 
-  const [selectedFile, setSelectedFile] =
-    useState<File | null>(null);
+  const [selectedFile, setSelectedFile] = useState<File | null>(null);
 
   const [preview, setPreview] = useState("");
 
-  const handleFileChange = (
-    e: React.ChangeEvent<HTMLInputElement>
-  ) => {
+  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
 
     if (!file) return;
@@ -66,9 +56,7 @@ export default function CourseForm() {
     setThumbnail("");
   };
 
-  const handleSubmit = (
-    e: React.FormEvent<HTMLFormElement>
-  ) => {
+  const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
 
     startTransition(async () => {
@@ -81,9 +69,7 @@ export default function CourseForm() {
             id: "upload-image",
           });
 
-          uploadedThumbnail = await uploadToCloudinary(
-            selectedFile
-          );
+          uploadedThumbnail = await uploadToCloudinary(selectedFile);
 
           toast.success("تم رفع الصورة بنجاح.", {
             id: "upload-image",
@@ -159,9 +145,7 @@ export default function CourseForm() {
               <Upload className="h-8 w-8 text-primary" />
             </div>
 
-            <h3 className="text-lg font-bold">
-              اختر صورة للدورة التعليمية
-            </h3>
+            <h3 className="text-lg font-bold">اختر صورة للدورة التعليمية</h3>
 
             <p className="mt-2 text-sm leading-7 text-muted-foreground">
               PNG, JPG, WEBP حتى 5MB
@@ -177,9 +161,11 @@ export default function CourseForm() {
           </label>
         ) : (
           <div className="relative overflow-hidden rounded-3xl border">
-            <img
+            <Image
               src={preview}
               alt="Preview"
+              width={100}
+              height={100}
               className="h-64 w-full object-cover"
             />
 
