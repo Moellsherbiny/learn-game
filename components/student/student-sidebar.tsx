@@ -10,6 +10,7 @@ import {
 } from "@/components/ui/sidebar"
 
 import { Home, Book, CheckCircle, Brain } from "lucide-react"
+import Link from "next/link"
 
 export function StudentSidebar() {
   return (
@@ -30,10 +31,10 @@ export function StudentSidebar() {
 
             <SidebarMenuItem>
               <SidebarMenuButton asChild>
-                <a href="/student/courses">
+                <Link href="/student/courses">
                   <Book />
                   <span>Courses</span>
-                </a>
+                </Link>
               </SidebarMenuButton>
             </SidebarMenuItem>
 

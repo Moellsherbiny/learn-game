@@ -100,7 +100,7 @@ export function StudentGroupChallengeResults({ data }: { data: ResultsData }) {
                     )) : <p className="text-muted-foreground">لم ترسل إجابة.</p>}
                     <p className="mt-3 font-semibold">الأزواج الصحيحة:</p>
                     {item.correctPairs.map((pair, pairIndex) => (
-                      <PairRow key={`${pair.left}-${pairIndex}`} left={pair.left} right={pair.right} />
+                      <PairRow key={`${pair.leftText}-${pairIndex}`} left={pair.rightText} right={pair.rightText} />
                     ))}
                   </div>
                 ) : (
