@@ -1,320 +1,151 @@
-
 "use server";
 
 import { auth } from "@/auth";
 import { prisma } from "@/lib/prisma";
-import {
-  UserRole,
-  GroupChallengeStatus,
-} from "@/lib/generated/prisma/client";
-
-// ============================================
-// Authentication
-// ============================================
+import { GroupChallengeStatus, UserRole, type GameType } from "@/lib/generated/prisma/client";
+import { advanceGroupChallengeIfExpired } from "@/lib/group-challenge";
+import { GROUP_CHALLENGE_QUESTION_DURATION_SECONDS } from "@/lib/group-challenge-constants";
+import { getMatchingOptionId, stableShuffle } from "@/lib/group-challenge-matching";
 
 async function requireStudent() {
   const session = await auth();
-
-  if (!session?.user?.id) {
-    throw new Error("يجب تسجيل الدخول أولاً.");
-  }
-
-  if (session.user.role !== UserRole.STUDENT) {
-    throw new Error("هذه العملية متاحة للطلاب فقط.");
-  }
-
+  if (!session?.user?.id) throw new Error("يجب تسجيل الدخول أولاً.");
+  if (session.user.role !== UserRole.STUDENT) throw new Error("هذه العملية متاحة للطلاب فقط.");
   return session.user.id;
 }
 
-// ============================================
-// Helpers
-// ============================================
+type SafeOption = { id: string; text: string };
+type SafeQuestion = {
+  id: string;
+  question: string;
+  gameType: GameType;
+  optionA: string | null;
+  optionB: string | null;
+  optionC: string | null;
+  optionD: string | null;
+  leftText: string | null;
+  rightText: string | null;
+  order: number;
+  timeLimit: number;
+  matchingOptions: { left: SafeOption[]; right: SafeOption[] } | null;
+};
 
-function hashString(value: string): number {
-  let hash = 0;
-
-  for (let index = 0; index < value.length; index++) {
-    hash = (hash * 31 + value.charCodeAt(index)) | 0;
-  }
-
-  return hash >>> 0;
-}
-
-function stableShuffle<T>(
-  items: T[],
-  getKey: (item: T) => string,
-  seed: string
-): T[] {
-  return [...items].sort((a, b) => {
-    const hashA = hashString(`${seed}:${getKey(a)}`);
-    const hashB = hashString(`${seed}:${getKey(b)}`);
-
-    if (hashA === hashB) {
-      return getKey(a).localeCompare(getKey(b));
-    }
-
-    return hashA - hashB;
-  });
-}
-
-// ============================================
-// Get Live Challenge State
-// ============================================
-
-export async function getStudentGroupChallengeLiveStateAction(
-  challengeId: string
-) {
+export async function getStudentGroupChallengeLiveStateAction(challengeId: string) {
   const studentId = await requireStudent();
+  if (!challengeId?.trim()) throw new Error("معرف التحدي غير صحيح.");
 
-  if (!challengeId?.trim()) {
-    throw new Error("معرف التحدي غير صحيح.");
-  }
-
-  // Verify student participation
   const participant = await prisma.challengeParticipant.findUnique({
-    where: {
-      challengeId_studentId: {
-        challengeId,
-        studentId,
-      },
-    },
-    select: {
-      id: true,
-      team: true,
-      isReady: true,
-      score: true,
-    },
+    where: { challengeId_studentId: { challengeId, studentId } },
+    select: { id: true, team: true, isReady: true, score: true },
   });
+  if (!participant) throw new Error("أنت غير منضم إلى هذا التحدي.");
 
-  if (!participant) {
-    throw new Error("أنت غير منضم إلى هذا التحدي.");
-  }
+  // Question expiry and transition are server-owned and atomic.
+  await advanceGroupChallengeIfExpired(challengeId);
 
-  // Get challenge state
   const challenge = await prisma.groupChallenge.findUnique({
-    where: {
-      id: challengeId,
-    },
+    where: { id: challengeId },
     select: {
       id: true,
       title: true,
       status: true,
       currentQuestionIndex: true,
       currentQuestionStartedAt: true,
-
-      course: {
-        select: {
-          title: true,
-        },
-      },
-
+      course: { select: { title: true } },
       participants: {
-        orderBy: {
-          joinedAt: "asc",
-        },
+        orderBy: { joinedAt: "asc" },
         select: {
           id: true,
           team: true,
           isReady: true,
           score: true,
-
-          student: {
-            select: {
-              id: true,
-              name: true,
-              image: true,
-            },
-          },
+          student: { select: { id: true, name: true, image: true } },
         },
       },
     },
   });
+  if (!challenge) throw new Error("التحدي غير موجود.");
 
-  if (!challenge) {
-    throw new Error("التحدي غير موجود.");
-  }
+  const teamA = challenge.participants.filter((p) => p.team === "TEAM_A");
+  const teamB = challenge.participants.filter((p) => p.team === "TEAM_B");
+  const readyCount = challenge.participants.filter((p) => p.isReady).length;
 
-  // ============================================
-  // Team Statistics
-  // ============================================
-
-  const teamA = challenge.participants.filter(
-    (item) => item.team === "TEAM_A"
-  );
-
-  const teamB = challenge.participants.filter(
-    (item) => item.team === "TEAM_B"
-  );
-
-  const teamStatistics = {
-    teamA: {
-      participants: teamA.length,
-      score: teamA.reduce(
-        (total, item) => total + item.score,
-        0
-      ),
-      readyCount: teamA.filter((item) => item.isReady).length,
-    },
-
-    teamB: {
-      participants: teamB.length,
-      score: teamB.reduce(
-        (total, item) => total + item.score,
-        0
-      ),
-      readyCount: teamB.filter((item) => item.isReady).length,
-    },
-  };
-
-  const readyCount = challenge.participants.filter(
-    (item) => item.isReady
-  ).length;
-
-  // ============================================
-  // Current Question State
-  // ============================================
-
-  let currentQuestion = null;
+  let currentQuestion: SafeQuestion | null = null;
   let hasAnswered = false;
   let remainingSeconds: number | null = null;
 
-  // Do not expose questions before the challenge starts
   if (challenge.status === GroupChallengeStatus.LIVE) {
     const question = await prisma.challengeQuestion.findFirst({
-      where: {
-        challengeId,
-        order: challenge.currentQuestionIndex + 1,
-      },
+      where: { challengeId, order: challenge.currentQuestionIndex + 1 },
       select: {
-        id: true,
-        question: true,
-        gameType: true,
-
-        optionA: true,
-        optionB: true,
-        optionC: true,
-        optionD: true,
-
-        leftText: true,
-        rightText: true,
-
-        order: true,
-        timeLimit: true,
-
-        challengeQuestionItems: {
-          select: {
-            id: true,
-            leftText: true,
-            rightText: true,
-          },
-        },
+        id: true, question: true, gameType: true,
+        optionA: true, optionB: true, optionC: true, optionD: true,
+        leftText: true, rightText: true, order: true,
+        challengeQuestionItems: { select: { id: true, leftText: true, rightText: true } },
       },
     });
+    if (!question) throw new Error("السؤال الحالي غير موجود.");
 
-    if (question) {
-      // Reject unsupported game types in Group Challenge.
-      if (
-        question.gameType !== "QUIZ" &&
-        question.gameType !== "MATCHING" &&
-        question.gameType !== "FILL_BLANKS"
-      ) {
-        throw new Error(
-          "نوع السؤال غير مدعوم في تحديات المجموعات."
-        );
-      }
-
-      const existingAnswer = await prisma.challengeAnswer.findUnique({
-        where: {
-          challengeQuestionId_participantId: {
-            challengeQuestionId: question.id,
-            participantId: participant.id,
-          },
-        },
-        select: {
-          id: true,
-          isCorrect: true,
-          responseTime: true,
-        },
-      });
-
-      hasAnswered = Boolean(existingAnswer);
-
-      if (challenge.currentQuestionStartedAt) {
-        const elapsedMilliseconds =
-          Date.now() -
-          challenge.currentQuestionStartedAt.getTime();
-
-        const elapsedSeconds = Math.floor(
-          elapsedMilliseconds / 1000
-        );
-
-        remainingSeconds = Math.max(
-          0,
-          question.timeLimit - elapsedSeconds
-        );
-      }
-
-      // ============================================
-      // Prepare Safe Question Data
-      // ============================================
-
-      const {
-        challengeQuestionItems,
-        leftText,
-        rightText,
-        ...safeQuestion
-      } = question;
-
-      if (question.gameType === "MATCHING") {
-        const matchingItems = challengeQuestionItems;
-
-        const leftOptions = stableShuffle(
-          matchingItems.map((item) => ({
-            id: item.id,
-            text: item.leftText,
-          })),
-          (item) => item.id,
-          `${question.id}:left`
-        );
-
-        const rightOptions = stableShuffle(
-          matchingItems.map((item) => ({
-            id: item.id,
-            text: item.rightText,
-          })),
-          (item) => item.id,
-          `${question.id}:right`
-        );
-
-        currentQuestion = {
-          ...safeQuestion,
-          leftText: null,
-          rightText: null,
-          matchingOptions: {
-            left: leftOptions,
-            right: rightOptions,
-          },
-        };
-      } else {
-        currentQuestion = {
-          ...safeQuestion,
-          leftText,
-          rightText,
-          matchingOptions: null,
-        };
-      }
+    if (question.gameType !== "QUIZ" && question.gameType !== "MATCHING" && question.gameType !== "FILL_BLANKS") {
+      throw new Error("نوع السؤال غير مدعوم في تحديات المجموعات.");
     }
-  }
 
-  // ============================================
-  // Response
-  // ============================================
+    const existingAnswer = await prisma.challengeAnswer.findUnique({
+      where: {
+        challengeQuestionId_participantId: {
+          challengeQuestionId: question.id,
+          participantId: participant.id,
+        },
+      },
+      select: { id: true },
+    });
+    hasAnswered = Boolean(existingAnswer);
+
+    if (challenge.currentQuestionStartedAt) {
+      const elapsed = Math.floor((Date.now() - challenge.currentQuestionStartedAt.getTime()) / 1000);
+      remainingSeconds = Math.max(0, GROUP_CHALLENGE_QUESTION_DURATION_SECONDS - elapsed);
+    }
+
+    const matchingOptions = question.gameType === "MATCHING"
+      ? {
+          left: stableShuffle(
+            question.challengeQuestionItems.map((item) => ({
+              id: getMatchingOptionId(question.id, "left", item.id),
+              text: item.leftText,
+            })),
+            (item) => item.id,
+            `${question.id}:left`,
+          ),
+          right: stableShuffle(
+            question.challengeQuestionItems.map((item) => ({
+              id: getMatchingOptionId(question.id, "right", item.id),
+              text: item.rightText,
+            })),
+            (item) => item.id,
+            `${question.id}:right`,
+          ),
+        }
+      : null;
+
+    currentQuestion = {
+      id: question.id,
+      question: question.question,
+      gameType: question.gameType,
+      optionA: question.optionA,
+      optionB: question.optionB,
+      optionC: question.optionC,
+      optionD: question.optionD,
+      leftText: question.gameType === "MATCHING" ? null : question.leftText,
+      rightText: question.gameType === "MATCHING" ? null : question.rightText,
+      order: question.order,
+      timeLimit: GROUP_CHALLENGE_QUESTION_DURATION_SECONDS,
+      matchingOptions,
+    };
+  }
 
   return {
     success: true,
-
     serverTime: new Date().toISOString(),
-
     challenge: {
       id: challenge.id,
       title: challenge.title,
@@ -322,21 +153,25 @@ export async function getStudentGroupChallengeLiveStateAction(
       currentQuestionIndex: challenge.currentQuestionIndex,
       course: challenge.course,
     },
-
     participant,
-
     currentQuestion,
     hasAnswered,
     remainingSeconds,
-
     statistics: {
       totalParticipants: challenge.participants.length,
       readyCount,
-      waitingCount:
-        challenge.participants.length - readyCount,
-      ...teamStatistics,
+      waitingCount: challenge.participants.length - readyCount,
+      teamA: {
+        participants: teamA.length,
+        score: teamA.reduce((sum, p) => sum + p.score, 0),
+        readyCount: teamA.filter((p) => p.isReady).length,
+      },
+      teamB: {
+        participants: teamB.length,
+        score: teamB.reduce((sum, p) => sum + p.score, 0),
+        readyCount: teamB.filter((p) => p.isReady).length,
+      },
     },
-
     participants: challenge.participants,
   };
 }

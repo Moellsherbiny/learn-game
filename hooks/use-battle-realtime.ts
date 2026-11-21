@@ -1,141 +1,112 @@
+
 "use client";
 
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
+import { getStudentGroupChallengeLiveStateAction } from "@/actions/student/group-challenge-live";
 
-import { onValue, type Unsubscribe } from "firebase/database";
+type LiveState = Awaited<
+  ReturnType<typeof getStudentGroupChallengeLiveStateAction>
+>;
 
-import { getBattleRoomRef } from "@/lib/battle/room";
+type HookState = {
+  challengeId: string;
+  data: LiveState | null;
+  isLoading: boolean;
+  error: string | null;
+};
 
-// =========================================================
-// TYPES
-// =========================================================
+export function useGroupChallengeRealtime(
+  challengeId: string,
+  interval = 2000
+) {
+  const [state, setState] = useState<HookState>({
+    challengeId,
+    data: null,
+    isLoading: true,
+    error: null,
+  });
 
-export interface BattleRealtimePlayer {
-  team: "TEAM_A" | "TEAM_B";
-  ready: boolean;
-  connected: boolean;
-}
+  // Shared lock between polling and manual refresh.
+  // Store the challenge ID to avoid blocking a new challenge
+  // while an old challenge request is still running.
+  const busyChallengeRef = useRef<string | null>(null);
 
-export interface BattleRealtimeState {
-  status: "WAITING" | "LIVE" | "FINISHED";
+  const mountedRef = useRef(false);
+  const activeChallengeRef = useRef(challengeId);
 
-  currentQuestion: number;
+  const refresh = useCallback(async () => {
+    if (!challengeId) return;
 
-  startedAt: number | null;
-
-  questionStartedAt: number | null;
-
-  players: Record<
-    string,
-    BattleRealtimePlayer
-  >;
-}
-
-// =========================================================
-// HOOK
-// =========================================================
-
-export function useBattleRealtime(battleId: string) {
-  const [state, setState] = useState<BattleRealtimeState | null>(null);
-
-  const [loading, setLoading] = useState(true);
-
-  const [error, setError] = useState<string | null>(null);
-
-  useEffect(() => {
-    if (!battleId) {
-      setLoading(false);
+    if (busyChallengeRef.current === challengeId) {
       return;
     }
 
-    // =====================================================
-    // FIREBASE REF
-    // =====================================================
-
-    const battleRef = getBattleRoomRef(battleId);
-
-    let unsubscribe: Unsubscribe | undefined;
-
-    // =====================================================
-    // LISTENER
-    // =====================================================
+    busyChallengeRef.current = challengeId;
 
     try {
-      unsubscribe = onValue(
-        battleRef,
-        (snapshot) => {
-          const data = snapshot.val();
+      const result =
+        await getStudentGroupChallengeLiveStateAction(challengeId);
 
-          // ===============================================
-          // ROOM DOES NOT EXIST
-          // ===============================================
-
-          if (!data) {
-            setState(null);
-            setLoading(false);
-            return;
-          }
-
-          // ===============================================
-          // NORMALIZE STATE
-          // ===============================================
-
-          const normalizedState: BattleRealtimeState = {
-            status: data.status ?? "WAITING",
-            questionStartedAt:
-              typeof data.questionStartedAt === "number"
-                ? data.questionStartedAt
-                : null,
-            currentQuestion:
-              typeof data.currentQuestion === "number"
-                ? data.currentQuestion
-                : 0,
-
-            startedAt:
-              typeof data.startedAt === "number" ? data.startedAt : null,
-
-            players: data.players ?? {},
-          };
-
-          setState(normalizedState);
-
-          setLoading(false);
-          setError(null);
-        },
-        (firebaseError) => {
-          console.error("BATTLE_REALTIME_ERROR:", firebaseError);
-
-          setError("تعذر الاتصال بالتحدي");
-
-          setLoading(false);
-        },
-      );
-    } catch (error) {
-      console.error("BATTLE_REALTIME_SETUP_ERROR:", error);
-
-      setError("حدث خطأ أثناء الاتصال بالتحدي");
-
-      setLoading(false);
-    }
-
-    // =====================================================
-    // CLEANUP
-    // =====================================================
-
-    return () => {
-      if (unsubscribe) {
-        unsubscribe();
+      if (
+        mountedRef.current &&
+        activeChallengeRef.current === challengeId
+      ) {
+        setState({
+          challengeId,
+          data: result,
+          isLoading: false,
+          error: null,
+        });
       }
-    };
-  }, [battleId]);
+    } catch (cause) {
+      if (
+        mountedRef.current &&
+        activeChallengeRef.current === challengeId
+      ) {
+        setState({
+          challengeId,
+          data: null,
+          isLoading: false,
+          error:
+            cause instanceof Error
+              ? cause.message
+              : "حدث خطأ أثناء تحديث بيانات التحدي.",
+        });
+      }
+    } finally {
+      if (busyChallengeRef.current === challengeId) {
+        busyChallengeRef.current = null;
+      }
+    }
+  }, [challengeId]);
 
-  // =======================================================
-  // RETURN
-  // =======================================================
+useEffect(() => {
+  mountedRef.current = true;
+  activeChallengeRef.current = challengeId;
+
+  // Defer the initial request outside the effect execution.
+  const initialRequest = window.setTimeout(() => {
+    void refresh();
+  }, 0);
+
+  const timer = window.setInterval(() => {
+    void refresh();
+  }, interval);
+
+  return () => {
+    mountedRef.current = false;
+
+    window.clearTimeout(initialRequest);
+    window.clearInterval(timer);
+  };
+}, [challengeId, interval, refresh]);
+  // Only expose state belonging to the current challenge.
+  const isCurrentChallenge = state.challengeId === challengeId;
 
   return {
-    state,
-    loading,
-    error,
+    data: isCurrentChallenge ? state.data : null,
+    isLoading: !isCurrentChallenge || state.isLoading,
+    error: isCurrentChallenge ? state.error : null,
+    refresh,
   };
 }

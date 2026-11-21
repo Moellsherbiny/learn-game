@@ -1,0 +1,48 @@
+diff --git a/components/teacher/group-challenges/create-group-challenge-form.tsx b/components/teacher/group-challenges/create-group-challenge-form.tsx
+--- a/components/teacher/group-challenges/create-group-challenge-form.tsx
++++ b/components/teacher/group-challenges/create-group-challenge-form.tsx
+@@ -50,1 +50,1 @@
+-type GameType = "QUIZ" | "MATCHING" | "FILL_BLANKS" | "CONVERSATION";
++type GameType = "QUIZ" | "MATCHING" | "FILL_BLANKS";
+@@ -56,6 +56,5 @@
+ const GAME_TYPE_LABELS: Record<GameType, string> = {
+   QUIZ: "اختيار من متعدد",
+   MATCHING: "مطابقة",
+   FILL_BLANKS: "أكمل الفراغ",
+-  CONVERSATION: "محادثة",
+ };
+diff --git a/actions/teacher/group-challenge-form.ts b/actions/teacher/group-challenge-form.ts
+--- a/actions/teacher/group-challenge-form.ts
++++ b/actions/teacher/group-challenge-form.ts
+@@ -132,5 +132,14 @@
+   return {
+     course,
+-    modules,
++    // Conversation lessons remain available in the LMS, but not in Group Challenge.
++    modules: modules.map((module) => ({
++      ...module,
++      lessons: module.lessons.filter(
++        (lesson) =>
++          lesson.gameType === "QUIZ" ||
++          lesson.gameType === "MATCHING" ||
++          lesson.gameType === "FILL_BLANKS",
++      ),
++    })),
+   };
+ }
+diff --git a/actions/teacher/group-challenge.ts b/actions/teacher/group-challenge.ts
+--- a/actions/teacher/group-challenge.ts
++++ b/actions/teacher/group-challenge.ts
+@@ -206,0 +207,12 @@
++  // Enforce supported Group Challenge types on the server too.
++  const unsupportedContent = orderedContents.find(
++    (content) =>
++      content.lesson.gameType !== "QUIZ" &&
++      content.lesson.gameType !== "MATCHING" &&
++      content.lesson.gameType !== "FILL_BLANKS",
++  );
++
++  if (unsupportedContent) {
++    throw new Error("نوع السؤال غير مدعوم في التحديات الجماعية.");
++  }
++
